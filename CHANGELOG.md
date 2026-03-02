@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.27.3](https://github.com/mattogodoy/nametag/compare/v0.27.2...v0.27.3) (2026-03-02)
+
+
+### Bug Fixes
+
+* handle symmetric relationship types with null inverseId ([094953f](https://github.com/mattogodoy/nametag/commit/094953f90c7d5bb5ce100f847ceb435b5cd2ae0c))
+* handle symmetric relationship types with null inverseId ([6ed69b9](https://github.com/mattogodoy/nametag/commit/6ed69b9491a267d386c50ee9212077e83385509b))
+* remove non-null assertions on route context.params ([eff1260](https://github.com/mattogodoy/nametag/commit/eff1260d080e6343b598ede2cf02454874e4d2f0))
+* remove non-null assertions on route context.params ([7972025](https://github.com/mattogodoy/nametag/commit/7972025540b9097abc60e143dbd3bdf415b3ddb0)), closes [#78](https://github.com/mattogodoy/nametag/issues/78)
+
 ## [0.27.2](https://github.com/mattogodoy/nametag/compare/v0.27.1...v0.27.2) (2026-03-02)
 
 
