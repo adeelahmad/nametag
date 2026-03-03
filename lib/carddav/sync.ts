@@ -558,6 +558,7 @@ export async function syncToServer(
       where: {
         userId,
         cardDavSyncEnabled: true,
+        deletedAt: null,
         ...(mappedIds.length > 0 ? { id: { notIn: mappedIds } } : {}),
       },
       include: {

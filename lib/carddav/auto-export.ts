@@ -39,7 +39,7 @@ function formatExportFullName(person: {
 export async function autoExportPerson(personId: string): Promise<void> {
   // Get person with all relations
   const person = await prisma.person.findUnique({
-    where: { id: personId },
+    where: { id: personId, deletedAt: null },
     include: {
       phoneNumbers: true,
       emails: true,
@@ -50,6 +50,7 @@ export async function autoExportPerson(personId: string): Promise<void> {
       customFields: true,
       importantDates: true,
       relationshipsFrom: {
+        where: { deletedAt: null },
         include: {
           relatedPerson: true,
         },
@@ -230,7 +231,7 @@ export async function autoExportPerson(personId: string): Promise<void> {
 export async function autoUpdatePerson(personId: string): Promise<void> {
   // Get person with all relations
   const person = await prisma.person.findUnique({
-    where: { id: personId },
+    where: { id: personId, deletedAt: null },
     include: {
       phoneNumbers: true,
       emails: true,
@@ -241,6 +242,7 @@ export async function autoUpdatePerson(personId: string): Promise<void> {
       customFields: true,
       importantDates: true,
       relationshipsFrom: {
+        where: { deletedAt: null },
         include: {
           relatedPerson: true,
         },
