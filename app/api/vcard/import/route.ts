@@ -65,6 +65,7 @@ export const POST = withLogging(async function POST(request: Request) {
             where: {
               uid: { in: validUIDs },
               userId: session.user.id,
+              deletedAt: null,
             },
             select: { uid: true },
           })
@@ -127,6 +128,7 @@ export const POST = withLogging(async function POST(request: Request) {
             where: {
               uid: parsedData.uid,
               userId: session.user.id,
+              deletedAt: null,
             },
           });
 

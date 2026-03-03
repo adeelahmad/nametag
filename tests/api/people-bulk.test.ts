@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   groupFindMany: vi.fn(),
   cardDavMappingDeleteMany: vi.fn(),
   cardDavMappingFindMany: vi.fn(),
-  relationshipTypeFindUnique: vi.fn(),
+  relationshipTypeFindFirst: vi.fn(),
   deleteFromCardDav: vi.fn(),
 }));
 
@@ -32,7 +32,7 @@ vi.mock('../../lib/prisma', () => ({
       findMany: mocks.cardDavMappingFindMany,
     },
     relationshipType: {
-      findUnique: mocks.relationshipTypeFindUnique,
+      findFirst: mocks.relationshipTypeFindFirst,
     },
   },
 }));
@@ -155,7 +155,7 @@ describe('Bulk Actions API', () => {
         { id: 'p1', userId: 'user-123' },
         { id: 'p2', userId: 'user-123' },
       ]);
-      mocks.relationshipTypeFindUnique.mockResolvedValue({
+      mocks.relationshipTypeFindFirst.mockResolvedValue({
         id: 'rt1',
         userId: 'user-123',
       });
@@ -180,7 +180,7 @@ describe('Bulk Actions API', () => {
     });
 
     it('should reject invalid relationship type', async () => {
-      mocks.relationshipTypeFindUnique.mockResolvedValue(null);
+      mocks.relationshipTypeFindFirst.mockResolvedValue(null);
 
       const request = new Request('http://localhost/api/people/bulk', {
         method: 'POST',

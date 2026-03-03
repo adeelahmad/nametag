@@ -45,7 +45,7 @@ export const POST = withAuth(async (request, session) => {
         let validOrphanIds: string[] = [];
         if (data.orphanIds && data.orphanIds.length > 0) {
           const validOrphans = await prisma.person.findMany({
-            where: { id: { in: data.orphanIds }, userId: session.user.id },
+            where: { id: { in: data.orphanIds }, userId: session.user.id, deletedAt: null },
             select: { id: true },
           });
           validOrphanIds = validOrphans.map((o) => o.id);
@@ -91,7 +91,7 @@ export const POST = withAuth(async (request, session) => {
       case 'addToGroups': {
         // Validate all group IDs belong to the current user
         const validGroups = await prisma.group.findMany({
-          where: { id: { in: data.groupIds }, userId: session.user.id },
+          where: { id: { in: data.groupIds }, userId: session.user.id, deletedAt: null },
           select: { id: true },
         });
         const validGroupIds = validGroups.map((g) => g.id);
@@ -137,8 +137,8 @@ export const POST = withAuth(async (request, session) => {
 
       case 'setRelationship': {
         // Validate the relationship type exists and belongs to the user
-        const relType = await prisma.relationshipType.findUnique({
-          where: { id: data.relationshipTypeId },
+        const relType = await prisma.relationshipType.findFirst({
+          where: { id: data.relationshipTypeId, deletedAt: null },
           select: { id: true, userId: true },
         });
 
