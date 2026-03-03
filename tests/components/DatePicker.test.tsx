@@ -385,6 +385,43 @@ describe('DatePicker', () => {
         `${currentYear}-06-20`
       );
     });
+
+    it('should re-emit when yearUnknown changes to true with month+day already set', () => {
+      const currentYear = new Date().getFullYear();
+
+      // Render with a date value and yearUnknown=false
+      const { rerender } = render(
+        <Wrapper>
+          <DatePicker
+            value={`${currentYear}-03-15`}
+            onChange={mockOnChange}
+            dateFormat="MDY"
+            showYearToggle
+            yearUnknown={false}
+            onYearUnknownChange={vi.fn()}
+          />
+        </Wrapper>
+      );
+
+      mockOnChange.mockClear();
+
+      // Simulate parent setting yearUnknown=true (user checked the checkbox)
+      rerender(
+        <Wrapper>
+          <DatePicker
+            value={`${currentYear}-03-15`}
+            onChange={mockOnChange}
+            dateFormat="MDY"
+            showYearToggle
+            yearUnknown={true}
+            onYearUnknownChange={vi.fn()}
+          />
+        </Wrapper>
+      );
+
+      // Should re-emit the date with current year placeholder
+      expect(mockOnChange).toHaveBeenCalledWith(`${currentYear}-03-15`);
+    });
   });
 
   describe('Today button', () => {

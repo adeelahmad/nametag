@@ -93,6 +93,15 @@ export default function DatePicker({
     return getDaysInMonth(month, effectiveYear);
   }, [month, year, yearUnknown]);
 
+  // Re-emit when yearUnknown changes (so parent gets a value if month+day are already set)
+  useEffect(() => {
+    if (yearUnknown && month !== null && day !== null) {
+      onChange(toISO(currentYear, month, day));
+    }
+    // Only react to yearUnknown changes, not to month/day/year changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [yearUnknown]);
+
   const emitChange = useCallback(
     (m: number | null, d: number | null, y: number | null) => {
       if (yearUnknown) {
@@ -263,40 +272,39 @@ export default function DatePicker({
         )}
       </div>
       {showYearToggle && (
-        <div className="flex items-center gap-2">
+        <label className="flex items-center mt-2 cursor-pointer group">
           <input
             type="checkbox"
             id={id ? `${id}-year-unknown` : 'year-unknown'}
             checked={yearUnknown}
             onChange={handleYearUnknownChange}
             disabled={disabled}
-            className="rounded border-border text-primary focus:ring-primary"
+            className="h-4 w-4 text-blue-600 border-border rounded focus:ring-blue-500"
             aria-label={t('yearUnknown')}
           />
-          <label
-            htmlFor={id ? `${id}-year-unknown` : 'year-unknown'}
-            className="text-sm text-muted"
-          >
+          <span className="ml-2 text-xs text-muted flex items-center gap-1">
             {t('yearUnknown')}
-          </label>
-          <span
-            title={t('yearUnknownTooltip')}
-            className="text-muted cursor-help"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z"
-                clipRule="evenodd"
+            <span className="relative inline-block">
+              <svg
+                className="w-3.5 h-3.5 text-muted hover:text-foreground transition-colors cursor-help"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-label={t('yearUnknownTooltip')}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
-            </svg>
+              </svg>
+              <span className="invisible group-hover:visible absolute left-6 top-1/2 -translate-y-1/2 w-64 px-3 py-2 text-xs text-foreground bg-surface-elevated border border-border rounded-lg shadow-lg z-10 pointer-events-none">
+                {t('yearUnknownTooltip')}
+              </span>
+            </span>
           </span>
-        </div>
+        </label>
       )}
     </div>
   );
