@@ -54,6 +54,7 @@ export const GET = withAuth(async (request, session) => {
       middleName: true,
       secondLastName: true,
       nickname: true,
+      photo: true,
     },
     orderBy: {
       name: 'asc',
