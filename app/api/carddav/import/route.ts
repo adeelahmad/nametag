@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma, withDeleted } from '@/lib/prisma';
 import { vCardToPerson } from '@/lib/vcard';
+import { parseVCard } from '@/lib/carddav/vcard-parser';
 import { sanitizeName, sanitizeNotes } from '@/lib/sanitize';
 import { createPersonFromVCardData, restorePersonFromVCardData } from '@/lib/carddav/person-from-vcard';
 import { createModuleLogger } from '@/lib/logger';
@@ -242,6 +243,7 @@ export const POST = withLogging(async function POST(request: Request) {
             // Person already exists — create a CardDAV mapping (if applicable) and clean up
             const isFileImport = pendingImport.uploadedByUserId !== null;
             if (!isFileImport && connection) {
+              const enhancedParsed = parseVCard(pendingImport.vCardData);
               await prisma.cardDavMapping.create({
                 data: {
                   connectionId: connection.id,
@@ -251,6 +253,9 @@ export const POST = withLogging(async function POST(request: Request) {
                   etag: pendingImport.etag,
                   syncStatus: 'synced',
                   lastSyncedAt: new Date(),
+                  preservedProperties: enhancedParsed.unknownProperties.length > 0
+                    ? enhancedParsed.unknownProperties
+                    : undefined,
                 },
               });
             }
@@ -292,6 +297,7 @@ export const POST = withLogging(async function POST(request: Request) {
         // Create CardDAV mapping only for CardDAV imports (not file imports)
         const isFileImport = pendingImport.uploadedByUserId !== null;
         if (!isFileImport && connection) {
+          const enhancedParsed = parseVCard(pendingImport.vCardData);
           await prisma.cardDavMapping.create({
             data: {
               connectionId: connection.id,
@@ -301,6 +307,9 @@ export const POST = withLogging(async function POST(request: Request) {
               etag: pendingImport.etag,
               syncStatus: 'synced',
               lastSyncedAt: new Date(),
+              preservedProperties: enhancedParsed.unknownProperties.length > 0
+                ? enhancedParsed.unknownProperties
+                : undefined,
             },
           });
         }
