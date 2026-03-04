@@ -423,6 +423,17 @@ export const POST = withAuth(async (request, session) => {
       return foundRaceMapping;
     });
 
+    // Mark primary's CardDAV mapping as pending so the merge changes get pushed
+    if (primary.cardDavMapping) {
+      await prisma.cardDavMapping.update({
+        where: { id: primary.cardDavMapping.id },
+        data: {
+          syncStatus: 'pending',
+          lastLocalChange: new Date(),
+        },
+      });
+    }
+
     // Post-transaction: if auto-export created a mapping during our window,
     // clean up the orphaned vCard from the CardDAV server.
     if (raceMappingInfo) {
