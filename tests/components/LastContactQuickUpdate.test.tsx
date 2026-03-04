@@ -145,8 +145,9 @@ describe('LastContactQuickUpdate', () => {
     });
 
     // Verify the body contains today's date
+    const calls = vi.mocked(global.fetch).mock.calls;
     const callBody = JSON.parse(
-      (mockFetch.mock.calls[0][1] as RequestInit).body as string
+      (calls[0][1] as RequestInit).body as string
     );
     const today = new Date().toISOString().split('T')[0];
     expect(callBody.lastContact).toBe(today);
@@ -244,6 +245,11 @@ describe('LastContactQuickUpdate', () => {
     resolvePromise!({
       ok: true,
       json: () => Promise.resolve({ success: true }),
+    });
+
+    // Wait for state update to complete to avoid act() warning
+    await waitFor(() => {
+      expect(button).not.toBeDisabled();
     });
   });
 });
