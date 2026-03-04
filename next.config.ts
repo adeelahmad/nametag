@@ -63,7 +63,7 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // TODO: Remove unsafe-inline and unsafe-eval in production
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: https:",
+              "img-src 'self' data: blob: https:",
               "connect-src 'self'",
               "frame-ancestors 'none'",
               "base-uri 'self'",
@@ -83,7 +83,7 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' https://unpkg.com",
               "style-src 'self' 'unsafe-inline' https://unpkg.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: https:",
+              "img-src 'self' data: blob: https:",
               "connect-src 'self'",
               "frame-ancestors 'none'",
               "base-uri 'self'",
