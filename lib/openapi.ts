@@ -2088,6 +2088,57 @@ export function generateOpenAPISpec(): OpenAPISpec {
           },
         },
       },
+      '/api/people/{id}/photo': {
+        post: {
+          tags: ['Photos'],
+          summary: 'Upload or replace a person photo',
+          description: 'Upload a photo for a person. The image is cropped to 256x256, converted to JPEG, and EXIF data is stripped.',
+          security: [{ session: [] }],
+          parameters: [pathParam('id', 'Person ID')],
+          requestBody: {
+            required: true,
+            content: {
+              'multipart/form-data': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    photo: {
+                      type: 'string',
+                      format: 'binary',
+                      description: 'Photo image file',
+                    },
+                  },
+                  required: ['photo'],
+                },
+              },
+            },
+          },
+          responses: {
+            '200': jsonResponse('Photo uploaded', {
+              type: 'object',
+              properties: {
+                filename: { type: 'string', description: 'Saved photo filename' },
+              },
+              required: ['filename'],
+            }),
+            '400': resp('Validation error or invalid image'),
+            '401': ref401(),
+            '404': ref404(),
+          },
+        },
+        delete: {
+          tags: ['Photos'],
+          summary: 'Remove a person photo',
+          description: 'Deletes the photo associated with a person.',
+          security: [{ session: [] }],
+          parameters: [pathParam('id', 'Person ID')],
+          responses: {
+            '200': refMessage(),
+            '401': ref401(),
+            '404': ref404(),
+          },
+        },
+      },
 
       // =====================================================
       // Cron
