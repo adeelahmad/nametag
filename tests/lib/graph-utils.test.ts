@@ -3,6 +3,7 @@ import {
   relationshipsWithUserToGraphEdges,
   relationshipToGraphEdge,
   inverseRelationshipToGraphEdge,
+  personToGraphNode,
 } from '@/lib/graph-utils';
 
 describe('graph-utils', () => {
@@ -73,6 +74,45 @@ describe('graph-utils', () => {
       const edges = relationshipsWithUserToGraphEdges(person, 'user-1');
 
       expect(edges).toHaveLength(0);
+    });
+  });
+
+  describe('personToGraphNode', () => {
+    it('should include photo in the graph node', () => {
+      const person = {
+        id: 'person-1',
+        name: 'John',
+        surname: 'Doe',
+        nickname: null,
+        photo: 'photos/person-1.webp',
+        groups: [
+          { group: { name: 'Family', color: '#FF0000' } },
+        ],
+      };
+
+      const node = personToGraphNode(person);
+
+      expect(node.id).toBe('person-1');
+      expect(node.photo).toBe('photos/person-1.webp');
+      expect(node.colors).toEqual(['#FF0000']);
+      expect(node.isCenter).toBe(false);
+    });
+
+    it('should handle null photo', () => {
+      const person = {
+        id: 'person-2',
+        name: 'Jane',
+        surname: null,
+        nickname: null,
+        photo: null,
+        groups: [],
+      };
+
+      const node = personToGraphNode(person, true);
+
+      expect(node.id).toBe('person-2');
+      expect(node.photo).toBeNull();
+      expect(node.isCenter).toBe(true);
     });
   });
 

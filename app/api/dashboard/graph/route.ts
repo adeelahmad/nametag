@@ -14,6 +14,7 @@ type DashboardGraphPerson = {
   name: string;
   surname: string | null;
   nickname: string | null;
+  photo: string | null;
   relationshipToUser: {
     label: string;
     color: string | null;
@@ -76,6 +77,7 @@ export const GET = withAuth(async (request, session) => {
         name: true,
         surname: true,
         nickname: true,
+        photo: true,
         relationshipToUser: {
           where: {
             deletedAt: null,

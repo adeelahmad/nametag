@@ -7,6 +7,7 @@ export interface GraphNode {
   groups: string[];
   colors: string[];
   isCenter: boolean;
+  photo?: string | null;
 }
 
 export interface GraphEdge {
@@ -131,7 +132,7 @@ type Group = Prisma.GroupGetPayload<{
 
 interface Person
   extends Prisma.PersonGetPayload<{
-    select: { id: true; name: true; surname: true; nickname: true };
+    select: { id: true; name: true; surname: true; nickname: true; photo: true };
   }> {
   groups: { group: Group }[];
 }
@@ -143,6 +144,7 @@ export function personToGraphNode(person: Person, isCenter = false): GraphNode {
     groups: person.groups.map((pg) => pg.group.name),
     colors: person.groups.map((pg) => pg.group.color || '#3B82F6'),
     isCenter,
+    photo: person.photo,
   };
 }
 
