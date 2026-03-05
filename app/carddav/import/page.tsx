@@ -25,6 +25,7 @@ export default async function ImportPage({
       email: true,
       name: true,
       nickname: true,
+      photo: true,
     },
   });
 
@@ -89,6 +90,7 @@ export default async function ImportPage({
         userEmail={user?.email}
         userName={user?.name}
         userNickname={user?.nickname}
+        userPhoto={user?.photo}
         currentPath="/carddav/import"
       />
 

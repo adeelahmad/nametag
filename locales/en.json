@@ -1081,6 +1081,20 @@
       "loadingContacts": "Loading contacts...",
       "personNotFound": "One or both contacts could not be found.",
       "missingParams": "Missing contact parameters. Please select two contacts to merge."
+    },
+    "photo": {
+      "cropTitle": "Crop Photo",
+      "zoom": "Zoom",
+      "cancel": "Cancel",
+      "confirm": "Save",
+      "processing": "Processing...",
+      "uploadLabel": "Upload photo",
+      "changeLabel": "Change photo",
+      "removeLabel": "Remove photo",
+      "uploadError": "Failed to upload photo",
+      "removeError": "Failed to remove photo",
+      "formatError": "Unsupported format. Use JPEG, PNG, GIF, or WebP.",
+      "sizeError": "Photo must be smaller than 10MB"
     }
   },
   "groups": {

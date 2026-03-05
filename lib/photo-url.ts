@@ -21,3 +21,12 @@ export function getPhotoUrl(personId: string, photo: string | null | undefined):
   // Legacy: data URI or external URL — return as-is
   return photo;
 }
+
+/**
+ * Get the URL for displaying the logged-in user's photo
+ * Returns /api/photos/user if photo is truthy, null otherwise
+ */
+export function getUserPhotoUrl(photo: string | null | undefined): string | null {
+  if (!photo) return null;
+  return '/api/photos/user';
+}

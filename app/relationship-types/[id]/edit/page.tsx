@@ -64,6 +64,7 @@ export default async function EditRelationshipTypePage({
         userEmail={session.user.email || undefined}
         userName={session.user.name}
         userNickname={session.user.nickname}
+        userPhoto={session.user.photo}
         currentPath="/relationship-types"
       />
 

@@ -1,15 +1,29 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { getPhotoUrl } from '@/lib/photo-url';
 
-interface PersonPhotoProps {
-  src: string;
+interface PersonAvatarProps {
+  personId: string;
   name: string;
+  photo?: string | null;
+  size?: number;
+  loading?: 'lazy' | 'eager';
+  className?: string;
 }
 
-export default function PersonPhoto({ src, name }: PersonPhotoProps) {
+export default function PersonAvatar({
+  personId,
+  name,
+  photo,
+  size = 32,
+  loading = 'lazy',
+  className = '',
+}: PersonAvatarProps) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
+
+  const src = getPhotoUrl(personId, photo);
 
   // Use a ref callback to catch images that loaded before hydration
   const imgRef = useCallback((img: HTMLImageElement | null) => {
@@ -19,37 +33,52 @@ export default function PersonPhoto({ src, name }: PersonPhotoProps) {
   }, []);
 
   const initials = name
+    .replace(/[''\u2018\u2019][^''\u2018\u2019]*[''\u2018\u2019]/g, '')
+    .replace(/[""\u201C\u201D][^""\u201C\u201D]*[""\u201C\u201D]/g, '')
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
     .map((w) => w[0].toUpperCase())
     .join('');
 
-  if (errored) {
-    return null;
-  }
+  const fontSize = Math.max(10, Math.round(size * 0.35));
+
+  const showImage = src && !errored;
 
   return (
-    <div className="relative w-32 h-32">
-      {/* Initials placeholder — visible until image loads */}
-      {!loaded && (
-        <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shadow-lg animate-pulse">
-          <span className="text-2xl font-semibold text-gray-500 dark:text-gray-400">
+    <div
+      className={`relative rounded-full overflow-hidden flex-shrink-0 ${className}`}
+      style={{ width: size, height: size }}
+    >
+      {/* Initials fallback — shown when no photo, on error, or while loading */}
+      {(!showImage || !loaded) && (
+        <div
+          className={`absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center ${showImage ? 'animate-pulse' : ''}`}
+        >
+          <span
+            className="font-semibold text-gray-500 dark:text-gray-400 select-none"
+            style={{ fontSize }}
+          >
             {initials}
           </span>
         </div>
       )}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        ref={imgRef}
-        src={src}
-        alt={name}
-        onLoad={() => setLoaded(true)}
-        onError={() => setErrored(true)}
-        className={`w-32 h-32 rounded-full object-cover shadow-lg transition-opacity duration-300 ${
-          loaded ? 'opacity-100' : 'opacity-0'
-        }`}
-      />
+      {/* Photo image */}
+      {showImage && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          ref={imgRef}
+          src={src}
+          alt={name}
+          loading={loading}
+          onLoad={() => setLoaded(true)}
+          onError={() => setErrored(true)}
+          className={`rounded-full object-cover bg-white dark:bg-black transition-opacity duration-300 ${
+            loaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ width: size, height: size }}
+        />
+      )}
     </div>
   );
 }

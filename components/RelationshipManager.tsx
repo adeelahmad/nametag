@@ -8,12 +8,14 @@ import { toast } from 'sonner';
 import PersonAutocomplete from './PersonAutocomplete';
 import { formatFullName, formatGraphName } from '@/lib/nameUtils';
 import { Button } from './ui/Button';
+import PersonAvatar from './PersonPhoto';
 
 interface Person {
   id: string;
   name: string;
   surname?: string | null;
   nickname?: string | null;
+  photo?: string | null;
 }
 
 interface RelationshipType {
@@ -44,6 +46,7 @@ interface RelationshipManagerProps {
     name: string;
     surname?: string | null;
     nickname?: string | null;
+    photo?: string | null;
   };
   hasUserRelationship?: boolean;
 }
@@ -279,12 +282,15 @@ export default function RelationshipManager({
                 <div className="flex items-center gap-1 flex-wrap text-foreground">
                   {t.rich('isRelationshipOf', {
                     name: () => (
-                      <Link
-                        href={`/people/${rel.personId}`}
-                        className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-                      >
-                        {formatGraphName(rel.person)}
-                      </Link>
+                      <span className="inline-flex items-center gap-1.5">
+                        <PersonAvatar personId={rel.personId} name={formatGraphName(rel.person)} photo={rel.person.photo} size={24} />
+                        <Link
+                          href={`/people/${rel.personId}`}
+                          className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                        >
+                          {formatGraphName(rel.person)}
+                        </Link>
+                      </span>
                     ),
                     personName: personName,
                     type: () => (

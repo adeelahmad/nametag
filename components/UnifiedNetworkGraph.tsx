@@ -12,6 +12,7 @@ interface GraphNode extends d3.SimulationNodeDatum {
   groups: string[];
   colors: string[];
   isCenter: boolean;
+  photo?: string | null;
 }
 
 interface GraphEdge {
@@ -155,6 +156,17 @@ export default function UnifiedNetworkGraph({
         .attr('d', 'M0,-5L10,0L0,5')
         .attr('fill', color)
         .attr('fill-opacity', 0.8)
+    });
+
+    // Add clip paths for nodes with photos
+    nodes.forEach((n) => {
+      if (n.photo) {
+        const r = n.isCenter ? nodeRadius.center : nodeRadius.normal;
+        defs.append('clipPath')
+          .attr('id', `clip-${CSS.escape(n.id)}`)
+          .append('circle')
+          .attr('r', r);
+      }
     });
 
     // Calculate cluster positions for group clustering
@@ -377,12 +389,28 @@ export default function UnifiedNetworkGraph({
       .append('circle')
       .attr('r', (d) => (d.isCenter ? nodeRadius.center : nodeRadius.normal))
       .attr('fill', (d) => {
+        if (d.photo) return isDarkTheme ? '#000000' : '#ffffff';
         if (d.isCenter) return '#3B82F6'; // Blue for center
         if (d.colors.length > 0) return d.colors[0];
         return '#9CA3AF';
       })
-      .attr('stroke', isDarkTheme ? '#fff' : '#1f2937') // White in dark theme, dark grey in light theme
+      .attr('stroke', (d) => {
+        if (d.colors.length > 0) return d.colors[0];
+        if (d.isCenter) return '#3B82F6';
+        return isDarkTheme ? '#fff' : '#1f2937';
+      })
       .attr('stroke-width', 2);
+
+    // Add photo images for nodes that have photos
+    node.filter((d) => !!d.photo)
+      .append('image')
+      .attr('href', (d) => d.id.startsWith('user-') ? '/api/photos/user' : `/api/photos/${d.id}`)
+      .attr('x', (d) => -(d.isCenter ? nodeRadius.center : nodeRadius.normal))
+      .attr('y', (d) => -(d.isCenter ? nodeRadius.center : nodeRadius.normal))
+      .attr('width', (d) => (d.isCenter ? nodeRadius.center : nodeRadius.normal) * 2)
+      .attr('height', (d) => (d.isCenter ? nodeRadius.center : nodeRadius.normal) * 2)
+      .attr('clip-path', (d) => `url(#clip-${CSS.escape(d.id)})`)
+      .attr('preserveAspectRatio', 'xMidYMid slice');
 
     // Animate new nodes
     if (animateNewNodes) {

@@ -29,6 +29,8 @@ model User {
   passwordResetSentAt  DateTime?
   lastLoginAt        DateTime?
 
+  photo              String?
+
   // OAuth fields
   provider           String?   // e.g., "google", "credentials"
   providerAccountId  String?   // OAuth provider's user ID

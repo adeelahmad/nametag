@@ -25,6 +25,7 @@ export default async function ProfileSettingsPage() {
         currentSurname={session.user.surname || ''}
         currentNickname={session.user.nickname || ''}
         currentEmail={session.user.email || ''}
+        currentPhoto={session.user.photo || null}
       />
     </div>
   );

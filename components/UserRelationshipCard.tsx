@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from './ui/Button';
+import { getUserPhotoUrl } from '@/lib/photo-url';
 
 interface RelationshipType {
   id: string;
@@ -23,6 +24,8 @@ interface UserRelationshipCardProps {
     color: string | null;
   };
   relationshipTypes: RelationshipType[];
+  userName?: string;
+  userPhoto?: string | null;
 }
 
 export default function UserRelationshipCard({
@@ -30,6 +33,8 @@ export default function UserRelationshipCard({
   personName,
   relationshipToUser,
   relationshipTypes,
+  userName,
+  userPhoto,
 }: UserRelationshipCardProps) {
   const t = useTranslations('people');
   const tCommon = useTranslations('common');
@@ -104,7 +109,19 @@ export default function UserRelationshipCard({
     <>
       <div className="mb-4 p-3 bg-primary/10 border border-primary/30 rounded-lg">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 flex-wrap text-foreground">
+          <div className="flex items-center gap-1.5 flex-wrap text-foreground">
+            {(() => {
+              const photoUrl = getUserPhotoUrl(userPhoto);
+              const initials = (userName || '?').charAt(0).toUpperCase();
+              return photoUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={photoUrl} alt="" className="w-6 h-6 rounded-full object-cover bg-white dark:bg-black flex-shrink-0" />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400">{initials}</span>
+                </div>
+              );
+            })()}
             {t.rich('isYourRelationship', {
               name: () => (
                 <span className="font-medium">

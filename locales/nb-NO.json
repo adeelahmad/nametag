@@ -1081,6 +1081,20 @@
       "loadingContacts": "Laster kontakter...",
       "personNotFound": "Én eller begge kontaktene ble ikke funnet.",
       "missingParams": "Manglende kontaktparametere. Velg to kontakter å slå sammen."
+    },
+    "photo": {
+      "cropTitle": "Beskjær bilde",
+      "zoom": "Zoom",
+      "cancel": "Avbryt",
+      "confirm": "Lagre",
+      "processing": "Behandler...",
+      "uploadLabel": "Last opp bilde",
+      "changeLabel": "Endre bilde",
+      "removeLabel": "Fjern bilde",
+      "uploadError": "Kunne ikke laste opp bilde",
+      "removeError": "Kunne ikke fjerne bilde",
+      "formatError": "Format ikke støttet. Bruk JPEG, PNG, GIF eller WebP.",
+      "sizeError": "Bildet må være mindre enn 10 MB"
     }
   },
   "groups": {

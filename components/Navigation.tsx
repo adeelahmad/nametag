@@ -11,10 +11,11 @@ interface NavigationProps {
   userEmail?: string;
   userName?: string | null;
   userNickname?: string | null;
+  userPhoto?: string | null;
   currentPath?: string;
 }
 
-export default function Navigation({ userEmail, userName, userNickname, currentPath }: NavigationProps) {
+export default function Navigation({ userEmail, userName, userNickname, userPhoto, currentPath }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
@@ -129,7 +130,7 @@ export default function Navigation({ userEmail, userName, userNickname, currentP
           {/* Right section: User menu (all screens), Hamburger (mobile) */}
           <div className="flex items-center space-x-2">
             {userEmail && (
-              <UserMenu userEmail={userEmail} userName={userName} userNickname={userNickname} />
+              <UserMenu userEmail={userEmail} userName={userName} userNickname={userNickname} userPhoto={userPhoto} />
             )}
 
             {/* Mobile menu button */}

@@ -42,6 +42,7 @@ export default async function GroupDetailsPage({
                 name: true,
                 surname: true,
                 nickname: true,
+                photo: true,
               },
             },
           },
@@ -58,6 +59,7 @@ export default async function GroupDetailsPage({
         name: true,
         surname: true,
         nickname: true,
+        photo: true,
       },
       orderBy: {
         name: 'asc',
@@ -77,6 +79,7 @@ export default async function GroupDetailsPage({
         userEmail={session.user.email || undefined}
         userName={session.user.name}
         userNickname={session.user.nickname}
+        userPhoto={session.user.photo}
         currentPath="/groups"
       />
 

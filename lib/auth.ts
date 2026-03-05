@@ -68,6 +68,7 @@ const providers = [
           name: user.name,
           surname: user.surname,
           nickname: user.nickname,
+          photo: user.photo,
         };
       },
     }),
@@ -151,6 +152,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.surname = user.surname;
         token.nickname = user.nickname;
         token.email = user.email;
+        token.photo = user.photo;
       }
       // Ensure jti exists for blacklist tracking (even on existing sessions)
       if (!token.jti) {
@@ -162,6 +164,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.surname = session.surname;
         token.nickname = session.nickname;
         token.email = session.email;
+        if (session.photo !== undefined) {
+          token.photo = session.photo;
+        }
       }
       return token;
     },
@@ -186,6 +191,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.surname = token.surname as string | null;
         session.user.nickname = token.nickname as string | null;
         session.user.email = token.email as string;
+        session.user.photo = token.photo as string | null;
       }
       return session;
     },

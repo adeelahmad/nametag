@@ -53,7 +53,14 @@ export const GET = withLogging(async function GET(request: Request) {
       },
       include: {
         person: {
-          include: {
+          select: {
+            id: true,
+            name: true,
+            surname: true,
+            middleName: true,
+            secondLastName: true,
+            nickname: true,
+            userId: true,
             user: {
               select: {
                 email: true,

@@ -38,6 +38,7 @@ export default async function EditGroupPage({
         userEmail={session.user.email || undefined}
         userName={session.user.name}
         userNickname={session.user.nickname}
+        userPhoto={session.user.photo}
         currentPath="/groups"
       />
 

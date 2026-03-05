@@ -1081,6 +1081,20 @@
       "loadingContacts": "Cargando contactos...",
       "personNotFound": "No se pudo encontrar uno o ambos contactos.",
       "missingParams": "Faltan parámetros de contacto. Por favor selecciona dos contactos para fusionar."
+    },
+    "photo": {
+      "cropTitle": "Recortar foto",
+      "zoom": "Zoom",
+      "cancel": "Cancelar",
+      "confirm": "Guardar",
+      "processing": "Procesando...",
+      "uploadLabel": "Subir foto",
+      "changeLabel": "Cambiar foto",
+      "removeLabel": "Eliminar foto",
+      "uploadError": "Error al subir la foto",
+      "removeError": "Error al eliminar la foto",
+      "formatError": "Formato no soportado. Usa JPEG, PNG, GIF o WebP.",
+      "sizeError": "La foto debe ser menor de 10MB"
     }
   },
   "groups": {

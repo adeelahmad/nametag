@@ -20,6 +20,7 @@ export default async function ExportPage() {
       email: true,
       name: true,
       nickname: true,
+      photo: true,
     },
   });
 
@@ -79,6 +80,7 @@ export default async function ExportPage() {
         userEmail={user?.email}
         userName={user?.name}
         userNickname={user?.nickname}
+        userPhoto={user?.photo}
         currentPath="/carddav/export"
       />
 

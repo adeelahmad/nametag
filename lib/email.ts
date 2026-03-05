@@ -23,12 +23,20 @@ export interface EmailBatchResult {
   results: EmailSendResult[];
 }
 
+export interface EmailAttachment {
+  filename: string;
+  content: Buffer;
+  cid: string;
+  contentType: string;
+}
+
 interface EmailMessage {
   from: string;
   to: string | string[];
   subject: string;
   html: string;
   text?: string;
+  attachments?: EmailAttachment[];
 }
 
 interface EmailProvider {
@@ -140,6 +148,12 @@ class SmtpEmailProvider implements EmailProvider {
         subject: message.subject,
         html: message.html,
         text: message.text,
+        attachments: message.attachments?.map(a => ({
+          filename: a.filename,
+          content: a.content,
+          cid: a.cid,
+          contentType: a.contentType,
+        })),
       });
 
       return {
@@ -208,6 +222,10 @@ class ResendEmailProvider implements EmailProvider {
           subject: message.subject,
           html: message.html,
           text: message.text,
+          attachments: message.attachments?.map(a => ({
+            filename: a.filename,
+            content: a.content,
+          })),
         });
 
         if (error) {
@@ -262,6 +280,10 @@ class ResendEmailProvider implements EmailProvider {
         subject: m.subject,
         html: m.html,
         text: m.text,
+        attachments: m.attachments?.map(a => ({
+          filename: a.filename,
+          content: a.content,
+        })),
       }));
 
       // Add delay between chunks to stay under rate limits
@@ -281,11 +303,11 @@ class ResendEmailProvider implements EmailProvider {
 
   private async sendBatchChunkWithRetry(
     client: Resend,
-    payload: { from: string; to: string | string[]; subject: string; html: string; text?: string }[],
+    payload: { from: string; to: string | string[]; subject: string; html: string; text?: string; attachments?: { filename: string; content: Buffer }[] }[],
     count: number
   ): Promise<EmailSendResult[]> {
     type BatchSendFn = (
-      items: { from: string; to: string | string[]; subject: string; html: string; text?: string }[],
+      items: { from: string; to: string | string[]; subject: string; html: string; text?: string; attachments?: { filename: string; content: Buffer }[] }[],
       options?: { batchValidation?: string }
     ) => Promise<{
       data: { data: { id: string }[] } | null;
@@ -427,9 +449,10 @@ export type SendEmailOptions = {
   html: string;
   text?: string;
   from?: keyof typeof fromAddresses;
+  attachments?: EmailAttachment[];
 };
 
-export async function sendEmail({ to, subject, html, text, from = 'default' }: SendEmailOptions): Promise<EmailSendResult> {
+export async function sendEmail({ to, subject, html, text, from = 'default', attachments }: SendEmailOptions): Promise<EmailSendResult> {
   const provider = getEmailProvider();
 
   if (!provider) {
@@ -443,6 +466,7 @@ export async function sendEmail({ to, subject, html, text, from = 'default' }: S
     subject,
     html,
     text,
+    attachments,
   };
 
   return provider.send(message);
@@ -467,6 +491,7 @@ export async function sendEmailBatch(items: SendBatchEmailItem[]): Promise<Email
     subject: item.subject,
     html: item.html,
     text: item.text,
+    attachments: item.attachments,
   }));
 
   if (provider.sendBatch) {

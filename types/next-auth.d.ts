@@ -6,6 +6,7 @@ declare module 'next-auth' {
       id: string;
       surname: string | null;
       nickname: string | null;
+      photo: string | null;
     } & DefaultSession['user'];
   }
 
@@ -15,6 +16,7 @@ declare module 'next-auth' {
     name: string | null;
     surname: string | null;
     nickname: string | null;
+    photo: string | null;
   }
 }
 
@@ -23,6 +25,7 @@ declare module 'next-auth/jwt' {
     id: string;
     surname: string | null;
     nickname: string | null;
+    photo: string | null;
     jti?: string; // JWT ID for token blacklist tracking
   }
 }

@@ -13,9 +13,8 @@ import LastContactQuickUpdate from '@/components/LastContactQuickUpdate';
 import { formatDate, formatDateWithoutYear, parseAsLocalDate, type DateFormat } from '@/lib/date-format';
 import { formatFullName, formatGraphName } from '@/lib/nameUtils';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
-import PersonPhoto from '@/components/PersonPhoto';
+import PersonAvatar from '@/components/PersonPhoto';
 import { getTranslations } from 'next-intl/server';
-import { getPhotoUrl } from '@/lib/photo-url';
 
 function isSafeUrl(url: string): boolean {
   try {
@@ -129,6 +128,7 @@ export default async function PersonDetailsPage({
       name: true,
       surname: true,
       nickname: true,
+      photo: true,
     },
   });
   const dateFormat = user?.dateFormat || 'MDY';
@@ -164,7 +164,15 @@ export default async function PersonDetailsPage({
             },
           },
           include: {
-            person: true,
+            person: {
+              select: {
+                id: true,
+                name: true,
+                surname: true,
+                nickname: true,
+                photo: true,
+              },
+            },
             relationshipType: {
               where: {
                 deletedAt: null,
@@ -264,6 +272,7 @@ export default async function PersonDetailsPage({
         userEmail={session.user.email || undefined}
         userName={session.user.name}
         userNickname={session.user.nickname}
+        userPhoto={session.user.photo}
         currentPath="/people"
       />
 
@@ -339,12 +348,15 @@ export default async function PersonDetailsPage({
 
             <div className="px-6 py-5 space-y-6">
               {/* Photo */}
-              {person.photo && getPhotoUrl(person.id, person.photo) && (
+              {person.photo && (
                 <div className="border border-border rounded-lg p-4">
                   <div className="flex justify-center">
-                    <PersonPhoto
-                      src={getPhotoUrl(person.id, person.photo)!}
+                    <PersonAvatar
+                      personId={person.id}
                       name={formatFullName(person)}
+                      photo={person.photo}
+                      size={80}
+                      loading="eager"
                     />
                   </div>
                 </div>
@@ -717,6 +729,8 @@ export default async function PersonDetailsPage({
                     personName={formatGraphName(person)}
                     relationshipToUser={relationshipToUser}
                     relationshipTypes={relationshipTypes}
+                    userName={user?.name || ''}
+                    userPhoto={user?.photo || null}
                   />
                 )}
 
@@ -732,6 +746,7 @@ export default async function PersonDetailsPage({
                     name: user?.name || '',
                     surname: user?.surname || null,
                     nickname: user?.nickname || null,
+                    photo: user?.photo || null,
                   }}
                   hasUserRelationship={!!person.relationshipToUserId}
                 />

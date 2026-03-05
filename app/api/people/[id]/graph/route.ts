@@ -130,9 +130,15 @@ export const GET = withAuth(async (_request, session, context) => {
     nodes.push(personToGraphNode(person, true));
     nodeIds.add(person.id);
 
+    // Fetch user photo
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { photo: true },
+    });
+
     // Add user as a node
     const userId = `user-${session.user.id}`;
-    nodes.push(userToGraphNode(userId));
+    nodes.push(userToGraphNode(userId, false, user?.photo));
     nodeIds.add(userId);
 
     // if person has direct relationship to user, add them

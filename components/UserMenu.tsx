@@ -4,14 +4,16 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { handleSignOut } from '@/app/actions/auth';
+import { getUserPhotoUrl } from '@/lib/photo-url';
 
 interface UserMenuProps {
   userEmail?: string;
   userName?: string | null;
   userNickname?: string | null;
+  userPhoto?: string | null;
 }
 
-export default function UserMenu({ userEmail, userName, userNickname }: UserMenuProps) {
+export default function UserMenu({ userEmail, userName, userNickname, userPhoto }: UserMenuProps) {
   const t = useTranslations('nav.userMenu');
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -37,17 +39,28 @@ export default function UserMenu({ userEmail, userName, userNickname }: UserMenu
     await handleSignOut();
   };
 
+  const photoUrl = getUserPhotoUrl(userPhoto);
+  const displayName = userNickname || userName || userEmail || '?';
+  const initials = (displayName || '?').charAt(0).toUpperCase();
+
   return (
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-surface-elevated transition-colors"
       >
-        <div className="w-8 h-8 rounded-full bg-secondary/30 border-2 border-secondary/50 flex items-center justify-center flex-shrink-0 shadow-lg shadow-secondary/20">
-          <svg className="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </div>
+        {photoUrl ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={photoUrl}
+            alt=""
+            className="w-8 h-8 rounded-full object-cover bg-white dark:bg-black border-2 border-secondary/50 flex-shrink-0 shadow-lg shadow-secondary/20"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-secondary/30 border-2 border-secondary/50 flex items-center justify-center flex-shrink-0 shadow-lg shadow-secondary/20">
+            <span className="text-sm font-medium text-secondary">{initials}</span>
+          </div>
+        )}
         <span>{userNickname || userName || userEmail}</span>
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}

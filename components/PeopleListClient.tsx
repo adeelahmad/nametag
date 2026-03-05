@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import BulkDeleteModal from './BulkDeleteModal';
 import BulkGroupAssignModal from './BulkGroupAssignModal';
 import BulkRelationshipModal from './BulkRelationshipModal';
+import PersonAvatar from './PersonPhoto';
+import { formatFullName } from '@/lib/nameUtils';
 import { formatDate, type DateFormat } from '@/lib/date-format';
 
 interface PersonRow {
@@ -17,6 +19,7 @@ interface PersonRow {
   surname: string | null;
   secondLastName: string | null;
   nickname: string | null;
+  photo: string | null;
   lastContact: Date | null;
   relationshipToUser: { label: string; color: string | null } | null;
   groups: Array<{ groupId: string; group: { name: string; color: string | null } }>;
@@ -234,6 +237,7 @@ export default function PeopleListClient({
                     title={t('selectAll')}
                   />
                 </th>
+                <th className="w-[32px] py-3 px-2" />
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                   <Link href={buildSortUrl('name')} className="flex items-center gap-1 hover:text-foreground">
                     {tc.name}
@@ -290,6 +294,14 @@ export default function PeopleListClient({
                         checked={isChecked}
                         onChange={() => togglePerson(person.id)}
                         className="w-4 h-4 text-primary bg-surface-elevated border-border rounded focus:ring-primary"
+                      />
+                    </td>
+                    <td className="w-[32px] py-4 px-2">
+                      <PersonAvatar
+                        personId={person.id}
+                        name={formatFullName(person)}
+                        photo={person.photo}
+                        size={32}
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

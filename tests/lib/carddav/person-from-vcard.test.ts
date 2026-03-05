@@ -57,6 +57,8 @@ vi.mock('uuid', () => ({
 import {
   updatePersonFromVCard,
   createPersonFromVCardData,
+  restorePersonFromVCardData,
+  savePhotoForPerson,
 } from '@/lib/carddav/person-from-vcard';
 import type { ParsedVCardData } from '@/lib/carddav/types';
 
@@ -232,6 +234,97 @@ describe('person-from-vcard', () => {
 
       const createCall = mocks.personCreate.mock.calls[0][0];
       expect(createCall.data.uid).toBe('generated-uuid');
+    });
+
+    it('calls savePhoto when creating person with photo (processes via sharp pipeline)', async () => {
+      const parsedData = makeMinimalParsedData({ photo: 'data:image/jpeg;base64,/9j/4AAQ...' });
+      mocks.savePhoto.mockResolvedValue('person-1.jpg');
+
+      await createPersonFromVCardData(USER_ID, parsedData);
+
+      expect(mocks.savePhoto).toHaveBeenCalledWith(USER_ID, PERSON_ID, 'data:image/jpeg;base64,/9j/4AAQ...');
+      const updateCall = mocks.personUpdate.mock.calls[0][0];
+      expect(updateCall.data.photo).toBe('person-1.jpg');
+    });
+
+    it('handles savePhoto failure gracefully during create', async () => {
+      const parsedData = makeMinimalParsedData({ photo: 'data:image/jpeg;base64,/9j/4AAQ...' });
+      mocks.savePhoto.mockResolvedValue(null);
+
+      await createPersonFromVCardData(USER_ID, parsedData);
+
+      expect(mocks.savePhoto).toHaveBeenCalledWith(USER_ID, PERSON_ID, 'data:image/jpeg;base64,/9j/4AAQ...');
+      // When savePhoto returns null, photo field should not be updated
+      expect(mocks.personUpdate).not.toHaveBeenCalled();
+    });
+
+    it('skips photo processing when vCard has no photo', async () => {
+      const parsedData = makeMinimalParsedData();
+
+      await createPersonFromVCardData(USER_ID, parsedData);
+
+      expect(mocks.savePhoto).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('restorePersonFromVCardData', () => {
+    it('calls savePhoto when restoring person with photo (processes via sharp pipeline)', async () => {
+      const parsedData = makeMinimalParsedData({ photo: 'data:image/jpeg;base64,/9j/4AAQ...' });
+      mocks.savePhoto.mockResolvedValue('person-1.jpg');
+      mocks.personUpdate.mockResolvedValue({ id: PERSON_ID });
+
+      await restorePersonFromVCardData(USER_ID, PERSON_ID, parsedData);
+
+      expect(mocks.savePhoto).toHaveBeenCalledWith(USER_ID, PERSON_ID, 'data:image/jpeg;base64,/9j/4AAQ...');
+      const calls = mocks.personUpdate.mock.calls;
+      expect(calls[calls.length - 1][0].data.photo).toBe('person-1.jpg');
+    });
+
+    it('handles savePhoto failure gracefully during restore', async () => {
+      const parsedData = makeMinimalParsedData({ photo: 'data:image/jpeg;base64,/9j/4AAQ...' });
+      mocks.savePhoto.mockResolvedValue(null);
+      mocks.personUpdate.mockResolvedValue({ id: PERSON_ID });
+
+      await restorePersonFromVCardData(USER_ID, PERSON_ID, parsedData);
+
+      expect(mocks.savePhoto).toHaveBeenCalled();
+      const calls = mocks.personUpdate.mock.calls;
+      expect(calls.length).toBe(1); // Only the initial restore, not a second update
+    });
+
+    it('sets photo to null when restored person has no photo', async () => {
+      const parsedData = makeMinimalParsedData();
+      mocks.personUpdate.mockResolvedValue({ id: PERSON_ID });
+
+      await restorePersonFromVCardData(USER_ID, PERSON_ID, parsedData);
+
+      const data = mocks.personUpdate.mock.calls[0][0].data;
+      expect(data.photo).toBeNull();
+    });
+  });
+
+  describe('savePhotoForPerson', () => {
+    it('calls savePhoto and updates person record with filename', async () => {
+      const photoData = 'data:image/jpeg;base64,/9j/4AAQ...';
+      mocks.savePhoto.mockResolvedValue('person-1.jpg');
+
+      await savePhotoForPerson(USER_ID, PERSON_ID, photoData);
+
+      expect(mocks.savePhoto).toHaveBeenCalledWith(USER_ID, PERSON_ID, photoData);
+      expect(mocks.personUpdate).toHaveBeenCalledWith({
+        where: { id: PERSON_ID },
+        data: { photo: 'person-1.jpg' },
+      });
+    });
+
+    it('skips update when savePhoto returns null (failure)', async () => {
+      const photoData = 'data:image/jpeg;base64,/9j/4AAQ...';
+      mocks.savePhoto.mockResolvedValue(null);
+
+      await savePhotoForPerson(USER_ID, PERSON_ID, photoData);
+
+      expect(mocks.savePhoto).toHaveBeenCalled();
+      expect(mocks.personUpdate).not.toHaveBeenCalled();
     });
   });
 });

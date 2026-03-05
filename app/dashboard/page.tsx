@@ -7,6 +7,7 @@ import UnifiedNetworkGraph from '@/components/UnifiedNetworkGraph';
 import { formatDate, formatDateWithoutYear } from '@/lib/date-format';
 import { getUpcomingEvents } from '@/lib/upcoming-events';
 import { getTranslations } from 'next-intl/server';
+import PersonAvatar from '@/components/PersonPhoto';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -50,6 +51,7 @@ export default async function DashboardPage() {
         userEmail={session.user.email || undefined}
         userName={session.user.name}
         userNickname={session.user.nickname}
+        userPhoto={session.user.photo}
         currentPath="/dashboard"
       />
 
@@ -82,7 +84,8 @@ export default async function DashboardPage() {
                         )}
                       </div>
                       <div>
-                        <div className="text-foreground font-semibold text-base">
+                        <div className="flex items-center gap-2 text-foreground font-semibold text-base">
+                          <PersonAvatar personId={event.personId} name={event.personName} photo={event.personPhoto} size={24} />
                           {event.personName}
                         </div>
                         <div className="text-sm text-muted">

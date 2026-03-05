@@ -14,6 +14,7 @@ type DashboardGraphPerson = {
   name: string;
   surname: string | null;
   nickname: string | null;
+  photo: string | null;
   relationshipToUser: {
     label: string;
     color: string | null;
@@ -76,6 +77,7 @@ export const GET = withAuth(async (request, session) => {
         name: true,
         surname: true,
         nickname: true,
+        photo: true,
         relationshipToUser: {
           where: {
             deletedAt: null,
@@ -151,9 +153,15 @@ export const GET = withAuth(async (request, session) => {
     const edges: GraphEdge[] = [];
     const nodeIds = new Set<string>();
 
+    // Fetch user photo for the center node
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { photo: true },
+    });
+
     // Add user as the center node
     const userId = `user-${session.user.id}`;
-    nodes.push(userToGraphNode(userId, true));
+    nodes.push(userToGraphNode(userId, true, user?.photo));
     nodeIds.add(userId);
 
     // Add all people as nodes

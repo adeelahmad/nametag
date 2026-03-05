@@ -132,6 +132,7 @@ export default async function PeoplePage({
         userEmail={session.user.email || undefined}
         userName={session.user.name}
         userNickname={session.user.nickname}
+        userPhoto={session.user.photo}
         currentPath="/people"
       />
       <Suspense>

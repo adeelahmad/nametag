@@ -61,7 +61,7 @@ export function generateOpenAPISpec(): OpenAPISpec {
       { name: 'Deleted Items', description: 'View and restore soft-deleted items' },
       { name: 'CardDAV', description: 'CardDAV server connection, bidirectional sync, import/export, and conflict resolution' },
       { name: 'vCard', description: 'Direct vCard file import and upload for preview' },
-      { name: 'Photos', description: 'Person photo retrieval' },
+      { name: 'Photos', description: 'Person and user photo management' },
       { name: 'Cron', description: 'Background jobs authenticated via CRON_SECRET bearer token' },
       { name: 'System', description: 'Health checks and system endpoints' },
     ],
@@ -2085,6 +2085,123 @@ export function generateOpenAPISpec(): OpenAPISpec {
               },
             },
             '404': ref404(),
+          },
+        },
+      },
+      '/api/people/{id}/photo': {
+        post: {
+          tags: ['Photos'],
+          summary: 'Upload or replace a person photo',
+          description: 'Upload a photo for a person. The image is cropped to 256x256, converted to JPEG, and EXIF data is stripped.',
+          security: [{ session: [] }],
+          parameters: [pathParam('id', 'Person ID')],
+          requestBody: {
+            required: true,
+            content: {
+              'multipart/form-data': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    photo: {
+                      type: 'string',
+                      format: 'binary',
+                      description: 'Photo image file',
+                    },
+                  },
+                  required: ['photo'],
+                },
+              },
+            },
+          },
+          responses: {
+            '200': jsonResponse('Photo uploaded', {
+              type: 'object',
+              properties: {
+                photo: { type: 'string', description: 'Saved photo filename' },
+              },
+              required: ['photo'],
+            }),
+            '400': resp('Validation error or invalid image'),
+            '401': ref401(),
+            '404': ref404(),
+          },
+        },
+        delete: {
+          tags: ['Photos'],
+          summary: 'Remove a person photo',
+          description: 'Deletes the photo associated with a person.',
+          security: [{ session: [] }],
+          parameters: [pathParam('id', 'Person ID')],
+          responses: {
+            '200': refMessage(),
+            '401': ref401(),
+            '404': ref404(),
+          },
+        },
+      },
+
+      '/api/photos/user': {
+        get: {
+          tags: ['Photos'],
+          summary: 'Get current user photo',
+          description: 'Returns the photo image for the logged-in user.',
+          security: [{ session: [] }],
+          responses: {
+            '200': {
+              description: 'Photo image',
+              content: {
+                'image/*': { schema: { type: 'string', format: 'binary' } },
+              },
+            },
+            '401': ref401(),
+            '404': ref404(),
+          },
+        },
+      },
+      '/api/user/photo': {
+        post: {
+          tags: ['Photos'],
+          summary: 'Upload or replace user photo',
+          description: 'Upload a photo for the logged-in user. The image is cropped to 256x256, converted to JPEG, and EXIF data is stripped.',
+          security: [{ session: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'multipart/form-data': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    photo: {
+                      type: 'string',
+                      format: 'binary',
+                      description: 'Photo image file',
+                    },
+                  },
+                  required: ['photo'],
+                },
+              },
+            },
+          },
+          responses: {
+            '200': jsonResponse('Photo uploaded', {
+              type: 'object',
+              properties: {
+                photo: { type: 'string', description: 'Saved photo filename' },
+              },
+              required: ['photo'],
+            }),
+            '400': resp('Validation error or invalid image'),
+            '401': ref401(),
+          },
+        },
+        delete: {
+          tags: ['Photos'],
+          summary: 'Remove user photo',
+          description: 'Deletes the photo associated with the logged-in user.',
+          security: [{ session: [] }],
+          responses: {
+            '200': refMessage(),
+            '401': ref401(),
           },
         },
       },

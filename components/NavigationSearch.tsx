@@ -4,12 +4,14 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { formatFullName } from '@/lib/nameUtils';
+import PersonAvatar from './PersonPhoto';
 
 interface Person {
   id: string;
   name: string;
   surname?: string | null;
   nickname?: string | null;
+  photo?: string | null;
 }
 
 export default function NavigationSearch() {
@@ -184,7 +186,8 @@ export default function NavigationSearch() {
               }`}
               onMouseEnter={() => setHighlightedIndex(index)}
             >
-              <div className="text-foreground font-medium">
+              <div className="flex items-center gap-2 text-foreground font-medium">
+                <PersonAvatar personId={person.id} name={formatFullName(person)} photo={person.photo} size={24} />
                 {formatFullName(person)}
               </div>
             </button>
