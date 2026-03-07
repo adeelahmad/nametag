@@ -4,6 +4,7 @@ import { personToVCard, vCardToPerson } from '@/lib/vcard';
 import { parseVCard } from '@/lib/carddav/vcard-parser';
 import type { UnknownProperty } from '@/lib/carddav/vcard-parser';
 import { withRetry, categorizeError } from './retry';
+import { getAddressBook } from './address-book';
 import { readPhotoForExport, isPhotoFilename } from '@/lib/photo-storage';
 import { updatePersonFromVCard } from './person-from-vcard';
 
@@ -151,18 +152,11 @@ export async function syncFromServer(
 
     onProgress?.({ phase: 'pull', step: 'fetching' });
 
-    // Get address books with retry
-    const addressBooks = await withRetry(
-      () => client.fetchAddressBooks(),
+    // Get address book with retry
+    const addressBook = await withRetry(
+      () => getAddressBook(client, connection),
       { maxAttempts: 3 }
     );
-
-    if (addressBooks.length === 0) {
-      throw new Error('No address books found');
-    }
-
-    // Use the first address book
-    const addressBook = addressBooks[0];
 
     // Fetch vCards from address book with retry
     const vCards = await withRetry(
@@ -473,17 +467,11 @@ export async function syncToServer(
     // Create CardDAV client
     const client = await createCardDavClient(connection);
 
-    // Get address books with retry
-    const addressBooks = await withRetry(
-      () => client.fetchAddressBooks(),
+    // Get address book with retry
+    const addressBook = await withRetry(
+      () => getAddressBook(client, connection),
       { maxAttempts: 3 }
     );
-
-    if (addressBooks.length === 0) {
-      throw new Error('No address books found');
-    }
-
-    const addressBook = addressBooks[0];
 
     onProgress?.({ phase: 'push', step: 'fetching' });
 

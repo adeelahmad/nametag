@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { createCardDavClient } from './client';
+import { getAddressBook } from './address-book';
 import { vCardToPerson } from '@/lib/vcard';
 import { createModuleLogger } from '@/lib/logger';
 
@@ -38,14 +39,8 @@ export async function discoverNewContacts(userId: string): Promise<DiscoveryResu
     // Create CardDAV client
     const client = await createCardDavClient(connection);
 
-    // Get address books
-    const addressBooks = await client.fetchAddressBooks();
-    if (addressBooks.length === 0) {
-      throw new Error('No address books found');
-    }
-
-    // Use the first address book
-    const addressBook = addressBooks[0];
+    // Get address book
+    const addressBook = await getAddressBook(client, connection);
 
     // Fetch all vCards
     const vCards = await client.fetchVCards(addressBook);

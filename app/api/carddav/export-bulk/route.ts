@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { createCardDavClient } from '@/lib/carddav/client';
+import { getAddressBook } from '@/lib/carddav/address-book';
 import { personToVCard } from '@/lib/vcard';
 import { v4 as uuidv4 } from 'uuid';
 import { buildLocalHash } from '@/lib/carddav/hash';
@@ -57,16 +58,16 @@ export const POST = withLogging(async function POST(request: Request) {
     // Create CardDAV client
     const client = await createCardDavClient(connection);
 
-    // Get address books
-    const addressBooks = await client.fetchAddressBooks();
-    if (addressBooks.length === 0) {
+    // Get address book
+    let addressBook;
+    try {
+      addressBook = await getAddressBook(client, connection);
+    } catch {
       return NextResponse.json(
         { error: 'No address books found' },
         { status: 404 }
       );
     }
-
-    const addressBook = addressBooks[0];
 
     // Get people to export
     const people = await prisma.person.findMany({

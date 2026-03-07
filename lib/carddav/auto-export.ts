@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { createCardDavClient } from './client';
+import { getAddressBook } from './address-book';
 import { personToVCard } from '@/lib/vcard';
 import { readPhotoForExport, isPhotoFilename } from '@/lib/photo-storage';
 import { withRetry } from './retry';
@@ -101,13 +102,8 @@ export async function autoExportPerson(personId: string): Promise<void> {
     // Create CardDAV client
     const client = await createCardDavClient(connection);
 
-    // Get address books
-    const addressBooks = await client.fetchAddressBooks();
-    if (addressBooks.length === 0) {
-      throw new Error('No address books found');
-    }
-
-    const addressBook = addressBooks[0];
+    // Get address book
+    const addressBook = await getAddressBook(client, connection);
 
     // Ensure person has a UID before generating vCard (CardDAV requires UID)
     const uid: string = person.uid || uuidv4();
