@@ -79,14 +79,18 @@ export default async function PeoplePage({
     let primaryComparison = 0;
 
     switch (sortBy) {
-      case 'name':
-        primaryComparison = a.name.localeCompare(b.name);
+      case 'name': {
+        const aFullName = `${a.name} ${a.surname || ''}`.trim();
+        const bFullName = `${b.name} ${b.surname || ''}`.trim();
+        primaryComparison = aFullName.localeCompare(bFullName);
         break;
-      case 'surname':
-        const aSurname = a.surname || 'zzz'; // Put people without surnames at the end
-        const bSurname = b.surname || 'zzz';
-        primaryComparison = aSurname.localeCompare(bSurname);
+      }
+      case 'surname': {
+        const aFullName = `${a.name} ${a.surname || ''}`.trim();
+        const bFullName = `${b.name} ${b.surname || ''}`.trim();
+        primaryComparison = aFullName.localeCompare(bFullName);
         break;
+      }
       case 'nickname':
         const aNickname = a.nickname || 'zzz'; // Put people without nicknames at the end
         const bNickname = b.nickname || 'zzz';
@@ -107,8 +111,11 @@ export default async function PeoplePage({
         const bDate = b.lastContact ? new Date(b.lastContact).getTime() : 0;
         primaryComparison = aDate - bDate;
         break;
-      default:
-        primaryComparison = a.name.localeCompare(b.name);
+      default: {
+        const aFull = `${a.name} ${a.surname || ''}`.trim();
+        const bFull = `${b.name} ${b.surname || ''}`.trim();
+        primaryComparison = aFull.localeCompare(bFull);
+      }
     }
 
     // Apply order to primary comparison only
@@ -119,8 +126,10 @@ export default async function PeoplePage({
       return orderedPrimaryComparison;
     }
 
-    // Otherwise, use secondary sort by name (always ascending)
-    return a.name.localeCompare(b.name);
+    // Otherwise, use secondary sort by full name (always ascending)
+    const aFallback = `${a.name} ${a.surname || ''}`.trim();
+    const bFallback = `${b.name} ${b.surname || ''}`.trim();
+    return aFallback.localeCompare(bFallback);
   });
 
   // Paginate the sorted results
