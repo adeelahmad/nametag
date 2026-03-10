@@ -90,5 +90,29 @@ describe('search', () => {
       const result = filterPeople(people, '', ['name']);
       expect(result).toHaveLength(3);
     });
+
+    it('should match query spanning multiple fields (e.g. "name surname")', () => {
+      const result = filterPeople(people, 'John Smith', ['name', 'surname', 'nickname']);
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('2');
+    });
+
+    it('should match partial multi-word query spanning fields', () => {
+      const result = filterPeople(people, 'John S', ['name', 'surname', 'nickname']);
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('2');
+    });
+
+    it('should match multi-word query with accents spanning fields', () => {
+      const result = filterPeople(people, 'María Gar', ['name', 'surname', 'nickname']);
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('1');
+    });
+
+    it('should match query with trailing space', () => {
+      const result = filterPeople(people, 'John ', ['name', 'surname', 'nickname']);
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('2');
+    });
   });
 });

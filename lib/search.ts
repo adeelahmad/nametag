@@ -25,7 +25,8 @@ export function matchesSearch(text: string, query: string): boolean {
 
 /**
  * Filter a list of people by a search query across the specified fields.
- * Accent- and case-insensitive.
+ * Accent- and case-insensitive. Also matches queries that span multiple
+ * fields (e.g. "John Doe" matching name="John" + surname="Doe").
  */
 export function filterPeople<T extends Record<string, unknown>>(
   people: T[],
@@ -34,11 +35,21 @@ export function filterPeople<T extends Record<string, unknown>>(
 ): T[] {
   if (!query) return people;
   const normalizedQuery = normalizeForSearch(query);
-  return people.filter((person) =>
-    fields.some((field) => {
+  return people.filter((person) => {
+    // Check individual fields
+    const matchesSingleField = fields.some((field) => {
       const value = person[field];
       if (typeof value !== 'string') return false;
       return normalizeForSearch(value).includes(normalizedQuery);
-    })
-  );
+    });
+    if (matchesSingleField) return true;
+
+    // Check concatenated fields (for queries like "John Doe" spanning name + surname)
+    const combined = fields
+      .map((field) => person[field])
+      .filter((value): value is string => typeof value === 'string' && value.length > 0)
+      .map(normalizeForSearch)
+      .join(' ');
+    return combined.includes(normalizedQuery);
+  });
 }
