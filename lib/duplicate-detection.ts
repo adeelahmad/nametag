@@ -5,6 +5,8 @@
  * and a union-find structure to group related duplicates.
  */
 
+import { normalizeForSearch } from '@/lib/search';
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -101,14 +103,14 @@ export function stringSimilarity(a: string, b: string): number {
 
 /**
  * Build a normalised comparison string from a name and optional surname.
- * Lowercases and trims the result.
+ * Strips diacritical marks (accents), lowercases, and trims the result.
  */
 function buildComparisonName(name: string, surname: string | null): string {
   const parts = [name];
   if (surname) {
     parts.push(surname);
   }
-  return parts.join(' ').toLowerCase().trim();
+  return normalizeForSearch(parts.join(' ').trim());
 }
 
 // ---------------------------------------------------------------------------
