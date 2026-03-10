@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.34.0](https://github.com/mattogodoy/nametag/compare/v0.33.0...v0.34.0) (2026-03-10)
+
+
+### Features
+
+* accent-insensitive search and multi-word query support ([6ad5794](https://github.com/mattogodoy/nametag/commit/6ad57948855f686f22a487e29ba964eefcf6ddf5))
+* add accent-insensitive search utility ([31eefb5](https://github.com/mattogodoy/nametag/commit/31eefb5aa01f9bbc1effa622d5ee23ed5f8277d1))
+* normalize accents in duplicate detection ([3bedc48](https://github.com/mattogodoy/nametag/commit/3bedc481cf3bbc3d0e3657c9c4c0213933849230))
+* use accent-insensitive search in people search API ([929cfb9](https://github.com/mattogodoy/nametag/commit/929cfb93699308d8d111ec15e9865fa9935300ce))
+* use accent-insensitive search in PersonAutocomplete ([77cbf53](https://github.com/mattogodoy/nametag/commit/77cbf53dc1959513d2c6986a34dbea11f700b3d3))
+* use accent-insensitive search in PillSelector ([46a3796](https://github.com/mattogodoy/nametag/commit/46a37967e93b5f9ecc52e585d8c313640b59c125))
+* use accent-insensitive search in RelationshipTypeAutocomplete ([e8114cc](https://github.com/mattogodoy/nametag/commit/e8114ccda12b37906139e6c96ec03e00e9624e6a))
+
+
+### Bug Fixes
+
+* resolve TypeScript errors in filterPeople generic constraint ([87db2a8](https://github.com/mattogodoy/nametag/commit/87db2a88c34be46a4aa4766b4824cebe865ccef3))
+* sort people list by full name (name + surname) for name and surname columns ([0190ed9](https://github.com/mattogodoy/nametag/commit/0190ed93a24b8f198382dd7fbd63a0f8404c85a9))
+* sort people list by full name for name and surname columns ([244d7c2](https://github.com/mattogodoy/nametag/commit/244d7c22ca2283811a62f26f50712374cc9b0f29))
+* support multi-word search queries spanning name fields ([4c306b3](https://github.com/mattogodoy/nametag/commit/4c306b36c315dbfb1207dfe6f0aa8599b20f79a2))
+
 ## [0.33.0](https://github.com/mattogodoy/nametag/compare/v0.32.1...v0.33.0) (2026-03-10)
 
 
