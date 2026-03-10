@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { matchesSearch } from '@/lib/search';
 
 interface RelationshipType {
   id: string;
@@ -41,7 +42,7 @@ export default function RelationshipTypeAutocomplete({
 
   // Filter types based on search term
   const filteredTypes = types.filter((type) =>
-    type.label.toLowerCase().includes(searchTerm.toLowerCase())
+    matchesSearch(type.label, searchTerm)
   );
 
   // Close dropdown when clicking outside

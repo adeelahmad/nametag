@@ -1,51 +1,21 @@
 import { prisma } from '@/lib/prisma';
 import { apiResponse, withAuth } from '@/lib/api-utils';
+import { filterPeople } from '@/lib/search';
 
 export const GET = withAuth(async (request, session) => {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q') || '';
 
-  // Only search if query is at least 1 character
   if (query.length === 0) {
     return apiResponse.ok({ people: [] });
   }
 
-  const people = await prisma.person.findMany({
+  // Fetch all people and filter in JS for accent-insensitive search.
+  // This keeps the app database-agnostic (no dependency on PostgreSQL extensions).
+  const allPeople = await prisma.person.findMany({
     where: {
       userId: session.user.id,
       deletedAt: null,
-      OR: [
-        {
-          name: {
-            contains: query,
-            mode: 'insensitive',
-          },
-        },
-        {
-          surname: {
-            contains: query,
-            mode: 'insensitive',
-          },
-        },
-        {
-          middleName: {
-            contains: query,
-            mode: 'insensitive',
-          },
-        },
-        {
-          secondLastName: {
-            contains: query,
-            mode: 'insensitive',
-          },
-        },
-        {
-          nickname: {
-            contains: query,
-            mode: 'insensitive',
-          },
-        },
-      ],
     },
     select: {
       id: true,
@@ -59,8 +29,13 @@ export const GET = withAuth(async (request, session) => {
     orderBy: {
       name: 'asc',
     },
-    take: 20, // Limit to 20 results
   });
+
+  const people = filterPeople(
+    allPeople,
+    query,
+    ['name', 'surname', 'middleName', 'secondLastName', 'nickname']
+  ).slice(0, 20);
 
   return apiResponse.ok({ people });
 });

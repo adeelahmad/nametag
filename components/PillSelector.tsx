@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent, ReactNode } from 'react';
+import { matchesSearch } from '@/lib/search';
 
 interface PillItem {
   id: string;
@@ -73,9 +74,7 @@ export default function PillSelector<T extends PillItem>({
 
   // Filter suggestions based on search term
   const filteredSuggestions = searchTerm
-    ? unselectedItems.filter((item) =>
-        item.label.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    ? unselectedItems.filter((item) => matchesSearch(item.label, searchTerm))
     : showAllOnFocus
     ? unselectedItems
     : [];
