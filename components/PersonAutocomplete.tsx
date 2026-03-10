@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { formatFullName } from '@/lib/nameUtils';
+import { matchesSearch } from '@/lib/search';
 
 interface Person {
   id: string;
@@ -43,11 +44,10 @@ export default function PersonAutocomplete({
 
   // Filter people based on search term - search in name, surname, and nickname
   const filteredPeople = people.filter((person) => {
-    const searchLower = searchTerm.toLowerCase();
     return (
-      person.name.toLowerCase().includes(searchLower) ||
-      person.surname?.toLowerCase().includes(searchLower) ||
-      person.nickname?.toLowerCase().includes(searchLower)
+      matchesSearch(person.name, searchTerm) ||
+      matchesSearch(person.surname ?? '', searchTerm) ||
+      matchesSearch(person.nickname ?? '', searchTerm)
     );
   });
 
