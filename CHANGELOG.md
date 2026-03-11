@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.36.0](https://github.com/mattogodoy/nametag/compare/v0.35.0...v0.36.0) (2026-03-11)
+
+
+### Features
+
+* add "Merge with..." option to person actions menu ([61c06c4](https://github.com/mattogodoy/nametag/commit/61c06c48d7684459d8491a4d0fba0e15db419acf))
+* add ability to dismiss false positive duplicate pairs ([10aea62](https://github.com/mattogodoy/nametag/commit/10aea625abfe9cbcf1b6b35ab3b993f31fd2a67e))
+* contact merge improvements ([6d46987](https://github.com/mattogodoy/nametag/commit/6d46987d92dda324ce6a8f8097021893900289db))
+
+
+### Bug Fixes
+
+* add navigation bar and back buttons to duplicates and merge pages ([6be4533](https://github.com/mattogodoy/nametag/commit/6be453330f67581a0da5073c4856b46c56122480))
+* improve duplicate detection by comparing name and surname separately ([597ab69](https://github.com/mattogodoy/nametag/commit/597ab69eec1dffacd86d6186369c3bd11340837f))
+* prevent merge modal from clipping autocomplete dropdown ([2423bbe](https://github.com/mattogodoy/nametag/commit/2423bbefb84c69684e4e09181a87581cbfc9de49))
+
 ## [0.35.0](https://github.com/mattogodoy/nametag/compare/v0.34.0...v0.35.0) (2026-03-11)
 
 
