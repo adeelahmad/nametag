@@ -15,7 +15,7 @@ const ITEMS_PER_PAGE = 50;
 export default async function PeoplePage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; sortBy?: string; order?: string; group?: string }>;
+  searchParams: Promise<{ page?: string; sortBy?: string; order?: string; group?: string; relationship?: string }>;
 }) {
   const session = await auth();
   const t = await getTranslations('people');
@@ -40,6 +40,7 @@ export default async function PeoplePage({
   const sortBy = params.sortBy || 'name';
   const order = params.order || 'asc';
   const groupFilter = params.group || '';
+  const relationshipFilter = params.relationship || '';
   const skip = (currentPage - 1) * ITEMS_PER_PAGE;
 
   // Build where clause for people query
@@ -47,6 +48,7 @@ export default async function PeoplePage({
     userId: string;
     deletedAt: null;
     groups?: { none: Record<string, never> } | { some: { groupId: string } };
+    relationshipToUserId?: string | null;
   } = {
     userId: session.user.id,
     deletedAt: null,
@@ -56,6 +58,12 @@ export default async function PeoplePage({
     peopleWhere.groups = { none: {} };
   } else if (groupFilter) {
     peopleWhere.groups = { some: { groupId: groupFilter } };
+  }
+
+  if (relationshipFilter === 'none') {
+    peopleWhere.relationshipToUserId = null;
+  } else if (relationshipFilter) {
+    peopleWhere.relationshipToUserId = relationshipFilter;
   }
 
   // Get total count for pagination
@@ -224,6 +232,7 @@ export default async function PeoplePage({
                 sortBy={sortBy}
                 order={order}
                 groupFilter={groupFilter}
+                relationshipFilter={relationshipFilter}
                 dateFormat={dateFormat}
                 availableGroups={allGroups}
                 relationshipTypes={relationshipTypes}

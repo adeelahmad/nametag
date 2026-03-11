@@ -645,6 +645,8 @@
     "filterByGroup": "Filter by group",
     "allGroups": "All groups",
     "noGroup": "No group",
+    "allRelationships": "All relationships",
+    "noRelationship": "No relationship",
     "backToPeople": "← Back to People",
     "edit": "Edit",
     "details": "Details",

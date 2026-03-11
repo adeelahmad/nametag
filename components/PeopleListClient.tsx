@@ -47,6 +47,7 @@ interface PeopleListClientProps {
   sortBy: string;
   order: string;
   groupFilter: string;
+  relationshipFilter: string;
   dateFormat: DateFormat;
   availableGroups: Group[];
   relationshipTypes: RelationshipType[];
@@ -80,6 +81,7 @@ export default function PeopleListClient({
   sortBy,
   order,
   groupFilter,
+  relationshipFilter,
   dateFormat,
   availableGroups,
   relationshipTypes,
@@ -183,51 +185,72 @@ export default function PeopleListClient({
     setGroups((prev) => [...prev, group]);
   }, []);
 
-  const buildSortUrl = (col: string) => {
+  const buildFilterParams = () => {
     const params = new URLSearchParams();
+    if (groupFilter) params.set('group', groupFilter);
+    if (relationshipFilter) params.set('relationship', relationshipFilter);
+    return params;
+  };
+
+  const buildSortUrl = (col: string) => {
+    const params = buildFilterParams();
     params.set('sortBy', col);
     params.set('order', sortBy === col && order === 'asc' ? 'desc' : 'asc');
     params.set('page', String(currentPage));
-    if (groupFilter) params.set('group', groupFilter);
     return `/people?${params.toString()}`;
   };
 
   const buildPageUrl = (page: number) => {
-    const params = new URLSearchParams();
+    const params = buildFilterParams();
     params.set('page', page.toString());
     if (sortBy !== 'name') params.set('sortBy', sortBy);
     if (order !== 'asc') params.set('order', order);
-    if (groupFilter) params.set('group', groupFilter);
     return `/people?${params.toString()}`;
   };
 
-  const handleGroupFilterChange = (value: string) => {
+  const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams();
     if (sortBy !== 'name') params.set('sortBy', sortBy);
     if (order !== 'asc') params.set('order', order);
-    if (value) params.set('group', value);
+    // Preserve existing filters, updating the changed one
+    const filters = { group: groupFilter, relationship: relationshipFilter, [key]: value };
+    if (filters.group) params.set('group', filters.group);
+    if (filters.relationship) params.set('relationship', filters.relationship);
     params.set('page', '1');
     router.push(`/people?${params.toString()}`);
   };
 
   return (
     <>
-      {/* Showing count and group filter */}
+      {/* Showing count and filters */}
       <div className="mb-4 flex items-center justify-between">
         <span className="text-sm text-muted">
           {tt.showing}
         </span>
-        <select
-          value={groupFilter}
-          onChange={(e) => handleGroupFilterChange(e.target.value)}
-          className="px-3 py-1.5 text-sm border border-border rounded-lg bg-surface-elevated text-foreground focus:ring-2 focus:ring-primary focus:border-primary"
-        >
-          <option value="">{tPeople('allGroups')}</option>
-          <option value="none">{tPeople('noGroup')}</option>
-          {availableGroups.map((g) => (
-            <option key={g.id} value={g.id}>{g.name}</option>
-          ))}
-        </select>
+        <div className="flex items-center gap-2">
+          <select
+            value={groupFilter}
+            onChange={(e) => handleFilterChange('group', e.target.value)}
+            className="px-3 py-1.5 text-sm border border-border rounded-lg bg-surface-elevated text-foreground focus:ring-2 focus:ring-primary focus:border-primary"
+          >
+            <option value="">{tPeople('allGroups')}</option>
+            <option value="none">{tPeople('noGroup')}</option>
+            {availableGroups.map((g) => (
+              <option key={g.id} value={g.id}>{g.name}</option>
+            ))}
+          </select>
+          <select
+            value={relationshipFilter}
+            onChange={(e) => handleFilterChange('relationship', e.target.value)}
+            className="px-3 py-1.5 text-sm border border-border rounded-lg bg-surface-elevated text-foreground focus:ring-2 focus:ring-primary focus:border-primary"
+          >
+            <option value="">{tPeople('allRelationships')}</option>
+            <option value="none">{tPeople('noRelationship')}</option>
+            {relationshipTypes.map((rt) => (
+              <option key={rt.id} value={rt.id}>{rt.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Table */}
