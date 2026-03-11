@@ -499,12 +499,14 @@ export default function PersonActionsMenu({
         <p className="text-sm text-muted mb-4">
           {tMerge('mergeWithDescription', { name: personName })}
         </p>
-        <PersonAutocomplete
-          people={allPeople}
-          value={mergeTargetId}
-          onChange={(id) => handleMergeSelect(id)}
-          placeholder={tMerge('searchPerson')}
-        />
+        <div className="min-h-[250px]">
+          <PersonAutocomplete
+            people={allPeople}
+            value={mergeTargetId}
+            onChange={(id) => handleMergeSelect(id)}
+            placeholder={tMerge('searchPerson')}
+          />
+        </div>
       </Modal>
     </>
   );
