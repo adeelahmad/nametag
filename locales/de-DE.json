@@ -1043,6 +1043,9 @@
       "merge": "Zusammenführen",
       "scanAll": "Alle Kontakte prüfen",
       "duplicateGroups": "{count, plural, one {# Gruppe} other {# Gruppen}} möglicher Duplikate gefunden",
+      "notDuplicate": "Keine Duplikate",
+      "dismissed": "Paar verworfen. Es wird nicht mehr angezeigt.",
+      "dismissError": "Fehler beim Verwerfen dieses Paares.",
       "error": "Beim Suchen nach Duplikaten ist ein Fehler aufgetreten."
     },
     "merge": {
@@ -1093,7 +1096,10 @@
       "empty": "-",
       "loadingContacts": "Kontakte werden geladen...",
       "personNotFound": "Einer oder beide Kontakte konnten nicht gefunden werden.",
-      "missingParams": "Fehlende Kontaktparameter. Bitte wählen Sie zwei Kontakte zum Zusammenführen aus."
+      "missingParams": "Fehlende Kontaktparameter. Bitte wählen Sie zwei Kontakte zum Zusammenführen aus.",
+      "mergeWith": "Zusammenführen mit...",
+      "mergeWithDescription": "Suche eine Person, um sie mit {name} zusammenzuführen.",
+      "searchPerson": "Person suchen..."
     },
     "photo": {
       "cropTitle": "Foto zuschneiden",

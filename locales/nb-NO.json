@@ -1043,6 +1043,9 @@
       "merge": "Slå sammen",
       "scanAll": "Skann alle kontakter",
       "duplicateGroups": "{count, plural, one {# gruppe} other {# grupper}} med mulige duplikater funnet",
+      "notDuplicate": "Ikke duplikater",
+      "dismissed": "Paret er avvist. Det vises ikke igjen.",
+      "dismissError": "Kunne ikke avvise dette paret.",
       "error": "Det oppstod en feil under søk etter duplikater."
     },
     "merge": {
@@ -1093,7 +1096,10 @@
       "empty": "-",
       "loadingContacts": "Laster kontakter...",
       "personNotFound": "Én eller begge kontaktene ble ikke funnet.",
-      "missingParams": "Manglende kontaktparametere. Velg to kontakter å slå sammen."
+      "missingParams": "Manglende kontaktparametere. Velg to kontakter å slå sammen.",
+      "mergeWith": "Slå sammen med...",
+      "mergeWithDescription": "Søk etter en person å slå sammen med {name}.",
+      "searchPerson": "Søk etter en person..."
     },
     "photo": {
       "cropTitle": "Beskjær bilde",

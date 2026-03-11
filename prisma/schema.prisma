@@ -46,6 +46,7 @@ model User {
   unsubscribeTokens      UnsubscribeToken[]
   cardDavConnection      CardDavConnection?
   cardDavPendingImports  CardDavPendingImport[]
+  duplicateDismissals    DuplicateDismissal[]
 
   @@unique([provider, providerAccountId])
   @@map("users")
@@ -103,6 +104,8 @@ model Person {
   locations          PersonLocation[]
   customFields       PersonCustomField[]
   cardDavMapping     CardDavMapping?
+  dismissalsAsA      DuplicateDismissal[]   @relation("DismissalPersonA")
+  dismissalsAsB      DuplicateDismissal[]   @relation("DismissalPersonB")
 
   @@index([userId])
   @@index([relationshipToUserId])
@@ -718,4 +721,21 @@ model CardDavConflict {
   @@index([mappingId])
   @@index([resolvedAt])
   @@map("carddav_conflicts")
+}
+
+// Dismissed duplicate pairs – prevents false positives from reappearing
+model DuplicateDismissal {
+  id        String   @id @default(cuid())
+  userId    String
+  personAId String   // Always the lexicographically smaller ID
+  personBId String   // Always the lexicographically larger ID
+  createdAt DateTime @default(now())
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personA Person @relation("DismissalPersonA", fields: [personAId], references: [id], onDelete: Cascade)
+  personB Person @relation("DismissalPersonB", fields: [personBId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, personAId, personBId])
+  @@index([userId])
+  @@map("duplicate_dismissals")
 }
