@@ -245,7 +245,7 @@ export default async function PeoplePage({
                   actions: t('actions'),
                   indirect: t('indirect'),
                   orphanWarning: t('orphanWarning'),
-                  showing: t('showing', { start: skip + 1, end: Math.min(skip + ITEMS_PER_PAGE, totalCount), total: totalCount }),
+                  showing: t('showing', { start: totalCount === 0 ? 0 : skip + 1, end: Math.min(skip + ITEMS_PER_PAGE, totalCount), total: totalCount }),
                   page: t('page'),
                   of: t('of'),
                 }}
