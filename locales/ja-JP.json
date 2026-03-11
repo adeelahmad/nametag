@@ -1043,6 +1043,9 @@
       "merge": "統合",
       "scanAll": "すべての連絡先をスキャン",
       "duplicateGroups": "{count, plural, other {#件のグループ}}の重複候補が見つかりました",
+      "notDuplicate": "重複ではない",
+      "dismissed": "ペアを除外しました。今後表示されません。",
+      "dismissError": "このペアの除外に失敗しました。",
       "error": "重複の検索中にエラーが発生しました。"
     },
     "merge": {

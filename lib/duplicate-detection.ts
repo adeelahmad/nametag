@@ -218,14 +218,24 @@ export function findDuplicates(
 }
 
 /**
+ * Build a consistent key for a pair of person IDs (smaller ID first).
+ */
+export function buildDismissalKey(idA: string, idB: string): string {
+  return idA < idB ? `${idA}:${idB}` : `${idB}:${idA}`;
+}
+
+/**
  * Find all groups of potential duplicates across a list of people.
  *
  * Uses union-find to cluster people whose names exceed the similarity
  * threshold. Returns only groups of 2 or more, sorted by highest
  * pairwise similarity within each group (descending).
+ *
+ * @param dismissedPairs - Optional set of "smallerId:largerId" keys to skip.
  */
 export function findAllDuplicateGroups(
-  people: PersonForComparison[]
+  people: PersonForComparison[],
+  dismissedPairs?: Set<string>
 ): DuplicateGroup[] {
   const uf = new UnionFind();
 
@@ -241,6 +251,10 @@ export function findAllDuplicateGroups(
     for (let j = i + 1; j < people.length; j++) {
       const a = people[i];
       const b = people[j];
+
+      // Skip dismissed pairs
+      if (dismissedPairs?.has(buildDismissalKey(a.id, b.id))) continue;
+
       const similarity = stringSimilarity(compNames.get(a.id)!, compNames.get(b.id)!);
 
       if (similarity >= SIMILARITY_THRESHOLD) {

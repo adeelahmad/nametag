@@ -1043,6 +1043,9 @@
       "merge": "Zusammenführen",
       "scanAll": "Alle Kontakte prüfen",
       "duplicateGroups": "{count, plural, one {# Gruppe} other {# Gruppen}} möglicher Duplikate gefunden",
+      "notDuplicate": "Keine Duplikate",
+      "dismissed": "Paar verworfen. Es wird nicht mehr angezeigt.",
+      "dismissError": "Fehler beim Verwerfen dieses Paares.",
       "error": "Beim Suchen nach Duplikaten ist ein Fehler aufgetreten."
     },
     "merge": {

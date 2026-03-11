@@ -1043,6 +1043,9 @@
       "merge": "Fusionar",
       "scanAll": "Analizar todos los contactos",
       "duplicateGroups": "{count, plural, one {# grupo} other {# grupos}} de posibles duplicados encontrados",
+      "notDuplicate": "No son duplicados",
+      "dismissed": "Par descartado. No aparecerá de nuevo.",
+      "dismissError": "Error al descartar este par.",
       "error": "Ocurrió un error al buscar duplicados."
     },
     "merge": {
