@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import BulkDeleteModal from './BulkDeleteModal';
@@ -86,6 +86,14 @@ export default function PeopleListClient({
 }: PeopleListClientProps) {
   const t = useTranslations('people.bulk');
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Save current people list URL so the "back to people" link can return here
+  useEffect(() => {
+    const url = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+    sessionStorage.setItem('backLink:/people', url);
+  }, [pathname, searchParams]);
 
   // Selection state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -194,33 +202,6 @@ export default function PeopleListClient({
       <div className="mb-4 text-sm text-muted">
         {tt.showing}
       </div>
-
-      {/* Select all pages banner */}
-      {allPageSelected && !selectAllPages && totalCount > people.length && (
-        <div className="mb-2 p-2 bg-primary/10 border border-primary/30 rounded-lg text-sm text-center">
-          <button
-            onClick={handleSelectAllPages}
-            className="text-primary hover:underline font-medium"
-          >
-            {t('selectAllPages', { count: totalCount })}
-          </button>
-        </div>
-      )}
-
-      {selectAllPages && (
-        <div className="mb-2 p-2 bg-primary/10 border border-primary/30 rounded-lg text-sm text-center">
-          <span className="text-foreground font-medium">
-            {t('allSelected', { count: totalCount })}
-          </span>
-          {' '}
-          <button
-            onClick={clearSelection}
-            className="text-primary hover:underline"
-          >
-            {t('clearSelection')}
-          </button>
-        </div>
-      )}
 
       {/* Table */}
       <div className="bg-surface shadow-lg rounded-lg overflow-hidden border-2 border-primary/30">
@@ -479,6 +460,17 @@ export default function PeopleListClient({
                   ? t('allSelected', { count: totalCount })
                   : t('selected', { count: selectedIds.size })}
               </span>
+              {allPageSelected && !selectAllPages && totalCount > people.length && (
+                <>
+                  <span className="text-muted">·</span>
+                  <button
+                    onClick={handleSelectAllPages}
+                    className="text-sm text-primary hover:underline font-medium"
+                  >
+                    {t('selectAllPages', { count: totalCount })}
+                  </button>
+                </>
+              )}
               <button
                 onClick={clearSelection}
                 className="text-muted hover:text-foreground transition-colors"
