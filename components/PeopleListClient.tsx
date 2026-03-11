@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import BulkDeleteModal from './BulkDeleteModal';
@@ -86,6 +86,14 @@ export default function PeopleListClient({
 }: PeopleListClientProps) {
   const t = useTranslations('people.bulk');
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Save current people list URL so the "back to people" link can return here
+  useEffect(() => {
+    const url = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+    sessionStorage.setItem('backLink:/people', url);
+  }, [pathname, searchParams]);
 
   // Selection state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());

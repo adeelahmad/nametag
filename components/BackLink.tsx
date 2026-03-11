@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 interface BackLinkProps {
   fallbackHref: string;
@@ -9,21 +10,18 @@ interface BackLinkProps {
 }
 
 export default function BackLink({ fallbackHref, children, className }: BackLinkProps) {
-  const router = useRouter();
+  const [href, setHref] = useState(fallbackHref);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem(`backLink:${fallbackHref}`);
+    if (saved) {
+      setHref(saved);
+    }
+  }, [fallbackHref]);
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        if (window.history.length > 1) {
-          router.back();
-        } else {
-          router.push(fallbackHref);
-        }
-      }}
-      className={className}
-    >
+    <Link href={href} className={className}>
       {children}
-    </button>
+    </Link>
   );
 }
