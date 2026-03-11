@@ -206,7 +206,7 @@ export default async function PeoplePage({
             </div>
           </div>
 
-          {totalCount === 0 ? (
+          {totalCount === 0 && !groupFilter && !relationshipFilter ? (
             <div className="bg-surface shadow-lg rounded-lg border-2 border-primary/30">
               <EmptyState
                 icon={
