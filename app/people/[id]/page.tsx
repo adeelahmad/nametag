@@ -100,6 +100,7 @@ export default async function PersonDetailsPage({
     where: { id: session.user.id },
     select: {
       dateFormat: true,
+      nameOrder: true,
       name: true,
       surname: true,
       nickname: true,
@@ -107,6 +108,7 @@ export default async function PersonDetailsPage({
     },
   });
   const dateFormat = user?.dateFormat || 'MDY';
+  const nameOrder = user?.nameOrder;
 
   const [person, allPeople, relationshipTypes, cardDavConnection] = await Promise.all([
     prisma.person.findUnique({
@@ -314,7 +316,7 @@ export default async function PersonDetailsPage({
                 </Link>
                 <PersonActionsMenu
                   personId={person.id}
-                  personName={formatFullName(person)}
+                  personName={formatFullName(person, nameOrder)}
                   person={serializedPerson}
                   hasCardDavSync={!!cardDavConnection && !!person.cardDavMapping}
                   allPeople={allPeople}
@@ -329,7 +331,7 @@ export default async function PersonDetailsPage({
                   <div className="flex justify-center">
                     <PersonAvatar
                       personId={person.id}
-                      name={formatFullName(person)}
+                      name={formatFullName(person, nameOrder)}
                       photo={person.photo}
                       size={80}
                       loading="eager"
@@ -702,7 +704,7 @@ export default async function PersonDetailsPage({
                 {relationshipToUser && (
                   <UserRelationshipCard
                     personId={person.id}
-                    personName={formatGraphName(person)}
+                    personName={formatGraphName(person, nameOrder)}
                     relationshipToUser={relationshipToUser}
                     relationshipTypes={relationshipTypes}
                     userName={user?.name || ''}
@@ -713,7 +715,7 @@ export default async function PersonDetailsPage({
                 {/* Relationships to other people */}
                 <RelationshipManager
                   personId={person.id}
-                  personName={formatGraphName(person)}
+                  personName={formatGraphName(person, nameOrder)}
                   relationships={person.relationshipsTo}
                   availablePeople={availablePeople}
                   relationshipTypes={relationshipTypes}
