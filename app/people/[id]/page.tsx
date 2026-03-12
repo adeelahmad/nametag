@@ -320,6 +320,7 @@ export default async function PersonDetailsPage({
                   person={serializedPerson}
                   hasCardDavSync={!!cardDavConnection && !!person.cardDavMapping}
                   allPeople={allPeople}
+                  nameOrder={nameOrder}
                 />
               </div>
             </div>
@@ -727,6 +728,7 @@ export default async function PersonDetailsPage({
                     photo: user?.photo || null,
                   }}
                   hasUserRelationship={!!person.relationshipToUserId}
+                  nameOrder={nameOrder}
                 />
               </div>
 

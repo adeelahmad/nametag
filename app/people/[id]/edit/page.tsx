@@ -116,6 +116,7 @@ export default async function EditPersonPage({
               mode="edit"
               dateFormat={dateFormat}
               hasCardDavConnection={!!cardDavConnection}
+              nameOrder={nameOrder}
               reminderLimit={{
                 canCreate: reminderCheck.allowed,
                 current: reminderCheck.current,
