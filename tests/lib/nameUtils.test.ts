@@ -247,4 +247,50 @@ describe('nameUtils', () => {
       expect(formatGraphName(person)).toBe('John Doe');
     });
   });
+
+  describe('CJK name handling (no spaces)', () => {
+    it('should omit spaces for Chinese names in eastern order', () => {
+      expect(formatPersonName('龙', '成', null, null, null, 'EASTERN')).toBe('成龙');
+    });
+
+    it('should omit spaces for Japanese names in eastern order', () => {
+      expect(formatPersonName('太郎', '田中', null, null, null, 'EASTERN')).toBe('田中太郎');
+    });
+
+    it('should omit spaces for Korean names in eastern order', () => {
+      expect(formatPersonName('철수', '김', null, null, null, 'EASTERN')).toBe('김철수');
+    });
+
+    it('should keep spaces for romanized names in eastern order', () => {
+      expect(formatPersonName('Taro', 'Tanaka', null, null, null, 'EASTERN')).toBe('Tanaka Taro');
+    });
+
+    it('should keep spaces for mixed CJK and Latin names', () => {
+      expect(formatPersonName('Taro', '田中', null, null, null, 'EASTERN')).toBe('田中 Taro');
+    });
+
+    it('should omit spaces for CJK names with middle name', () => {
+      expect(formatPersonName('太郎', '田中', '次郎', null, null, 'EASTERN')).toBe('田中太郎次郎');
+    });
+
+    it('should omit spaces for CJK formatFullName', () => {
+      const person = { name: '太郎', surname: '田中' };
+      expect(formatFullName(person, 'EASTERN')).toBe('田中太郎');
+    });
+
+    it('should omit spaces for CJK formatGraphName', () => {
+      const person = { name: '太郎', surname: '田中' };
+      expect(formatGraphName(person, 'EASTERN')).toBe('田中太郎');
+    });
+
+    it('should omit spaces for CJK formatGraphName with nickname', () => {
+      const person = { name: '太郎', surname: '田中', nickname: 'たろちゃん' };
+      expect(formatGraphName(person, 'EASTERN')).toBe('田中たろちゃん');
+    });
+
+    it('should keep spaces for CJK names in western order', () => {
+      const person = { name: '太郎', surname: '田中' };
+      expect(formatFullName(person)).toBe('太郎 田中');
+    });
+  });
 });
