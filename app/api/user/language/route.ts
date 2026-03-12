@@ -1,0 +1,54 @@
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { isSupportedLocale, setLocaleCookie } from '@/lib/locale';
+import { logger } from '@/lib/logger';
+import { withLogging } from '@/lib/api-utils';
+
+/**
+ * PUT /api/user/language
+ * Update user's language preference
+ */
+export const PUT = withLogging(async function PUT(request: Request) {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { language } = body;
+
+    // Validate language
+    if (!language || !isSupportedLocale(language)) {
+      return NextResponse.json(
+        { error: 'Invalid language. Supported languages: en, es-ES, ja-JP, nb-NO, de-DE, zh-CN'},
+        { status: 400 }
+      );
+    }
+
+    // Update user's language preference in database
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { language },
+    });
+
+    // Set cookie for immediate effect
+    await setLocaleCookie(language);
+
+    return NextResponse.json({
+      success: true,
+      language,
+    });
+  } catch (error) {
+    logger.error({ err: error instanceof Error ? error : new Error(String(error)) }, 'Error updating language');
+    return NextResponse.json(
+      { error: 'Failed to update language' },
+      { status: 500 }
+    );
+  }
+});
