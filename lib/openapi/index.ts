@@ -8,7 +8,7 @@ import { dashboardPaths } from './dashboard';
 import { userPaths } from './user';
 import { billingPaths } from './billing';
 import { carddavPaths } from './carddav';
-import { jsonResponse, ref400, ref401, ref404, pathParam, jsonBody, refMessage, resp } from './helpers';
+import { jsonResponse, ref400, ref401, ref404, pathParam, jsonBody, resp } from './helpers';
 
 // OpenAPI 3.1.0 specification generator for the Nametag API.
 // Request body schemas are generated from Zod validation schemas (single source of truth).

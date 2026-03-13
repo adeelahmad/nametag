@@ -4,9 +4,6 @@ import { apiResponse, handleApiError, parseRequestBody, withAuth } from '@/lib/a
 import { canCreateResource, canEnableReminder } from '@/lib/billing';
 import { savePhoto } from '@/lib/photo-storage';
 import { createPerson } from '@/lib/services/person';
-import { createModuleLogger } from '@/lib/logger';
-
-const log = createModuleLogger('people');
 
 // GET /api/people - List all people for the current user
 export const GET = withAuth(async (request, session) => {
@@ -114,7 +111,7 @@ export const POST = withAuth(async (request, session) => {
       connectedThroughId,
       importantDates,
       contactReminderEnabled,
-      cardDavSyncEnabled,
+      cardDavSyncEnabled: _cardDavSyncEnabled,
     } = validation.data;
 
     // Relationship type is always required when creating a person

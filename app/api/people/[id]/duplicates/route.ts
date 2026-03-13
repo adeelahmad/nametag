@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { apiResponse, handleApiError, withAuth } from '@/lib/api-utils';
-import { findDuplicates, buildDismissalKey } from '@/lib/duplicate-detection';
+import { findDuplicates } from '@/lib/duplicate-detection';
 
 // GET /api/people/[id]/duplicates - Find potential duplicates for a person
 export const GET = withAuth(async (_request, session, context) => {
