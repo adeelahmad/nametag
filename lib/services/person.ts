@@ -6,6 +6,7 @@
  */
 
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { prisma, withDeleted } from '@/lib/prisma';
 import { createPersonSchema, updatePersonSchema } from '@/lib/validations';
 import { sanitizeName, sanitizeNotes } from '@/lib/sanitize';
@@ -283,7 +284,7 @@ export async function updatePerson(id: string, userId: string, data: PersonUpdat
   const sanitizedNickname = nickname !== undefined ? (nickname ? sanitizeName(nickname) : null) : undefined;
   const sanitizedNotes = notes !== undefined ? (notes ? sanitizeNotes(notes) : null) : undefined;
 
-  const updateData: Record<string, unknown> = {};
+  const updateData: Prisma.PersonUpdateInput = {};
 
   if (name !== undefined) updateData.name = sanitizedName;
   if (surname !== undefined) updateData.surname = sanitizedSurname;
@@ -402,8 +403,9 @@ export async function updatePerson(id: string, userId: string, data: PersonUpdat
     include: personUpdateInclude(),
   });
 
-  // CardDAV sync
-  if (cardDavSyncEnabled !== false) {
+  // CardDAV sync — use stored value as default when input doesn't specify
+  const shouldSync = cardDavSyncEnabled ?? existingPerson.cardDavSyncEnabled;
+  if (shouldSync !== false) {
     autoUpdatePerson(person.id).catch((error: unknown) => {
       log.error(
         {
@@ -435,6 +437,11 @@ export async function deletePerson(id: string, userId: string): Promise<string |
   if (!existingPerson) {
     return null;
   }
+
+  // Delete CardDAV mapping so the contact can be re-imported if it still exists on server
+  await prisma.cardDavMapping.deleteMany({
+    where: { personId: id },
+  });
 
   await prisma.person.update({
     where: { id },

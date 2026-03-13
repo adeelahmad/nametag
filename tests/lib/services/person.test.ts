@@ -563,6 +563,13 @@ describe('updatePerson', () => {
     expect(mocks.autoUpdatePerson).not.toHaveBeenCalled();
   });
 
+  it('does NOT schedule auto-update when stored cardDavSyncEnabled is false and input omits it', async () => {
+    mocks.personFindUnique.mockResolvedValue(makeExistingPerson({ cardDavSyncEnabled: false }));
+    await updatePerson(PERSON_ID, USER_ID, { name: 'Bob' });
+    await Promise.resolve();
+    expect(mocks.autoUpdatePerson).not.toHaveBeenCalled();
+  });
+
   it('converts anniversary string to Date', async () => {
     await updatePerson(PERSON_ID, USER_ID, { anniversary: '2020-06-15' });
     const call = mocks.personUpdate.mock.calls[0][0];
@@ -605,6 +612,13 @@ describe('deletePerson', () => {
     const call = mocks.personUpdate.mock.calls[0][0];
     expect(call.where).toEqual({ id: PERSON_ID });
     expect(call.data.deletedAt).toBeInstanceOf(Date);
+  });
+
+  it('deletes CardDAV mapping before soft-deleting', async () => {
+    await deletePerson(PERSON_ID, USER_ID);
+    expect(mocks.cardDavMappingDeleteMany).toHaveBeenCalledWith({
+      where: { personId: PERSON_ID },
+    });
   });
 
   it('returns the person id on success', async () => {
