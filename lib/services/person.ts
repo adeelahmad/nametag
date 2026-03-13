@@ -542,7 +542,7 @@ export async function mergePeople(
   if (overrides) {
     for (const field of SCALAR_STRING_FIELDS) {
       if (field in overrides) {
-        scalarUpdates[field] = overrides[field as ScalarStringField];
+        (scalarUpdates as Record<string, unknown>)[field] = overrides[field as ScalarStringField];
       }
     }
     if ('anniversary' in overrides) {

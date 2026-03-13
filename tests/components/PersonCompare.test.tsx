@@ -53,10 +53,10 @@ function makePerson(overrides: Partial<PersonForCompare> = {}): PersonForCompare
 }
 
 describe('PersonCompare', () => {
-  let onSelectionsChange: ReturnType<typeof vi.fn>;
+  let onSelectionsChange: ReturnType<typeof vi.fn<(selections: MergeSelections) => void>>;
 
   beforeEach(() => {
-    onSelectionsChange = vi.fn();
+    onSelectionsChange = vi.fn<(selections: MergeSelections) => void>();
   });
 
   describe('Primary selection', () => {
@@ -404,13 +404,13 @@ describe('PersonCompare', () => {
         id: 'a',
         name: 'Alice',
         surname: null,
-        phoneNumbers: [{ id: 'ph1', personId: 'a', type: 'mobile', number: '111', createdAt: new Date(), updatedAt: new Date() }],
+        phoneNumbers: [{ type: 'mobile', number: '111' }],
       });
       const personB = makePerson({
         id: 'b',
         name: 'Bob',
         surname: null,
-        phoneNumbers: [{ id: 'ph2', personId: 'b', type: 'mobile', number: '222', createdAt: new Date(), updatedAt: new Date() }],
+        phoneNumbers: [{ type: 'mobile', number: '222' }],
       });
 
       render(
@@ -432,13 +432,13 @@ describe('PersonCompare', () => {
         id: 'a',
         name: 'Alice',
         surname: null,
-        groups: [{ group: { id: 'g1', name: 'Family', color: null } }],
+        groups: [{ group: { id: 'g1', name: 'Family' } }],
       });
       const personB = makePerson({
         id: 'b',
         name: 'Bob',
         surname: null,
-        groups: [{ group: { id: 'g2', name: 'Friends', color: null } }],
+        groups: [{ group: { id: 'g2', name: 'Friends' } }],
       });
 
       render(

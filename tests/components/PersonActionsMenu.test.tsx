@@ -54,14 +54,17 @@ const mockPerson: PersonWithRelations = {
   organization: null,
   jobTitle: null,
   gender: null,
-  birthDate: null,
   anniversary: null,
-  address: null,
   lastContact: null,
   notes: null,
   uid: null,
   relationshipToUserId: null,
   deletedAt: null,
+  contactReminderEnabled: false,
+  contactReminderInterval: null,
+  contactReminderIntervalUnit: null,
+  lastContactReminderSent: null,
+  cardDavSyncEnabled: true,
   createdAt: new Date(),
   updatedAt: new Date(),
   phoneNumbers: [],
@@ -332,7 +335,7 @@ describe('PersonActionsMenu', () => {
               200
             )
           )
-      );
+      ) as unknown as typeof global.fetch;
 
       const user = userEvent.setup();
       renderMenu();

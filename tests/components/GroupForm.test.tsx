@@ -269,7 +269,7 @@ describe('GroupForm', () => {
               100
             )
           )
-      );
+      ) as unknown as typeof global.fetch;
 
       const user = userEvent.setup();
 

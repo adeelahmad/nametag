@@ -795,8 +795,10 @@ describe('mergePeople', () => {
     await mergePeople(PERSON_ID, SOURCE_ID, USER_ID);
     const calls = mocks.mockTxClient.person.update.mock.calls;
     const softDeleteCall = calls.find(
-      (c: [{ where: { id: string }; data: { deletedAt?: unknown } }]) =>
-        c[0].where.id === SOURCE_ID && c[0].data.deletedAt instanceof Date
+      (c: unknown[]) => {
+        const arg = c[0] as { where: { id: string }; data: { deletedAt?: unknown } };
+        return arg.where.id === SOURCE_ID && arg.data.deletedAt instanceof Date;
+      }
     );
     expect(softDeleteCall).toBeDefined();
   });
@@ -818,11 +820,12 @@ describe('mergePeople', () => {
   it('applies scalar overrides to target', async () => {
     await mergePeople(PERSON_ID, SOURCE_ID, USER_ID, { name: 'Alice Override', surname: 'Smith' });
     const call = mocks.mockTxClient.person.update.mock.calls.find(
-      (c: [{ where: { id: string } }]) => c[0].where.id === PERSON_ID
+      (c: unknown[]) => (c[0] as { where: { id: string } }).where.id === PERSON_ID
     );
     if (!call) throw new Error('Expected update call for target person');
-    expect(call[0].data.name).toBe('Alice Override');
-    expect(call[0].data.surname).toBe('Smith');
+    const data = (call[0] as { data: Record<string, unknown> }).data;
+    expect(data.name).toBe('Alice Override');
+    expect(data.surname).toBe('Smith');
   });
 
   it('auto-transfers scalar fields that are empty on target', async () => {
@@ -834,10 +837,11 @@ describe('mergePeople', () => {
     await mergePeople(PERSON_ID, SOURCE_ID, USER_ID);
 
     const call = mocks.mockTxClient.person.update.mock.calls.find(
-      (c: [{ where: { id: string } }]) => c[0].where.id === PERSON_ID
+      (c: unknown[]) => (c[0] as { where: { id: string } }).where.id === PERSON_ID
     );
     if (!call) throw new Error('Expected update call for target person');
-    expect(call[0].data.surname).toBe('Smith');
+    const data = (call[0] as { data: Record<string, unknown> }).data;
+    expect(data.surname).toBe('Smith');
   });
 
   it('transfers non-duplicate phone numbers to target', async () => {
