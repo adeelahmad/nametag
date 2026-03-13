@@ -6,16 +6,20 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { usePersonForm } from '../../hooks/usePersonForm';
+import FieldManager from '../fields/FieldManager';
+import {
+  phoneFieldConfig,
+  emailFieldConfig,
+  addressFieldConfig,
+  urlFieldConfig,
+} from '../../lib/field-configs';
 import PhotoSection from './PhotoSection';
 import PersonalInfoSection from './PersonalInfoSection';
 import WorkInfoSection from './WorkInfoSection';
-import ContactInfoSection from './ContactInfoSection';
-import LocationSection from './LocationSection';
-import WebsitesSection from './WebsitesSection';
 import GroupsSection from './GroupsSection';
 import LastContactSection from './LastContactSection';
-import DatesSection from './DatesSection';
-import NotesSection from './NotesSection';
+import ImportantDatesManager from '../ImportantDatesManager';
+import MarkdownEditor from '../MarkdownEditor';
 import CardDavSyncSection from './CardDavSyncSection';
 
 type ReminderIntervalUnit = 'DAYS' | 'WEEKS' | 'MONTHS' | 'YEARS';
@@ -433,27 +437,46 @@ export default function PersonForm({
       {/* Contact Information Section */}
       <Section>
         <SectionHeader>{t('sectionContactInfo')}</SectionHeader>
-        <ContactInfoSection
-          phoneNumbers={phoneNumbers}
-          emails={emails}
-          onPhoneNumbersChange={setPhoneNumbers}
-          onEmailsChange={setEmails}
-        />
+        <div className="space-y-4">
+          <FieldManager
+            items={phoneNumbers}
+            onChange={setPhoneNumbers}
+            fieldConfig={phoneFieldConfig}
+            label={t('phones.label')}
+            emptyText={t('phones.noPhones')}
+          />
+          <FieldManager
+            items={emails}
+            onChange={setEmails}
+            fieldConfig={emailFieldConfig}
+            label={t('emails.label')}
+            emptyText={t('emails.noEmails')}
+          />
+        </div>
       </Section>
 
       {/* Location Section */}
       <Section>
         <SectionHeader>{t('sectionLocation')}</SectionHeader>
-        <LocationSection
-          addresses={addresses}
-          onAddressesChange={setAddresses}
+        <FieldManager
+          items={addresses}
+          onChange={setAddresses}
+          fieldConfig={addressFieldConfig}
+          label={t('addresses.label')}
+          emptyText={t('addresses.noAddresses')}
         />
       </Section>
 
       {/* Websites Section */}
       <Section>
         <SectionHeader>{t('sectionWebsites')}</SectionHeader>
-        <WebsitesSection urls={urls} onUrlsChange={setUrls} />
+        <FieldManager
+          items={urls}
+          onChange={setUrls}
+          fieldConfig={urlFieldConfig}
+          label={t('urls.label')}
+          emptyText={t('urls.noUrls')}
+        />
       </Section>
 
       {/* Groups Section */}
@@ -487,11 +510,11 @@ export default function PersonForm({
       {/* Important Dates Section */}
       <Section>
         <SectionHeader>{t('sectionImportantDates')}</SectionHeader>
-        <DatesSection
+        <ImportantDatesManager
           personId={person?.id}
+          initialDates={importantDates}
+          onChange={setImportantDates}
           mode={mode}
-          importantDates={importantDates}
-          onImportantDatesChange={setImportantDates}
           dateFormat={dateFormat}
           reminderLimit={reminderLimit}
         />
@@ -500,7 +523,16 @@ export default function PersonForm({
       {/* Notes Section */}
       <Section>
         <SectionHeader>{t('sectionNotes')}</SectionHeader>
-        <NotesSection formData={formData} onFormDataChange={setFormData} />
+        <div>
+          <MarkdownEditor
+            id="notes"
+            value={formData.notes}
+            onChange={(notes) => setFormData({ notes })}
+            placeholder={t('notesPlaceholder')}
+            rows={4}
+          />
+          <p className="text-xs text-muted mt-1">{t('markdownSupport')}</p>
+        </div>
       </Section>
 
       {/* CardDAV Sync Section */}
