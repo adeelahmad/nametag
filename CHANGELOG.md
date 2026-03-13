@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.37.1](https://github.com/mattogodoy/nametag/compare/v0.37.0...v0.37.1) (2026-03-13)
+
+
+### Bug Fixes
+
+* avoid server-only imports in ImportContactsList client component ([7143271](https://github.com/mattogodoy/nametag/commit/714327111d4945abf92f52e5456e44de6e05c5c5))
+* resolve 28 TypeScript errors failing CI type check ([0180a85](https://github.com/mattogodoy/nametag/commit/0180a85be8bbe2b9e402d5a752136353cc6790fa))
+* resolve eslint warnings for unused imports and console statement ([40bbf2b](https://github.com/mattogodoy/nametag/commit/40bbf2bedc1f6a07eaaa2fba1c0e2278551db52a))
+* use CardDavConnection type in merge route deleteSecondaryVCard ([2561d65](https://github.com/mattogodoy/nametag/commit/2561d6578d3bfd9f1402ab8e0b6b63a61ec461fc))
+
 ## [0.37.0](https://github.com/mattogodoy/nametag/compare/v0.36.0...v0.37.0) (2026-03-13)
 
 
