@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { findPersonForGraph } from '@/lib/prisma-queries';
 import { apiResponse, handleApiError, withAuth } from '@/lib/api-utils';
 import type { GraphNode, GraphEdge } from '@/lib/graph-utils';
 import {
@@ -14,108 +15,7 @@ export const GET = withAuth(async (_request, session, context) => {
     const { id } = await context.params;
 
     // Fetch the person with all their relationships
-    const person = await prisma.person.findUnique({
-      where: {
-        id,
-        userId: session.user.id,
-        deletedAt: null,
-      },
-      include: {
-        relationshipToUser: {
-          include: {
-            inverse: {
-              where: {
-                deletedAt: null,
-              },
-            },
-          },
-          where: {
-            deletedAt: null,
-          },
-        },
-        groups: {
-          where: {
-            group: {
-              deletedAt: null,
-            },
-          },
-          include: {
-            group: true,
-          },
-        },
-        relationshipsFrom: {
-          where: {
-            deletedAt: null,
-            relatedPerson: {
-              deletedAt: null,
-            },
-          },
-          include: {
-            relatedPerson: {
-              include: {
-                relationshipToUser: {
-                  include: {
-                    inverse: {
-                      where: {
-                        deletedAt: null,
-                      },
-                    },
-                  },
-                  where: {
-                    deletedAt: null,
-                  },
-                },
-                groups: {
-                  where: {
-                    group: {
-                      deletedAt: null,
-                    },
-                  },
-                  include: {
-                    group: true,
-                  },
-                },
-                // Fetch relationships between connected people
-                relationshipsFrom: {
-                  where: {
-                    deletedAt: null,
-                    relatedPerson: {
-                      deletedAt: null,
-                    },
-                  },
-                  include: {
-                    relationshipType: {
-                      where: {
-                        deletedAt: null,
-                      },
-                      include: {
-                        inverse: {
-                          where: {
-                            deletedAt: null,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            relationshipType: {
-              where: {
-                deletedAt: null,
-              },
-              include: {
-                inverse: {
-                  where: {
-                    deletedAt: null,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
+    const person = await findPersonForGraph(id, session.user.id);
 
     if (!person) {
       return apiResponse.notFound('Person not found');

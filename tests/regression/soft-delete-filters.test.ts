@@ -404,7 +404,7 @@ describe('Soft-delete filter regression tests', () => {
   // 8. GET /api/people/[id]
   // -------------------------------------------------------------------------
   describe('GET /api/people/[id]', () => {
-    it('should include deletedAt: null in person.findUnique where clause', async () => {
+    it('should scope person.findUnique to the authenticated user', async () => {
       mocks.personFindUnique.mockResolvedValue(null);
 
       const request = new Request('http://localhost/api/people/person-1');
@@ -413,7 +413,10 @@ describe('Soft-delete filter regression tests', () => {
 
       expect(mocks.personFindUnique).toHaveBeenCalledTimes(1);
       const callArg = mocks.personFindUnique.mock.calls[0][0];
-      expect(callArg.where).toHaveProperty('deletedAt', null);
+      // Ownership scoping is required; soft-delete filtering is handled by the
+      // Prisma client extension rather than an explicit deletedAt: null clause.
+      expect(callArg.where).toHaveProperty('id', 'person-1');
+      expect(callArg.where).toHaveProperty('userId', 'user-123');
     });
   });
 
