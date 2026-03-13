@@ -1,3 +1,4 @@
+import type { CardDavConnection } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { mergePersonSchema, validateRequest } from '@/lib/validations';
 import { apiResponse, handleApiError, parseRequestBody, withAuth } from '@/lib/api-utils';
@@ -24,13 +25,7 @@ async function deleteSecondaryVCard(
       href: string;
       etag: string | null;
       uid: string;
-      connection: {
-        id: string;
-        serverUrl: string;
-        username: string;
-        password: string;
-        authMethod: string;
-      };
+      connection: CardDavConnection;
     } | null;
   },
 ): Promise<void> {
