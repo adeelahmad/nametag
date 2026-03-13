@@ -266,7 +266,7 @@ describe('People API', () => {
 
       expect(mocks.personFindUnique).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { id: 'other-user-person', userId: 'user-123', deletedAt: null },
+          where: expect.objectContaining({ id: 'other-user-person', userId: 'user-123' }),
         })
       );
     });

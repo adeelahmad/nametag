@@ -3,7 +3,7 @@
  * Handles photo fetching, base64 encoding, and file downloads
  */
 
-import { addPhotoToVCard } from './vcard';
+import { addPhotoToVCard } from './carddav/vcard-export';
 
 export interface PhotoData {
   base64: string;
@@ -74,9 +74,8 @@ export async function addPhotoToVCardFromUrl(
   try {
     const photoData = await fetchPhotoAsBase64(photoUrl);
     return addPhotoToVCard(vcard, photoData.base64, photoData.mimeType);
-  } catch (error) {
-    console.warn('Failed to encode photo for vCard:', error);
-    // Return vCard without photo rather than failing entirely
+  } catch {
+    // Photo encoding failed — return vCard without photo rather than failing entirely
     return vcard;
   }
 }

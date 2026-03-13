@@ -1,13 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { createPersonSchema, validateRequest } from '@/lib/validations';
 import { apiResponse, handleApiError, parseRequestBody, withAuth } from '@/lib/api-utils';
-import { sanitizeName, sanitizeNotes } from '@/lib/sanitize';
 import { canCreateResource, canEnableReminder } from '@/lib/billing';
-import { autoExportPerson } from '@/lib/carddav/auto-export';
 import { savePhoto } from '@/lib/photo-storage';
-import { createModuleLogger } from '@/lib/logger';
-
-const log = createModuleLogger('people');
+import { createPerson } from '@/lib/services/person';
 
 // GET /api/people - List all people for the current user
 export const GET = withAuth(async (request, session) => {
@@ -110,36 +106,12 @@ export const POST = withAuth(async (request, session) => {
     }
 
     const {
-      name,
-      surname,
-      middleName,
-      secondLastName,
-      nickname,
-      prefix,
-      suffix,
-      uid,
-      organization,
-      jobTitle,
       photo,
-      gender,
-      anniversary,
-      lastContact,
-      notes,
       relationshipToUserId,
-      groupIds,
       connectedThroughId,
       importantDates,
       contactReminderEnabled,
-      contactReminderInterval,
-      contactReminderIntervalUnit,
-      cardDavSyncEnabled,
-      phoneNumbers,
-      emails,
-      addresses,
-      urls,
-      imHandles,
-      locations,
-      customFields,
+      cardDavSyncEnabled: _cardDavSyncEnabled,
     } = validation.data;
 
     // Relationship type is always required when creating a person
@@ -180,157 +152,17 @@ export const POST = withAuth(async (request, session) => {
       }
     }
 
-    // Sanitize user inputs to prevent XSS attacks
-    const sanitizedName = sanitizeName(name) || name; // Fallback to original if sanitization fails
-    const sanitizedSurname = surname ? sanitizeName(surname) : null;
-    const sanitizedMiddleName = middleName ? sanitizeName(middleName) : null;
-    const sanitizedSecondLastName = secondLastName ? sanitizeName(secondLastName) : null;
-    const sanitizedNickname = nickname ? sanitizeName(nickname) : null;
-    const sanitizedNotes = notes ? sanitizeNotes(notes) : null;
+    // Create person via service (handles sanitisation, nested writes, CardDAV auto-export).
+    // When connected through another person, omit relationshipToUserId so the service
+    // does not create a direct user relationship — that link is established below via
+    // bidirectional Relationship records instead.
+    const serviceData = connectedThroughId
+      ? { ...validation.data, relationshipToUserId: null }
+      : validation.data;
 
-    // Create person data based on whether it's a direct or indirect connection
-    const personData = {
-      user: {
-        connect: { id: session.user.id },
-      },
-      name: sanitizedName,
-      surname: sanitizedSurname,
-      middleName: sanitizedMiddleName,
-      secondLastName: sanitizedSecondLastName,
-      nickname: sanitizedNickname,
+    const person = await createPerson(session.user.id, serviceData);
 
-      // vCard identification fields
-      prefix: prefix || null,
-      suffix: suffix || null,
-      uid: uid || null,
-
-      // Professional fields
-      organization: organization || null,
-      jobTitle: jobTitle || null,
-
-      // Other vCard fields
-      photo: photo || null,
-      gender: gender || null,
-      anniversary: anniversary ? new Date(anniversary) : null,
-
-      lastContact: lastContact ? new Date(lastContact) : null,
-      notes: sanitizedNotes,
-      contactReminderEnabled: contactReminderEnabled ?? false,
-      contactReminderInterval: contactReminderEnabled ? contactReminderInterval : null,
-      contactReminderIntervalUnit: contactReminderEnabled ? contactReminderIntervalUnit : null,
-      cardDavSyncEnabled: cardDavSyncEnabled ?? true,
-      groups: groupIds
-        ? {
-            create: groupIds.map((groupId) => ({
-              groupId,
-            })),
-          }
-        : undefined,
-      importantDates: importantDates && importantDates.length > 0
-        ? {
-            create: importantDates.map((date) => {
-              // If yearUnknown is true, set the year to 1604 (Apple's convention)
-              const dateValue = date.yearUnknown
-                ? (() => {
-                    const d = new Date(date.date);
-                    d.setFullYear(1604);
-                    return d;
-                  })()
-                : new Date(date.date);
-
-              return {
-                title: date.title,
-                date: dateValue,
-                reminderEnabled: date.reminderEnabled ?? false,
-                reminderType: date.reminderEnabled ? date.reminderType : null,
-                reminderInterval: date.reminderEnabled && date.reminderType === 'RECURRING' ? date.reminderInterval : null,
-                reminderIntervalUnit: date.reminderEnabled && date.reminderType === 'RECURRING' ? date.reminderIntervalUnit : null,
-              };
-            }),
-          }
-        : undefined,
-      // Multi-value vCard fields
-      phoneNumbers: phoneNumbers && phoneNumbers.length > 0
-        ? {
-            create: phoneNumbers.map((phone) => ({
-              type: phone.type,
-              number: phone.number,
-            })),
-          }
-        : undefined,
-      emails: emails && emails.length > 0
-        ? {
-            create: emails.map((email) => ({
-              type: email.type,
-              email: email.email,
-            })),
-          }
-        : undefined,
-      addresses: addresses && addresses.length > 0
-        ? {
-            create: addresses.map((addr) => ({
-              type: addr.type,
-              streetLine1: addr.streetLine1 || null,
-              streetLine2: addr.streetLine2 || null,
-              locality: addr.locality || null,
-              region: addr.region || null,
-              postalCode: addr.postalCode || null,
-              country: addr.country || null,
-            })),
-          }
-        : undefined,
-      urls: urls && urls.length > 0
-        ? {
-            create: urls.map((url) => ({
-              type: url.type,
-              url: url.url,
-            })),
-          }
-        : undefined,
-      imHandles: imHandles && imHandles.length > 0
-        ? {
-            create: imHandles.map((im) => ({
-              protocol: im.protocol,
-              handle: im.handle,
-            })),
-          }
-        : undefined,
-      locations: locations && locations.length > 0
-        ? {
-            create: locations.map((loc) => ({
-              type: loc.type,
-              latitude: loc.latitude,
-              longitude: loc.longitude,
-            })),
-          }
-        : undefined,
-      customFields: customFields && customFields.length > 0
-        ? {
-            create: customFields.map((field) => ({
-              key: field.key,
-              value: field.value,
-              type: field.type || null,
-            })),
-          }
-        : undefined,
-      // Only add relationshipToUser if NOT connected through another person
-      relationshipToUser: !connectedThroughId && relationshipToUserId
-        ? { connect: { id: relationshipToUserId } }
-        : undefined,
-    };
-
-    const person = await prisma.person.create({
-      data: personData,
-      include: {
-        groups: {
-          include: {
-            group: true,
-          },
-        },
-      },
-    });
-
-    // Save photo as file if it's a data URI or URL
+    // Save photo as file if it's a data URI or URL (must happen after creation for person ID)
     if (photo && (photo.startsWith('data:') || photo.startsWith('http://') || photo.startsWith('https://'))) {
       const photoFilename = await savePhoto(session.user.id, person.id, photo);
       if (photoFilename) {
@@ -367,14 +199,6 @@ export const POST = withAuth(async (request, session) => {
           relatedPersonId: person.id,
           relationshipTypeId: relationshipType?.inverseId || relationshipToUserId,
         },
-      });
-    }
-
-    // Auto-export to CardDAV if enabled (don't await - let it run in background)
-    if (cardDavSyncEnabled !== false) {
-      autoExportPerson(person.id).catch((error) => {
-        log.error({ err: error instanceof Error ? error : new Error(String(error)), personId: person.id }, 'Auto-export failed');
-        // Don't fail the request if auto-export fails
       });
     }
 
