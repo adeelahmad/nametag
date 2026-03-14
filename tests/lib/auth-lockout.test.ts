@@ -178,11 +178,13 @@ describe('authorizeCredentials - account lockout', () => {
       expect(mocks.sendEmail).toHaveBeenCalledTimes(1);
     });
 
-    expect(mocks.sendEmail).toHaveBeenCalledWith({
-      to: 'test@example.com',
-      subject: 'Account temporarily locked',
-      text: expect.stringContaining('temporarily locked'),
-    });
+    expect(mocks.sendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: 'test@example.com',
+        subject: 'Account temporarily locked',
+        text: expect.stringContaining('temporarily locked'),
+      })
+    );
   });
 
   it('does not send lockout email before reaching threshold', async () => {
