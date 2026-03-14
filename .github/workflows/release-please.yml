@@ -1,0 +1,96 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+  models: read
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    if: github.repository == 'mattogodoy/nametag'
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+  ai-release-summary:
+    runs-on: ubuntu-latest
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Get commits since previous tag
+        id: commits
+        env:
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          PREV_TAG=$(git tag --sort=-v:refname --list 'v*' | sed -n '2p')
+          if [ -z "$PREV_TAG" ]; then
+            COMMIT_LOG=$(git log --oneline --no-merges)
+          else
+            COMMIT_LOG=$(git log ${PREV_TAG}..${TAG} --oneline --no-merges)
+          fi
+          FILTERED=$(echo "$COMMIT_LOG" | grep -E "^[a-f0-9]+ (feat|fix|perf)" || echo "No notable changes")
+          {
+            echo "commit_log<<EOF"
+            echo "$FILTERED"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate AI release summary
+        id: ai-notes
+        continue-on-error: true
+        uses: actions/ai-inference@v1
+        with:
+          model: openai/gpt-4o-mini
+          prompt: |
+            You are writing release notes for Nametag, a personal relationships manager web app.
+
+            Here are the commits since the last release:
+            ---
+            ${{ steps.commits.outputs.commit_log }}
+            ---
+
+            Write a SHORT release summary for end users. This is critical — keep it brief.
+
+            Format: a flat markdown bullet list. No headings, no sections, no preamble.
+            - 3-6 bullet points MAXIMUM. Combine related commits into one bullet.
+            - One short sentence per bullet (under 20 words). Start with a verb (Added, Fixed, Improved).
+            - Write from the user's perspective: what changed for them.
+            - Only mention breaking changes if there are any — prefix with "**Breaking:**".
+            - Do NOT include commit hashes, component names, or technical jargon.
+            - Do NOT include invisible changes (refactoring, CI, tests, translations).
+            - Do NOT add a title, header, or sign-off. Just the bullets.
+
+      - name: Prepend AI summary to release
+        if: steps.ai-notes.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+          AI_SUMMARY: ${{ steps.ai-notes.outputs.response }}
+        run: |
+          CURRENT_BODY=$(gh release view "$TAG" --json body --jq '.body')
+
+          {
+            echo "## Release Summary"
+            echo ""
+            echo "$AI_SUMMARY"
+            echo ""
+            echo "---"
+            echo ""
+            echo "$CURRENT_BODY"
+          } > /tmp/release-body.md
+
+          gh release edit "$TAG" --notes-file /tmp/release-body.md
