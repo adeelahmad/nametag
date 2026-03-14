@@ -3,9 +3,13 @@ import { prisma } from '@/lib/prisma';
 import { handleApiError, parseRequestBody, withLogging } from '@/lib/api-utils';
 import { logger } from '@/lib/logger';
 import { hashToken } from '@/lib/token-hash';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export const POST = withLogging(async function POST(request: Request) {
   try {
+    const rateLimitResponse = checkRateLimit(request, 'verifyEmail');
+    if (rateLimitResponse) return rateLimitResponse;
+
     const { token } = await parseRequestBody<{ token?: string }>(request);
 
     if (!token) {
