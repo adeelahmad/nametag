@@ -67,7 +67,7 @@ export async function authorizeCredentials(credentials: {
       // Send lockout notification email (non-blocking)
       const locale = normalizeLocale(user.language || 'en');
       import(`@/locales/${locale}.json`).then((messages) => {
-        const lockoutMessages = messages.auth?.accountLocked;
+        const lockoutMessages = messages.emails?.accountLocked;
         const subject = lockoutMessages?.subject || 'Account temporarily locked';
         const text = lockoutMessages?.body || 'Your account has been temporarily locked due to too many failed login attempts. It will be automatically unlocked in 30 minutes. If you did not attempt to log in, please reset your password immediately.';
         const html = `<p>${text.replace(/\n/g, '</p><p>')}</p>`;

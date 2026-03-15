@@ -1591,6 +1591,10 @@
       "bodyScheduledDetail": "After this date, your account will be downgraded to the Free plan. You can resubscribe at any time from your billing settings.",
       "button": "View Billing Settings",
       "note": "We're sorry to see you go. If you have any feedback about your experience, we'd love to hear from you."
+    },
+    "accountLocked": {
+      "subject": "Account temporarily locked",
+      "body": "Your account has been temporarily locked due to too many failed login attempts. It will be automatically unlocked in 30 minutes. If you did not attempt to log in, please reset your password immediately."
     }
   },
   "unsubscribe": {
@@ -1621,11 +1625,5 @@
     "today": "Today",
     "yearUnknown": "Year unknown",
     "yearUnknownTooltip": "When checked, only the month and day will be saved. The year will be ignored."
-  },
-  "auth": {
-    "accountLocked": {
-      "subject": "Account temporarily locked",
-      "body": "Your account has been temporarily locked due to too many failed login attempts. It will be automatically unlocked in 30 minutes. If you did not attempt to log in, please reset your password immediately."
-    }
   }
 }

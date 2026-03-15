@@ -920,6 +920,10 @@
           "personal": "Personal",
           "work": "Trabajo",
           "other": "Otro"
+        },
+        "accountLocked": {
+          "subject": "Cuenta bloqueada temporalmente",
+          "body": "Tu cuenta ha sido bloqueada temporalmente debido a demasiados intentos de inicio de sesión fallidos. Se desbloqueará automáticamente en 30 minutos. Si no intentaste iniciar sesión, restablece tu contraseña inmediatamente."
         }
       },
       "addresses": {
@@ -1591,6 +1595,10 @@
       "bodyScheduledDetail": "Después de esta fecha, tu cuenta será degradada al plan Gratuito. Puedes volver a suscribirte en cualquier momento desde tu configuración de facturación.",
       "button": "Ver Configuración de Facturación",
       "note": "Lamentamos verte partir. Si tienes algún comentario sobre tu experiencia, nos encantaría escucharlo."
+    },
+    "accountLocked": {
+      "subject": "Cuenta bloqueada temporalmente",
+      "body": "Tu cuenta ha sido bloqueada temporalmente debido a demasiados intentos de inicio de sesión fallidos. Se desbloqueará automáticamente en 30 minutos. Si no intentaste iniciar sesión, restablece tu contraseña inmediatamente."
     }
   },
   "unsubscribe": {
@@ -1621,11 +1629,5 @@
     "today": "Hoy",
     "yearUnknown": "Año desconocido",
     "yearUnknownTooltip": "Cuando está marcado, solo se guardarán el mes y el día. El año será ignorado."
-  },
-  "auth": {
-    "accountLocked": {
-      "subject": "Cuenta bloqueada temporalmente",
-      "body": "Tu cuenta ha sido bloqueada temporalmente debido a demasiados intentos de inicio de sesión fallidos. Se desbloqueará automáticamente en 30 minutos. Si no intentaste iniciar sesión, restablece tu contraseña inmediatamente."
-    }
   }
 }

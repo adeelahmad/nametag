@@ -920,6 +920,10 @@
           "personal": "Privat",
           "work": "Geschäftlich",
           "other": "Sonstige"
+        },
+        "accountLocked": {
+          "subject": "Konto vorübergehend gesperrt",
+          "body": "Ihr Konto wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche vorübergehend gesperrt. Es wird in 30 Minuten automatisch entsperrt. Wenn Sie nicht versucht haben, sich anzumelden, setzen Sie bitte sofort Ihr Passwort zurück."
         }
       },
       "addresses": {
@@ -1591,6 +1595,10 @@
       "bodyScheduledDetail": "Nach diesem Datum wird dein Konto auf den kostenlosen Plan heruntergestuft. Du kannst jederzeit in den Abrechnungseinstellungen erneut abonnieren.",
       "button": "Abrechnungseinstellungen ansehen",
       "note": "Schade, dass du gehst. Wenn du Feedback hast, würden wir uns freuen, davon zu hören."
+    },
+    "accountLocked": {
+      "subject": "Konto vorübergehend gesperrt",
+      "body": "Ihr Konto wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche vorübergehend gesperrt. Es wird in 30 Minuten automatisch entsperrt. Wenn Sie nicht versucht haben, sich anzumelden, setzen Sie bitte sofort Ihr Passwort zurück."
     }
   },
   "unsubscribe": {
@@ -1621,11 +1629,5 @@
     "today": "Heute",
     "yearUnknown": "Jahr unbekannt",
     "yearUnknownTooltip": "Wenn aktiviert, werden nur der Monat und der Tag gespeichert. Das Jahr wird ignoriert."
-  },
-  "auth": {
-    "accountLocked": {
-      "subject": "Konto vorübergehend gesperrt",
-      "body": "Ihr Konto wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche vorübergehend gesperrt. Es wird in 30 Minuten automatisch entsperrt. Wenn Sie nicht versucht haben, sich anzumelden, setzen Sie bitte sofort Ihr Passwort zurück."
-    }
   }
 }
