@@ -60,7 +60,10 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self'",
+              // Next.js requires 'unsafe-inline' for hydration scripts.
+              // Nonce-based CSP is the proper solution but requires middleware integration.
+              // See: https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
+              "script-src 'self' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https:",
