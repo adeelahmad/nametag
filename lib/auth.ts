@@ -4,6 +4,10 @@ import Google from 'next-auth/providers/google';
 import { randomUUID } from 'crypto';
 import { env } from '@/lib/env';
 import { isSaasMode } from '@/lib/features';
+import { createModuleLogger } from '@/lib/logger';
+import { normalizeLocale } from '@/lib/locale';
+
+const log = createModuleLogger('auth');
 
 export const MAX_FAILED_ATTEMPTS = 10;
 export const LOCKOUT_DURATION_MS = 30 * 60 * 1000; // 30 minutes
@@ -42,7 +46,7 @@ export async function authorizeCredentials(credentials: {
 
   // Check if account is currently locked
   if (user.lockedUntil && user.lockedUntil > new Date()) {
-    return null; // Don't check password — prevents timing attacks
+    throw new Error('ACCOUNT_LOCKED');
   }
 
   const passwordMatch = await bcrypt.compare(
@@ -61,7 +65,7 @@ export async function authorizeCredentials(credentials: {
       updateData.lockedUntil = new Date(Date.now() + LOCKOUT_DURATION_MS);
 
       // Send lockout notification email (non-blocking)
-      const locale = user.language || 'en';
+      const locale = normalizeLocale(user.language || 'en');
       import(`@/locales/${locale}.json`).then((messages) => {
         const lockoutMessages = messages.auth?.accountLocked;
         const subject = lockoutMessages?.subject || 'Account temporarily locked';
@@ -70,7 +74,9 @@ export async function authorizeCredentials(credentials: {
         return import('@/lib/email').then(({ sendEmail }) =>
           sendEmail({ to: user.email, subject, html, text })
         );
-      }).catch(() => {});
+      }).catch((err: unknown) => {
+        log.warn({ err: err instanceof Error ? err : new Error(String(err)), email: user.email }, 'Failed to send lockout notification email');
+      });
     }
 
     await prisma.user.update({

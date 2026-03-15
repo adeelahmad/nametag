@@ -33,6 +33,19 @@ vi.mock('@/lib/api-utils', () => ({
   normalizeEmail: mocks.normalizeEmail,
 }));
 
+vi.mock('@/lib/logger', () => ({
+  createModuleLogger: () => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  }),
+}));
+
+vi.mock('@/lib/locale', () => ({
+  normalizeLocale: vi.fn((locale: string) => locale),
+}));
+
 vi.mock('@/lib/email', () => ({
   sendEmail: mocks.sendEmail,
 }));
@@ -67,9 +80,9 @@ describe('authorizeCredentials - account lockout', () => {
     };
     mocks.findUnique.mockResolvedValue(lockedUser);
 
-    const result = await authorizeCredentials({ email: 'test@example.com', password: 'anything' });
-
-    expect(result).toBeNull();
+    await expect(
+      authorizeCredentials({ email: 'test@example.com', password: 'anything' })
+    ).rejects.toThrow('ACCOUNT_LOCKED');
     // bcrypt.compare should NOT have been called
     expect(mocks.bcryptCompare).not.toHaveBeenCalled();
     // No database update should occur
