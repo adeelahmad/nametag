@@ -920,6 +920,10 @@
           "personal": "Personlig",
           "work": "Jobb",
           "other": "Annet"
+        },
+        "accountLocked": {
+          "subject": "Kontoen er midlertidig låst",
+          "body": "Kontoen din har blitt midlertidig låst på grunn av for mange mislykkede påloggingsforsøk. Den vil automatisk bli låst opp om 30 minutter. Hvis du ikke forsøkte å logge inn, vennligst tilbakestill passordet ditt umiddelbart."
         }
       },
       "addresses": {
@@ -1591,6 +1595,10 @@
       "bodyScheduledDetail": "Etter denne datoen blir kontoen din nedgradert til Gratis-abonnementet. Du kan abonnere igjen når som helst fra faktureringsinnstillingene.",
       "button": "Se faktureringsinnstillinger",
       "note": "Vi er lei for at du drar. Hvis du har tilbakemeldinger om opplevelsen din, vil vi gjerne høre fra deg."
+    },
+    "accountLocked": {
+      "subject": "Kontoen er midlertidig låst",
+      "body": "Kontoen din har blitt midlertidig låst på grunn av for mange mislykkede påloggingsforsøk. Den vil automatisk bli låst opp om 30 minutter. Hvis du ikke forsøkte å logge inn, vennligst tilbakestill passordet ditt umiddelbart."
     }
   },
   "unsubscribe": {
@@ -1621,11 +1629,5 @@
     "today": "I dag",
     "yearUnknown": "År ukjent",
     "yearUnknownTooltip": "Når dette er avkrysset, lagres kun måneden og dagen. Året ignoreres."
-  },
-  "auth": {
-    "accountLocked": {
-      "subject": "Kontoen er midlertidig låst",
-      "body": "Kontoen din har blitt midlertidig låst på grunn av for mange mislykkede påloggingsforsøk. Den vil automatisk bli låst opp om 30 minutter. Hvis du ikke forsøkte å logge inn, vennligst tilbakestill passordet ditt umiddelbart."
-    }
   }
 }
