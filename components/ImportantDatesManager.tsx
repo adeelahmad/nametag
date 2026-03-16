@@ -4,12 +4,15 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { parseAsLocalDate, formatDate, formatDateWithoutYear } from '@/lib/date-format';
 import DatePicker from './ui/DatePicker';
+import ComboboxInput from './ui/ComboboxInput';
+import { PREDEFINED_DATE_TYPES, getDateDisplayTitle } from '@/lib/important-date-types';
 
 type ReminderType = 'ONCE' | 'RECURRING';
 type ReminderIntervalUnit = 'DAYS' | 'WEEKS' | 'MONTHS' | 'YEARS';
 
 interface ImportantDate {
   id?: string;
+  type?: string | null;
   title: string;
   date: string; // ISO date string
   yearUnknown?: boolean;
@@ -36,6 +39,7 @@ interface ImportantDatesManagerProps {
 }
 
 const defaultNewDate: ImportantDate = {
+  type: null,
   title: '',
   date: '',
   yearUnknown: false,
@@ -55,6 +59,13 @@ export default function ImportantDatesManager({
 }: ImportantDatesManagerProps) {
   const t = useTranslations('people.form.importantDates');
   const tForm = useTranslations('people.form');
+
+  const comboboxOptions = PREDEFINED_DATE_TYPES.map((type) => ({
+    value: type,
+    label: t(`types.${type}`),
+  }));
+  const otherLabel = t('types.other');
+
   const [dates, setDates] = useState<ImportantDate[]>(initialDates);
   const [isAdding, setIsAdding] = useState(false);
   const [newDate, setNewDate] = useState<ImportantDate>({ ...defaultNewDate });
@@ -88,7 +99,7 @@ export default function ImportantDatesManager({
   };
 
   const handleAdd = () => {
-    if (!newDate.title.trim() || !newDate.date) return;
+    if ((!newDate.type && !newDate.title.trim()) || !newDate.date) return;
 
     // If year unknown, set year to 1604 (Apple's convention for unknown year)
     let finalDate = newDate.date;
@@ -132,7 +143,7 @@ export default function ImportantDatesManager({
 
   const handleSaveEdit = async () => {
     if (!editingDate || editingIndex === null) return;
-    if (!editingDate.title.trim() || !editingDate.date) return;
+    if ((!editingDate.type && !editingDate.title.trim()) || !editingDate.date) return;
 
     // If year unknown, set year to 1604 (Apple's convention for unknown year)
     let finalDate = editingDate.date;
@@ -160,6 +171,7 @@ export default function ImportantDatesManager({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            type: dateToSave.type ?? null,
             title: dateToSave.title,
             date: dateToSave.date,
             reminderEnabled: dateToSave.reminderEnabled,
@@ -370,12 +382,20 @@ export default function ImportantDatesManager({
                   >
                     {t('title')}
                   </label>
-                  <input
-                    type="text"
+                  <ComboboxInput
+                    options={comboboxOptions}
+                    value={editingDate.type ?? null}
+                    customText={editingDate.title}
+                    onChange={(type, customText) => {
+                      if (type) {
+                        setEditingDate({ ...editingDate, type, title: '' });
+                      } else {
+                        setEditingDate({ ...editingDate, type: null, title: customText ?? '' });
+                      }
+                    }}
+                    placeholder={t('titlePlaceholder')}
                     id={`edit-date-title-${index}`}
-                    value={editingDate.title}
-                    onChange={(e) => setEditingDate({ ...editingDate, title: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    otherLabel={`${otherLabel}...`}
                   />
                 </div>
                 <div>
@@ -416,7 +436,7 @@ export default function ImportantDatesManager({
                   <button
                     type="button"
                     onClick={handleSaveEdit}
-                    disabled={!editingDate.title.trim() || !editingDate.date}
+                    disabled={(!editingDate.type && !editingDate.title.trim()) || !editingDate.date}
                     className="px-3 py-1.5 text-sm bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark shadow-lg hover:shadow-primary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {t('save')}
@@ -427,7 +447,7 @@ export default function ImportantDatesManager({
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="font-medium text-foreground text-sm">
-                    {date.title}
+                    {getDateDisplayTitle(date, t)}
                   </div>
                   <div className="text-xs text-muted">
                     {date.date.startsWith('1604-')
@@ -491,14 +511,20 @@ export default function ImportantDatesManager({
               >
                 {t('title')}
               </label>
-              <input
-                type="text"
-                id="new-date-title"
-                value={newDate.title}
-                onChange={(e) => setNewDate({ ...newDate, title: e.target.value })}
+              <ComboboxInput
+                options={comboboxOptions}
+                value={newDate.type ?? null}
+                customText={newDate.title}
+                onChange={(type, customText) => {
+                  if (type) {
+                    setNewDate({ ...newDate, type, title: '' });
+                  } else {
+                    setNewDate({ ...newDate, type: null, title: customText ?? '' });
+                  }
+                }}
                 placeholder={t('titlePlaceholder')}
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
-                autoFocus
+                id="new-date-title"
+                otherLabel={`${otherLabel}...`}
               />
             </div>
             <div>
@@ -542,7 +568,7 @@ export default function ImportantDatesManager({
               <button
                 type="button"
                 onClick={handleAdd}
-                disabled={!newDate.title.trim() || !newDate.date}
+                disabled={(!newDate.type && !newDate.title.trim()) || !newDate.date}
                 className="px-3 py-1.5 text-sm bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark shadow-lg hover:shadow-primary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('add')}
