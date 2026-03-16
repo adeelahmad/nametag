@@ -468,10 +468,10 @@ function formatInterval(interval: number, unit: string): string {
 function formatDateForEmail(
   date: Date,
   dateFormat: string | null,
-  locale: 'en' | 'es-ES' = 'en'
+  locale: string = 'en'
 ): string {
   const d = new Date(date);
-  const localeCode = locale === 'es-ES' ? 'es-ES' : 'en-US';
+  const localeCode = locale === 'en' ? 'en-US' : locale;
   const month = d.toLocaleDateString(localeCode, { month: 'long' });
   const day = d.getDate();
   const year = d.getFullYear();
