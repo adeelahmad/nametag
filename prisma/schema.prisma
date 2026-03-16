@@ -188,6 +188,7 @@ model ImportantDate {
   id                   String                @id @default(cuid())
   personId             String
   title                String                // e.g., "Birthday", "Anniversary", "First met"
+  type                 String?               // Predefined type key: "birthday", "anniversary", "nameday", "memorial"
   date                 DateTime
   reminderEnabled      Boolean               @default(false)
   reminderType         ReminderType?
@@ -201,6 +202,9 @@ model ImportantDate {
   // Relations
   person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
 
+  // NOTE: Partial unique index on (personId, type) WHERE type IS NOT NULL AND deletedAt IS NULL
+  // is managed via raw SQL in migration — Prisma doesn't support partial indexes natively.
+  // Do NOT add @@unique here — it would create a full constraint and cause migration drift.
   @@index([personId])
   @@index([personId, date]) // For sorting by date
   @@index([reminderEnabled, date]) // For querying due reminders
