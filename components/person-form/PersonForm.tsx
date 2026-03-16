@@ -60,6 +60,7 @@ export interface PersonFormProps {
     cardDavMapping?: { id: string } | null;
     importantDates?: Array<{
       id: string;
+      type?: string | null;
       title: string;
       date: Date;
       reminderEnabled?: boolean;

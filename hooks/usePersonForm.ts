@@ -6,6 +6,7 @@ type ReminderIntervalUnit = 'DAYS' | 'WEEKS' | 'MONTHS' | 'YEARS';
 
 export interface ImportantDateItem {
   id?: string;
+  type?: string | null;
   title: string;
   date: string;
   reminderEnabled?: boolean;
@@ -172,6 +173,7 @@ interface PersonProp {
   cardDavMapping?: { id: string } | null;
   importantDates?: Array<{
     id: string;
+    type?: string | null;
     title: string;
     date: Date;
     reminderEnabled?: boolean;
@@ -271,6 +273,7 @@ function buildInitialState(params: {
     importantDates:
       person?.importantDates?.map((d) => ({
         id: d.id,
+        type: d.type ?? null,
         title: d.title,
         date: new Date(d.date).toISOString().split('T')[0],
         reminderEnabled: d.reminderEnabled,
