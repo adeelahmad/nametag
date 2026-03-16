@@ -13,7 +13,7 @@ export const PUT = withAuth(async (request, session, context) => {
       return validation.response;
     }
 
-    const { title, date, reminderEnabled, reminderType, reminderInterval, reminderIntervalUnit } = validation.data;
+    const { type, title, date, reminderEnabled, reminderType, reminderInterval, reminderIntervalUnit } = validation.data;
 
     // Check if person exists and belongs to user
     const person = await prisma.person.findUnique({
@@ -28,6 +28,16 @@ export const PUT = withAuth(async (request, session, context) => {
       return apiResponse.notFound('Person not found');
     }
 
+    // Check for duplicate predefined type (exclude self)
+    if (type) {
+      const existing = await prisma.importantDate.findFirst({
+        where: { personId: id, type, deletedAt: null, id: { not: dateId } },
+      });
+      if (existing) {
+        return apiResponse.error(`A "${type}" date already exists for this person.`);
+      }
+    }
+
     // Update the important date
     const updatedDate = await prisma.importantDate.update({
       where: {
@@ -35,6 +45,7 @@ export const PUT = withAuth(async (request, session, context) => {
         personId: id,
       },
       data: {
+        type: type ?? null,
         title,
         date: new Date(date),
         reminderEnabled: reminderEnabled ?? false,

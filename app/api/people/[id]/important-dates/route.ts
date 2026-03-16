@@ -49,7 +49,7 @@ export const POST = withAuth(async (request, session, context) => {
       return validation.response;
     }
 
-    const { title, date, reminderEnabled, reminderType, reminderInterval, reminderIntervalUnit } = validation.data;
+    const { type, title, date, reminderEnabled, reminderType, reminderInterval, reminderIntervalUnit } = validation.data;
 
     // Check reminder limits if enabling a reminder
     if (reminderEnabled) {
@@ -65,9 +65,20 @@ export const POST = withAuth(async (request, session, context) => {
       }
     }
 
+    // Check for duplicate predefined type
+    if (type) {
+      const existing = await prisma.importantDate.findFirst({
+        where: { personId: id, type, deletedAt: null },
+      });
+      if (existing) {
+        return apiResponse.error(`A "${type}" date already exists for this person.`);
+      }
+    }
+
     const importantDate = await prisma.importantDate.create({
       data: {
         personId: id,
+        type: type ?? null,
         title,
         date: new Date(date),
         reminderEnabled: reminderEnabled ?? false,

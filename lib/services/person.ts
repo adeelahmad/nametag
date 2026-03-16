@@ -58,6 +58,7 @@ function mapImportantDate(date: NonNullable<PersonInput['importantDates']>[numbe
 
   return {
     title: date.title,
+    type: date.type ?? null,
     date: dateValue,
     reminderEnabled: date.reminderEnabled ?? false,
     reminderType: date.reminderEnabled ? date.reminderType : null,

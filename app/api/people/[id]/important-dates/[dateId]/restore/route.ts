@@ -36,6 +36,22 @@ export const POST = withAuth(async (_request, session, context) => {
       return apiResponse.error('Important date is not deleted');
     }
 
+    // Check for uniqueness conflict with predefined types
+    if (importantDate.type) {
+      const existing = await prismaWithDeleted.importantDate.findFirst({
+        where: {
+          personId: id,
+          type: importantDate.type,
+          deletedAt: null,
+        },
+      });
+      if (existing) {
+        return apiResponse.error(
+          `A ${importantDate.type} date already exists for this person. Delete it first before restoring this one.`
+        );
+      }
+    }
+
     // Restore the important date by clearing deletedAt
     const restored = await prismaWithDeleted.importantDate.update({
       where: { id: dateId },
