@@ -351,7 +351,7 @@ function processProperty(
       // Handle X-APPLE-OMIT-YEAR parameter
       const date = parseVCardDate(prop.value, prop.params['X-APPLE-OMIT-YEAR']);
       if (date) {
-        data.importantDates.push({ title: 'Birthday', date });
+        data.importantDates.push({ type: 'birthday', title: '', date });
       }
       return true;
     }
@@ -364,9 +364,12 @@ function processProperty(
 
         if (type && type.toUpperCase() === 'LAST-CONTACT') {
           data.lastContact = date;
+        } else if (!type) {
+          // Bare ANNIVERSARY → predefined type
+          data.importantDates.push({ type: 'anniversary', title: '', date });
         } else {
-          const title = type || 'Anniversary';
-          data.importantDates.push({ title, date });
+          // ANNIVERSARY;TYPE=<value> → custom date with type label as title
+          data.importantDates.push({ type: null, title: type, date });
         }
       }
       return true;
@@ -498,7 +501,7 @@ function processProperty(
       const date = parseVCardDate(prop.value);
       if (date && prop.group) {
         const label = getItemGroupLabel(prop.group, itemGroups) || 'Important Date';
-        data.importantDates.push({ title: label, date });
+        data.importantDates.push({ type: null, title: label, date });
       }
       return true;
     }

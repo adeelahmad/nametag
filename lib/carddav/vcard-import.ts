@@ -58,6 +58,7 @@ function buildMultiValueCreateData(parsedData: ParsedVCardData) {
     importantDates: parsedData.importantDates?.length
       ? {
           create: parsedData.importantDates.map((date) => ({
+            type: date.type ?? null,
             title: date.title,
             date: date.date,
             reminderEnabled: false,
@@ -98,6 +99,7 @@ function buildMultiValueUpdateData(parsedData: ParsedVCardData) {
       ? {
           deleteMany: {},
           create: parsedData.importantDates.map((date) => ({
+            type: date.type ?? null,
             title: date.title,
             date: date.date,
             reminderEnabled: false,
@@ -269,7 +271,12 @@ export async function updatePersonFromVCard(
           ? { create: parsedData.customFields }
           : undefined,
         importantDates: parsedData.importantDates?.length
-          ? { create: parsedData.importantDates }
+          ? { create: parsedData.importantDates.map((date) => ({
+              type: date.type ?? null,
+              title: date.title,
+              date: date.date,
+              reminderEnabled: false,
+            })) }
           : undefined,
       },
     });
@@ -328,7 +335,12 @@ export async function updatePersonFromVCardInTransaction(
         ? { create: parsedData.customFields }
         : undefined,
       importantDates: parsedData.importantDates?.length
-        ? { create: parsedData.importantDates }
+        ? { create: parsedData.importantDates.map((date) => ({
+            type: date.type ?? null,
+            title: date.title,
+            date: date.date,
+            reminderEnabled: false,
+          })) }
         : undefined,
     },
   });
