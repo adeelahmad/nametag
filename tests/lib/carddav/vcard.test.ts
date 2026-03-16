@@ -254,7 +254,8 @@ describe('vCard Transformation', () => {
           {
             id: 'date-1',
             personId: 'test-1',
-            title: 'Birthday',
+            type: 'birthday',
+            title: '',
             date: new Date('1990-05-15'),
             reminderEnabled: false,
             reminderType: null,
@@ -430,7 +431,8 @@ END:VCARD`;
       const person = vCardToPerson(vcard);
 
       expect(person.importantDates).toHaveLength(1);
-      expect(person.importantDates[0].title).toBe('Birthday');
+      expect(person.importantDates[0].type).toBe('birthday');
+      expect(person.importantDates[0].title).toBe('');
       expect(person.importantDates[0].date.toISOString()).toContain('1990-05-15');
     });
 
