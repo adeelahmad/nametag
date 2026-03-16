@@ -1,0 +1,232 @@
+'use client';
+
+import { useState, useRef, useEffect, useCallback } from 'react';
+
+export interface ComboboxOption {
+  value: string;
+  label: string;
+}
+
+interface ComboboxInputProps {
+  options: ComboboxOption[];
+  value: string | null;
+  customText?: string;
+  onChange: (value: string | null, customText?: string) => void;
+  placeholder?: string;
+  otherLabel?: string;
+  id?: string;
+  disabled?: boolean;
+}
+
+export default function ComboboxInput({
+  options,
+  value,
+  customText = '',
+  onChange,
+  placeholder,
+  otherLabel = 'Other...',
+  id,
+  disabled = false,
+}: ComboboxInputProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [inputText, setInputText] = useState(customText);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const filteredOptions = inputText && !value
+    ? options.filter((opt) =>
+        opt.label.toLowerCase().includes(inputText.toLowerCase())
+      )
+    : options;
+
+  const selectedOption = value
+    ? options.find((opt) => opt.value === value)
+    : null;
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        if (!value && inputText.trim()) {
+          onChange(null, inputText.trim());
+        }
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [value, inputText, onChange]);
+
+  useEffect(() => {
+    if (!value) {
+      setInputText(customText);
+    }
+  }, [customText, value]);
+
+  const handleSelectOption = useCallback((optionValue: string) => {
+    onChange(optionValue);
+    setInputText('');
+    setIsOpen(false);
+    setHighlightedIndex(-1);
+  }, [onChange]);
+
+  const handleSelectOther = useCallback(() => {
+    onChange(null, '');
+    setInputText('');
+    setIsOpen(false);
+    setHighlightedIndex(-1);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }, [onChange]);
+
+  const handleClear = useCallback(() => {
+    onChange(null, '');
+    setInputText('');
+    setIsOpen(true);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }, [onChange]);
+
+  const handleInputChange = (text: string) => {
+    setInputText(text);
+    onChange(null, text);
+    if (!isOpen) setIsOpen(true);
+    setHighlightedIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (disabled) return;
+
+    const totalItems = filteredOptions.length + 1;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setIsOpen(true);
+        setHighlightedIndex((prev) => (prev + 1) % totalItems);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setIsOpen(true);
+        setHighlightedIndex((prev) => (prev - 1 + totalItems) % totalItems);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (isOpen && highlightedIndex >= 0) {
+          if (highlightedIndex < filteredOptions.length) {
+            handleSelectOption(filteredOptions[highlightedIndex].value);
+          } else {
+            handleSelectOther();
+          }
+        } else {
+          setIsOpen(!isOpen);
+        }
+        break;
+      case 'Escape':
+        setIsOpen(false);
+        setHighlightedIndex(-1);
+        break;
+    }
+  };
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div className="flex items-center">
+        {selectedOption ? (
+          <div
+            className="w-full flex items-center justify-between px-3 py-2 text-sm border border-border rounded-lg bg-surface text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => !disabled && setIsOpen(!isOpen)}
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+            role="combobox"
+            aria-expanded={isOpen}
+          >
+            <span>{selectedOption.label}</span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClear();
+                }}
+                className="text-muted hover:text-foreground transition-colors"
+                aria-label="Clear selection"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <svg className="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full relative">
+            <input
+              ref={inputRef}
+              type="text"
+              id={id}
+              value={inputText}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onFocus={() => setIsOpen(true)}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              disabled={disabled}
+              className="w-full px-3 py-2 pr-8 text-sm border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
+              role="combobox"
+              aria-expanded={isOpen}
+              autoComplete="off"
+            />
+            <button
+              type="button"
+              onClick={() => !disabled && setIsOpen(!isOpen)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted hover:text-foreground transition-colors"
+              tabIndex={-1}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {isOpen && !disabled && (
+        <div className="absolute z-50 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg overflow-hidden" role="listbox">
+          {filteredOptions.map((option, index) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => handleSelectOption(option.value)}
+              className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                highlightedIndex === index
+                  ? 'bg-blue-600 text-white'
+                  : option.value === value
+                    ? 'bg-surface-elevated text-blue-600 dark:text-blue-400'
+                    : 'text-foreground hover:bg-surface-elevated'
+              }`}
+              role="option"
+              aria-selected={option.value === value}
+            >
+              {option.label}
+            </button>
+          ))}
+          <div className="border-t border-border">
+            <button
+              type="button"
+              onClick={handleSelectOther}
+              className={`w-full text-left px-3 py-2 text-sm italic transition-colors ${
+                highlightedIndex === filteredOptions.length
+                  ? 'bg-blue-600 text-white'
+                  : 'text-muted hover:bg-surface-elevated'
+              }`}
+              role="option"
+              aria-selected={false}
+            >
+              {otherLabel}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
