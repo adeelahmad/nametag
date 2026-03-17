@@ -436,7 +436,6 @@ Future features and improvements, ordered by priority:
 - [ ] Add support for SQLite databases
 - [ ] Implement OIDC [[Issue #10](https://github.com/mattogodoy/nametag/issues/10)]
 - [ ] Add notification support [[Issue #6](https://github.com/mattogodoy/nametag/issues/6)]
-- [ ] Add custom template titles for important dates [[Issue #23](https://github.com/mattogodoy/nametag/issues/23)]
 - [ ] Add map to show people's locations [[Issue #26](https://github.com/mattogodoy/nametag/issues/26)]
 - [ ] Support multi-user groups [[Issue #37](https://github.com/mattogodoy/nametag/issues/37)]
 - [ ] Immich integration [[Issue #46](https://github.com/mattogodoy/nametag/issues/46)]
@@ -454,7 +453,8 @@ Features and improvements that have already been implemented:
 - [x] ~~Improve development setup to make contributors' lives easier~~ [[PR #25](https://github.com/mattogodoy/nametag/pull/25)]
 - [x] ~~Implement CardDAV support~~ [[Issue #15](https://github.com/mattogodoy/nametag/issues/15), [PR #82](https://github.com/mattogodoy/nametag/pull/82)]
 - [x] ~~API for third-party integrations~~ [[Issue #29](https://github.com/mattogodoy/nametag/issues/29), [PR #70](https://github.com/mattogodoy/nametag/pull/70)]
-- [ ] ~~Add photos to people~~ [[Issue #19](https://github.com/mattogodoy/nametag/issues/19)]
+- [x] ~~Add photos to people~~ [[Issue #19](https://github.com/mattogodoy/nametag/issues/19), [PR #135](https://github.com/mattogodoy/nametag/pull/135)]
+- [x] ~~Add custom template titles for important dates~~ [[Issue #23](https://github.com/mattogodoy/nametag/issues/23), [PR #176](https://github.com/mattogodoy/nametag/pull/176)]
 
 ## License
 
