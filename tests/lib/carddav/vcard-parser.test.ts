@@ -335,7 +335,8 @@ END:VCARD`;
       const parsed = parseVCard(vCard);
 
       expect(parsed.importantDates).toHaveLength(1);
-      expect(parsed.importantDates[0].title).toBe('Birthday');
+      expect(parsed.importantDates[0].type).toBe('birthday');
+      expect(parsed.importantDates[0].title).toBe('');
       expect(parsed.importantDates[0].date.getFullYear()).toBe(1990);
       expect(parsed.importantDates[0].date.getMonth()).toBe(4); // May (0-indexed)
       expect(parsed.importantDates[0].date.getDate()).toBe(15);
@@ -406,7 +407,8 @@ END:VCARD`;
       const parsed = parseVCard(vCard);
 
       expect(parsed.importantDates).toHaveLength(1);
-      expect(parsed.importantDates[0].title).toBe('Anniversary');
+      expect(parsed.importantDates[0].type).toBe('anniversary');
+      expect(parsed.importantDates[0].title).toBe('');
     });
 
     it('should handle LAST-CONTACT type in ANNIVERSARY', () => {
@@ -723,7 +725,8 @@ END:VCARD`;
       const vCardText = readFileSync('tests/vcards/google-vcard-example.vcf', 'utf-8');
       const parsed = parseVCard(vCardText);
 
-      const birthday = parsed.importantDates.find(d => d.title === 'Birthday');
+      const birthday = parsed.importantDates.find(d => d.type === 'birthday');
+      expect(birthday?.title).toBe('');
       expect(birthday?.date.getFullYear()).toBe(1604); // Year unknown
     });
   });

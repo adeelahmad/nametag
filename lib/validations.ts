@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PREDEFINED_DATE_TYPES } from './important-date-types';
 
 // ============================================
 // Common schemas
@@ -62,14 +63,18 @@ const reminderIntervalUnitSchema = z.enum(['DAYS', 'WEEKS', 'MONTHS', 'YEARS']);
 
 const importantDateSchema = z.object({
   id: z.string().optional(),
-  title: z.string().min(1, 'Title is required').max(100),
+  type: z.enum(PREDEFINED_DATE_TYPES).nullable().optional(),
+  title: z.string().max(100).default(''),
   date: z.iso.date({ error: 'Invalid date' }),
   yearUnknown: z.boolean().optional(),
   reminderEnabled: z.boolean().optional(),
   reminderType: z.enum(['ONCE', 'RECURRING']).nullable().optional(),
   reminderInterval: z.number().int().min(1).max(99).nullable().optional(),
   reminderIntervalUnit: reminderIntervalUnitSchema.nullable().optional(),
-});
+}).refine(
+  (data) => data.type != null || (data.title && data.title.trim().length > 0),
+  { message: 'Title is required when no predefined type is selected', path: ['title'] }
+);
 
 // vCard field schemas
 const phoneNumberSchema = z.object({
@@ -398,14 +403,18 @@ export const importDataSchema = z.object({
 // ============================================
 
 export const createImportantDateSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(100),
+  type: z.enum(PREDEFINED_DATE_TYPES).nullable().optional(),
+  title: z.string().max(100).default(''),
   date: z.iso.date({ error: 'Invalid date' }),
   yearUnknown: z.boolean().optional(),
   reminderEnabled: z.boolean().optional(),
   reminderType: z.enum(['ONCE', 'RECURRING']).nullable().optional(),
   reminderInterval: z.number().int().min(1).max(99).nullable().optional(),
   reminderIntervalUnit: reminderIntervalUnitSchema.nullable().optional(),
-});
+}).refine(
+  (data) => data.type != null || (data.title && data.title.trim().length > 0),
+  { message: 'Title is required when no predefined type is selected', path: ['title'] }
+);
 
 export const updateImportantDateSchema = createImportantDateSchema;
 

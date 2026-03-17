@@ -84,7 +84,8 @@ describe('vCard v3.0 Compliance (RFC 2426)', () => {
           {
             id: 'date-1',
             personId: 'test-1',
-            title: 'Birthday',
+            type: 'birthday',
+            title: '',
             date: new Date('1990-05-15'),
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -105,7 +106,8 @@ describe('vCard v3.0 Compliance (RFC 2426)', () => {
           {
             id: 'date-1',
             personId: 'test-1',
-            title: 'Birthday',
+            type: 'birthday',
+            title: '',
             date: new Date('1604-05-15T12:00:00Z'), // Year marker for unknown, use UTC
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -237,7 +239,8 @@ describe('vCard v3.0 Compliance (RFC 2426)', () => {
           {
             id: 'date-1',
             personId: 'test-1',
-            title: 'Birthday',
+            type: 'birthday',
+            title: '',
             date: new Date('1990-05-15'),
             createdAt: new Date(),
             updatedAt: new Date(),

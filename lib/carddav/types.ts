@@ -102,6 +102,7 @@ export interface ParsedVCardData {
 
   // Important dates (from BDAY and ANNIVERSARY properties)
   importantDates: {
+    type?: string | null;
     title: string;
     date: Date;
   }[];
