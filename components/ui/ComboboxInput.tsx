@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useId } from 'react';
 
 export interface ComboboxOption {
   value: string;
@@ -29,10 +29,15 @@ export default function ComboboxInput({
   disabled = false,
 }: ComboboxInputProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [inputText, setInputText] = useState(customText);
+  const [localText, setLocalText] = useState<string | null>(null);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listboxId = useId();
+
+  // Use local text while typing, fall back to prop
+  const inputText = localText ?? customText;
+  const setInputText = (text: string) => setLocalText(text);
 
   const filteredOptions = inputText && !value
     ? options.filter((opt) =>
@@ -57,22 +62,16 @@ export default function ComboboxInput({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [value, inputText, onChange]);
 
-  useEffect(() => {
-    if (!value) {
-      setInputText(customText);
-    }
-  }, [customText, value]);
-
   const handleSelectOption = useCallback((optionValue: string) => {
     onChange(optionValue);
-    setInputText('');
+    setLocalText(null);
     setIsOpen(false);
     setHighlightedIndex(-1);
   }, [onChange]);
 
   const handleSelectOther = useCallback(() => {
     onChange(null, '');
-    setInputText('');
+    setLocalText(null);
     setIsOpen(false);
     setHighlightedIndex(-1);
     setTimeout(() => inputRef.current?.focus(), 0);
@@ -80,7 +79,7 @@ export default function ComboboxInput({
 
   const handleClear = useCallback(() => {
     onChange(null, '');
-    setInputText('');
+    setLocalText(null);
     setIsOpen(true);
     setTimeout(() => inputRef.current?.focus(), 0);
   }, [onChange]);
@@ -138,6 +137,7 @@ export default function ComboboxInput({
             tabIndex={0}
             role="combobox"
             aria-expanded={isOpen}
+            aria-controls={listboxId}
           >
             <span>{selectedOption.label}</span>
             <div className="flex items-center gap-1">
@@ -174,6 +174,7 @@ export default function ComboboxInput({
               className="w-full px-3 py-2 pr-8 text-sm border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
               role="combobox"
               aria-expanded={isOpen}
+              aria-controls={listboxId}
               autoComplete="off"
             />
             <button
@@ -191,7 +192,7 @@ export default function ComboboxInput({
       </div>
 
       {isOpen && !disabled && (
-        <div className="absolute z-50 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg overflow-hidden" role="listbox">
+        <div id={listboxId} className="absolute z-50 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg overflow-hidden" role="listbox">
           {filteredOptions.map((option, index) => (
             <button
               key={option.value}
