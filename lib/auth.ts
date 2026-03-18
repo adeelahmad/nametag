@@ -139,6 +139,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   // Trust host header in production (required for Docker/proxy deployments)
   trustHost: true,
 
+  // Downgrade expected JWT expiration errors from error to debug level.
+  // When a user's JWT expires (normal lifecycle), NextAuth logs a noisy
+  // JWTSessionError. This is expected behavior, not an actionable error.
+  logger: {
+    error(error) {
+      if (error.name === 'JWTSessionError') {
+        log.debug({ error: error.name }, 'JWT session expired (expected)');
+        return;
+      }
+      log.error({ err: error }, error.message);
+    },
+    warn(code) {
+      log.warn({ code }, 'Auth warning');
+    },
+    debug(code, metadata) {
+      log.debug({ code, ...metadata }, 'Auth debug');
+    },
+  },
+
   providers,
   callbacks: {
     async signIn({ user, account, profile }) {
