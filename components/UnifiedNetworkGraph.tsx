@@ -1,12 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import * as d3 from 'd3';
+import { select } from 'd3-selection';
+import {
+  forceSimulation, forceLink, forceManyBody, forceCenter,
+  forceCollide, forceX, forceY,
+  type SimulationNodeDatum,
+} from 'd3-force';
+import { zoom, zoomIdentity, type ZoomTransform, type ZoomBehavior } from 'd3-zoom';
+import { drag, type D3DragEvent } from 'd3-drag';
+import 'd3-transition';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import PillSelector from './PillSelector';
 
-interface GraphNode extends d3.SimulationNodeDatum {
+interface GraphNode extends SimulationNodeDatum {
   id: string;
   label: string;
   groups: string[];
@@ -72,8 +80,8 @@ export default function UnifiedNetworkGraph({
   const svgRef = useRef<SVGSVGElement>(null);
   const router = useRouter();
   const previousNodeIdsRef = useRef<Set<string> | null>(null);
-  const zoomTransformRef = useRef<d3.ZoomTransform | null>(null);
-  const zoomBehaviorRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+  const zoomTransformRef = useRef<ZoomTransform | null>(null);
+  const zoomBehaviorRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [clusteringEnabled, setClusteringEnabled] = useState(enableGroupClustering);
@@ -95,13 +103,13 @@ export default function UnifiedNetworkGraph({
   const recenterGraph = useCallback(() => {
     if (!svgRef.current || !zoomBehaviorRef.current) return;
 
-    const svg = d3.select(svgRef.current);
+    const svg = select(svgRef.current);
 
     // Reset to identity transform (no zoom, no pan)
     svg
       .transition()
       .duration(750)
-      .call(zoomBehaviorRef.current.transform, d3.zoomIdentity);
+      .call(zoomBehaviorRef.current.transform, zoomIdentity);
 
     // Clear the stored transform
     zoomTransformRef.current = null;
@@ -111,7 +119,7 @@ export default function UnifiedNetworkGraph({
     if (!svgRef.current) return;
 
     // Clear previous graph
-    d3.select(svgRef.current).selectAll('*').remove();
+    select(svgRef.current).selectAll('*').remove();
 
     const width = svgRef.current.clientWidth;
     const height = svgRef.current.clientHeight;
@@ -136,7 +144,7 @@ export default function UnifiedNetworkGraph({
       : new Set<string>();
     previousNodeIdsRef.current = currentNodeIds;
 
-    const svg = d3.select(svgRef.current);
+    const svg = select(svgRef.current);
 
     // Main group for zooming/panning
     const g = svg.append('g');
@@ -210,31 +218,30 @@ export default function UnifiedNetworkGraph({
       : (isMobile ? 25 : 30);
 
     // Create force simulation
-    const simulation = d3
-      .forceSimulation(nodes)
+    const simulation = forceSimulation(nodes)
       .force(
         'link',
-        d3.forceLink<GraphNode, SimEdge>(simEdges)
+        forceLink<GraphNode, SimEdge>(simEdges)
           .id((d) => d.id)
           .distance(mobileLinkDistance)
       )
-      .force('charge', d3.forceManyBody().strength(clusteringEnabled ? mobileChargeStrength * 1.5 : mobileChargeStrength))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(collisionRadius));
+      .force('charge', forceManyBody().strength(clusteringEnabled ? mobileChargeStrength * 1.5 : mobileChargeStrength))
+      .force('center', forceCenter(width / 2, height / 2))
+      .force('collision', forceCollide().radius(collisionRadius));
 
     // Add clustering forces if enabled
     if (clusteringEnabled) {
       simulation
         .force(
           'clusterX',
-          d3.forceX<GraphNode>((d) => {
+          forceX<GraphNode>((d) => {
             const target = getClusterTarget(d);
             return target ? target.x : width / 2;
           }).strength((d) => (getClusterTarget(d) ? clusterStrength : 0))
         )
         .force(
           'clusterY',
-          d3.forceY<GraphNode>((d) => {
+          forceY<GraphNode>((d) => {
             const target = getClusterTarget(d);
             return target ? target.y : height / 2;
           }).strength((d) => (getClusterTarget(d) ? clusterStrength : 0))
@@ -284,7 +291,7 @@ export default function UnifiedNetworkGraph({
       .attr('text-anchor', 'middle')
       .attr('opacity', 0)
       .each(function(d) {
-        const el = d3.select(this);
+        const el = select(this);
         el.selectAll('*').remove();
 
         const youLabel = tPeople('you');
@@ -328,8 +335,7 @@ export default function UnifiedNetworkGraph({
         return 'pointer';
       })
       .call(
-        d3
-          .drag<SVGGElement, GraphNode>()
+        drag<SVGGElement, GraphNode>()
           .on('start', dragstarted)
           .on('drag', dragged)
           .on('end', dragended)
@@ -444,8 +450,7 @@ export default function UnifiedNetworkGraph({
     }
 
     // Add zoom behavior
-    const zoom = d3
-      .zoom<SVGSVGElement, unknown>()
+    const zoomBehavior = zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 3])
       .on('zoom', (event) => {
         g.attr('transform', event.transform);
@@ -454,13 +459,13 @@ export default function UnifiedNetworkGraph({
       });
 
     // Store zoom behavior for re-centering
-    zoomBehaviorRef.current = zoom;
+    zoomBehaviorRef.current = zoomBehavior;
 
-    svg.call(zoom);
+    svg.call(zoomBehavior);
 
     // Restore previous zoom transform if it exists
     if (zoomTransformRef.current) {
-      svg.call(zoom.transform, zoomTransformRef.current);
+      svg.call(zoomBehavior.transform, zoomTransformRef.current);
     }
 
     // Update positions on each tick
@@ -480,18 +485,18 @@ export default function UnifiedNetworkGraph({
     });
 
     // Drag functions
-    function dragstarted(event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
+    function dragstarted(event: D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
       if (!event.active) simulation.alphaTarget(0.3).restart();
       d.fx = d.x;
       d.fy = d.y;
     }
 
-    function dragged(event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
+    function dragged(event: D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
       d.fx = event.x;
       d.fy = event.y;
     }
 
-    function dragended(event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
+    function dragended(event: D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
       if (!event.active) simulation.alphaTarget(0);
       d.fx = null;
       d.fy = null;
