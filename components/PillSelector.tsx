@@ -278,7 +278,7 @@ export default function PillSelector<T extends PillItem>({
 
       {/* Suggestions dropdown */}
       {showSuggestions && (searchTerm || showAllOnFocus) && (
-        <div className="absolute left-0 right-0 mt-1 bg-surface border-2 border-secondary/30 rounded-lg shadow-lg shadow-secondary/20 max-h-60 overflow-y-auto z-50">
+        <div className="absolute left-0 right-0 mt-1 bg-surface border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
           {filteredSuggestions.length > 0 || showCreateOption ? (
             <ul>
               {filteredSuggestions.map((item, index) => (
