@@ -54,10 +54,10 @@ export default function UserMenu({ userEmail, userName, userNickname, userPhoto 
           <img
             src={photoUrl}
             alt=""
-            className="w-8 h-8 rounded-full object-cover bg-surface border-2 border-secondary/50 flex-shrink-0 shadow-lg shadow-secondary/20"
+            className="w-8 h-8 rounded-full object-cover bg-surface border border-border flex-shrink-0"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-secondary/30 border-2 border-secondary/50 flex items-center justify-center flex-shrink-0 shadow-lg shadow-secondary/20">
+          <div className="w-8 h-8 rounded-full bg-surface-elevated border border-border flex items-center justify-center flex-shrink-0">
             <span className="text-sm font-medium text-secondary">{initials}</span>
           </div>
         )}
@@ -74,7 +74,7 @@ export default function UserMenu({ userEmail, userName, userNickname, userPhoto 
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-surface rounded-lg shadow-lg shadow-secondary/20 py-1 z-50 border-2 border-secondary/30">
+        <div className="absolute right-0 mt-2 w-48 bg-surface rounded-lg shadow-lg py-1 z-50 border border-border">
           <Link
             href="/settings"
             onClick={() => setIsOpen(false)}

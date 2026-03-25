@@ -189,13 +189,13 @@ export default function NavigationSearch() {
       </div>
 
       {isOpen && isLoading && (
-        <div className="absolute z-50 w-full mt-1 bg-surface border-2 border-primary/30 rounded-lg shadow-lg shadow-primary/20 p-3">
+        <div className="absolute z-50 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg p-3">
           <p className="text-sm text-muted">{t('searching')}</p>
         </div>
       )}
 
       {isOpen && !isLoading && results.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-surface border-2 border-primary/30 rounded-lg shadow-lg shadow-primary/20 max-h-96 overflow-auto">
+        <div className="absolute z-50 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg max-h-96 overflow-auto">
           {results.map((person, index) => (
             <button
               key={person.id}
