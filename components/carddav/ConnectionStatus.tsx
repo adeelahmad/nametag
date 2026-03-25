@@ -79,8 +79,8 @@ export default function ConnectionStatus({
     } else {
       return {
         label: t('statusNotSynced'),
-        color: 'text-gray-600 dark:text-gray-400',
-        bgColor: 'bg-gray-100 dark:bg-gray-700',
+        color: 'text-muted',
+        bgColor: 'bg-surface-elevated',
       };
     }
   };
@@ -106,11 +106,11 @@ export default function ConnectionStatus({
 
       {/* Statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div className="p-4 bg-surface-elevated rounded-lg">
           <p className="text-sm text-muted mb-1">{t('syncedContacts', { count: syncedContactsCount })}</p>
           <p className="text-2xl font-bold text-foreground">{syncedContactsCount}</p>
         </div>
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div className="p-4 bg-surface-elevated rounded-lg">
           <p className="text-sm text-muted mb-1">
             {connection.lastSyncAt ? t('lastSyncedAt') : t('neverSynced')}
           </p>

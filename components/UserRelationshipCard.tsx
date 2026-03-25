@@ -117,8 +117,8 @@ export default function UserRelationshipCard({
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={photoUrl} alt="" className="w-6 h-6 rounded-full object-cover bg-surface flex-shrink-0" />
               ) : (
-                <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400">{initials}</span>
+                <div className="w-6 h-6 rounded-full bg-surface-elevated flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-semibold text-muted">{initials}</span>
                 </div>
               );
             })()}
