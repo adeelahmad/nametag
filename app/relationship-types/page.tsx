@@ -100,7 +100,7 @@ export default async function RelationshipTypesPage() {
                       <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
                         <div
                           className="w-8 h-8 rounded"
-                          style={{ backgroundColor: type.color || '#3B82F6' }}
+                          style={{ backgroundColor: type.color || 'var(--badge-bg)' }}
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

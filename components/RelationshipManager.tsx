@@ -288,7 +288,7 @@ export default function RelationshipManager({
                         <PersonAvatar personId={rel.personId} name={formatGraphName(rel.person, nameOrder)} photo={rel.person.photo} size={24} />
                         <Link
                           href={`/people/${rel.personId}`}
-                          className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                          className="text-primary hover:underline font-medium"
                         >
                           {formatGraphName(rel.person, nameOrder)}
                         </Link>
@@ -301,8 +301,8 @@ export default function RelationshipManager({
                         style={{
                           backgroundColor: rel.relationshipType?.color
                             ? `${rel.relationshipType.color}20`
-                            : '#E5E7EB',
-                          color: rel.relationshipType?.color || '#374151',
+                            : 'var(--badge-bg)',
+                          color: rel.relationshipType?.color || 'var(--badge-text)',
                         }}
                       >
                         {rel.relationshipType?.label || 'Unknown'}
@@ -319,7 +319,7 @@ export default function RelationshipManager({
               <div className="flex gap-3">
                 <button
                   onClick={() => openEditModal(rel)}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                  className="text-primary hover:text-primary-dark transition-colors"
                   aria-label={t('edit')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

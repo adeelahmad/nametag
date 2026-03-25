@@ -115,7 +115,7 @@ export default function UserRelationshipCard({
               const initials = (userName || '?').charAt(0).toUpperCase();
               return photoUrl ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={photoUrl} alt="" className="w-6 h-6 rounded-full object-cover bg-white dark:bg-black flex-shrink-0" />
+                <img src={photoUrl} alt="" className="w-6 h-6 rounded-full object-cover bg-surface flex-shrink-0" />
               ) : (
                 <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                   <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400">{initials}</span>
@@ -134,8 +134,8 @@ export default function UserRelationshipCard({
                   style={{
                     backgroundColor: relationshipToUser.color
                       ? `${relationshipToUser.color}20`
-                      : '#E5E7EB',
-                    color: relationshipToUser.color || '#374151',
+                      : 'var(--badge-bg)',
+                    color: relationshipToUser.color || 'var(--badge-text)',
                   }}
                 >
                   {relationshipToUser.label}

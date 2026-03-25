@@ -25,6 +25,8 @@
   --accent: #6DA8FF;
   --muted: rgba(27, 29, 33, 0.75);
   --warning: #ff4800;
+  --badge-bg: #E5E7EB;
+  --badge-text: #374151;
 }
 
 .dark {
@@ -47,6 +49,8 @@
   --accent: #2C3E9F;
   --muted: rgba(231, 234, 240, 0.78);
   --warning: #ff4800;
+  --badge-bg: #374151;
+  --badge-text: #D1D5DB;
 }
 
 @theme inline {
@@ -70,6 +74,8 @@
   --color-accent: var(--accent);
   --color-muted: var(--muted);
   --color-warning: var(--warning);
+  --color-badge-bg: var(--badge-bg);
+  --color-badge-text: var(--badge-text);
 
   /* Use system font stack for better performance */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;

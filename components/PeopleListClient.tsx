@@ -366,8 +366,8 @@ export default function PeopleListClient({
                         <span
                           className="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
                           style={{
-                            backgroundColor: person.relationshipToUser.color ? `${person.relationshipToUser.color}20` : '#E5E7EB',
-                            color: person.relationshipToUser.color || '#374151',
+                            backgroundColor: person.relationshipToUser.color ? `${person.relationshipToUser.color}20` : 'var(--badge-bg)',
+                            color: person.relationshipToUser.color || 'var(--badge-text)',
                           }}
                         >
                           {person.relationshipToUser.label}
@@ -385,8 +385,8 @@ export default function PeopleListClient({
                             key={pg.groupId}
                             className="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
                             style={{
-                              backgroundColor: pg.group.color ? `${pg.group.color}20` : '#E5E7EB',
-                              color: pg.group.color || '#374151',
+                              backgroundColor: pg.group.color ? `${pg.group.color}20` : 'var(--badge-bg)',
+                              color: pg.group.color || 'var(--badge-text)',
                             }}
                           >
                             {pg.group.name}

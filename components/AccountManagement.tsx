@@ -432,10 +432,10 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
 
         {/* Export Format Explanation */}
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
-          <h4 className="font-medium text-blue-900 dark:text-blue-300 mb-2">
+          <h4 className="font-medium text-foreground mb-2">
             {t('exportFormats')}
           </h4>
-          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-400">
+          <div className="space-y-2 text-sm text-primary">
             <div>
               <span className="font-medium">{t('jsonFormat')}</span>: {t('jsonFormatDescription')}
             </div>
@@ -562,10 +562,10 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
 
         {/* Import Format Explanation */}
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
-          <h4 className="font-medium text-blue-900 dark:text-blue-300 mb-2">
+          <h4 className="font-medium text-foreground mb-2">
             {t('importFormats')}
           </h4>
-          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-400">
+          <div className="space-y-2 text-sm text-primary">
             <div>
               <span className="font-medium">{t('jsonFormat')}</span>: {t('jsonImportDescription')}
             </div>
@@ -711,7 +711,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                                 <div
                                   className="w-4 h-4 rounded-full flex-shrink-0"
                                   style={{
-                                    backgroundColor: group.color || '#9CA3AF',
+                                    backgroundColor: group.color || 'var(--badge-bg)',
                                   }}
                                 />
                                 <span className="text-sm font-medium text-blue-900 dark:text-blue-200">

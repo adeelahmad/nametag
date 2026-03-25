@@ -124,7 +124,7 @@ export default function GroupsSelector({
       <div
         className="w-3 h-3 rounded-full flex-shrink-0"
         style={{
-          backgroundColor: item.color || '#9CA3AF',
+          backgroundColor: item.color || 'var(--badge-bg)',
         }}
       />
       <span className="text-foreground">{item.label}</span>

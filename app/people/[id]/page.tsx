@@ -280,8 +280,8 @@ export default async function PersonDetailsPage({
                         style={{
                           backgroundColor: pg.group.color
                             ? `${pg.group.color}20`
-                            : '#E5E7EB',
-                          color: pg.group.color || '#374151',
+                            : 'var(--badge-bg)',
+                          color: pg.group.color || 'var(--badge-text)',
                         }}
                       >
                         {pg.group.name}

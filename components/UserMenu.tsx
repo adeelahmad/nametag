@@ -54,7 +54,7 @@ export default function UserMenu({ userEmail, userName, userNickname, userPhoto 
           <img
             src={photoUrl}
             alt=""
-            className="w-8 h-8 rounded-full object-cover bg-white dark:bg-black border-2 border-secondary/50 flex-shrink-0 shadow-lg shadow-secondary/20"
+            className="w-8 h-8 rounded-full object-cover bg-surface border-2 border-secondary/50 flex-shrink-0 shadow-lg shadow-secondary/20"
           />
         ) : (
           <div className="w-8 h-8 rounded-full bg-secondary/30 border-2 border-secondary/50 flex items-center justify-center flex-shrink-0 shadow-lg shadow-secondary/20">

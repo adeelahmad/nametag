@@ -149,7 +149,7 @@ export default function CompactContactRow({
                 >
                   <span
                     className="w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: group.color || '#9CA3AF' }}
+                    style={{ backgroundColor: group.color || 'var(--badge-bg)' }}
                   />
                   {group.name}
                 </span>
@@ -166,7 +166,7 @@ export default function CompactContactRow({
             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-surface-elevated rounded-full text-xs font-medium text-foreground flex-shrink-0">
               <span
                 className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{ backgroundColor: relType.color || '#9CA3AF' }}
+                style={{ backgroundColor: relType.color || 'var(--badge-bg)' }}
               />
               {relType.label}
             </span>
