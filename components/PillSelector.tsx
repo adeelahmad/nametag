@@ -208,7 +208,7 @@ export default function PillSelector<T extends PillItem>({
 
       {/* Input box with pills */}
       <div
-        className="min-h-[42px] p-2 border-2 border-border rounded-lg bg-surface-elevated focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20 transition-all cursor-text"
+        className="min-h-[44px] p-2 border border-border rounded-lg bg-surface-elevated focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20 transition-all cursor-text"
         onClick={() => inputRef.current?.focus()}
       >
         <div className="flex flex-wrap gap-1.5 items-center">

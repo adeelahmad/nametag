@@ -47,9 +47,8 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
   };
 
   return (
-    <nav className="bg-surface shadow-lg border-b-2 border-primary/20 relative">
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-tertiary/5 pointer-events-none"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <nav className="bg-surface border-b border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Left section: Logo, Search (desktop), Nav items (desktop) */}
           <div className="flex items-center space-x-4 md:space-x-8">
@@ -136,7 +135,7 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-md text-foreground hover:bg-surface-elevated transition-colors"
+              className="lg:hidden p-3 rounded-md text-foreground hover:bg-surface-elevated transition-colors"
               aria-label="Toggle menu"
             >
               <svg

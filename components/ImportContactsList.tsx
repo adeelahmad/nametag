@@ -239,7 +239,7 @@ export default function ImportContactsList({
             <select
               value={globalRelationshipTypeId}
               onChange={(e) => setGlobalRelationshipTypeId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-surface text-foreground focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-border rounded-lg bg-surface text-foreground focus:ring-2 focus:ring-primary focus:border-primary"
             >
               <option value="">{t('noRelationship')}</option>
               {relationshipTypes.map((rt) => (
@@ -270,7 +270,7 @@ export default function ImportContactsList({
               type="checkbox"
               checked={allSelected}
               onChange={handleSelectAll}
-              className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
             />
             <span className="font-medium text-foreground">
               {allSelected ? t('deselectAll') : t('selectAll')}

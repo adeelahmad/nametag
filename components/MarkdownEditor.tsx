@@ -25,6 +25,7 @@ function ToolbarButton({ onClick, title, children }: ToolbarButtonProps) {
     <button
       type="button"
       onClick={onClick}
+      aria-label={title}
       title={title}
       className="p-1.5 text-muted hover:text-foreground hover:bg-surface-elevated rounded transition-colors"
     >
@@ -222,7 +223,7 @@ export default function MarkdownEditor({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full px-3 py-2 bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset resize-y"
+          className="w-full px-3 py-2 bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset resize-y"
           onKeyDown={(e) => {
             // Handle keyboard shortcuts
             if (e.ctrlKey || e.metaKey) {

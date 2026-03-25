@@ -182,7 +182,7 @@ export default function UserRelationshipCard({
             </h3>
             <form onSubmit={handleEdit} className="space-y-4">
               {error && (
-                <div className="bg-warning/10 border-2 border-warning text-warning px-3 py-2 rounded text-sm">
+                <div role="alert" className="bg-warning/10 border border-warning/30 text-warning px-3 py-2 rounded text-sm">
                   {error}
                 </div>
               )}
@@ -194,7 +194,7 @@ export default function UserRelationshipCard({
                   required
                   value={selectedTypeId}
                   onChange={(e) => setSelectedTypeId(e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   {relationshipTypes.map((type) => (
                     <option key={type.id} value={type.id}>
@@ -235,7 +235,7 @@ export default function UserRelationshipCard({
             </p>
 
             {error && (
-              <div className="mb-4 p-3 bg-warning/10 border-2 border-warning text-warning rounded text-sm">
+              <div role="alert" className="mb-4 p-3 bg-warning/10 border border-warning/30 text-warning rounded text-sm">
                 {error}
               </div>
             )}

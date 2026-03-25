@@ -153,7 +153,7 @@ export default function ConnectionStatus({
       <div className="flex flex-wrap gap-3">
         <Button
           onClick={onSyncClick}
-          className="bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-green-600/50"
+          className="bg-green-600 hover:bg-green-700"
         >
           {t('syncNow')}
         </Button>

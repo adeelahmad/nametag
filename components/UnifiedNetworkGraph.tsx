@@ -599,16 +599,16 @@ export default function UnifiedNetworkGraph({
         <div className="absolute bottom-4 right-4 flex gap-2">
           <button
             onClick={() => setClusteringEnabled(!clusteringEnabled)}
-            className={`p-3 border-2 rounded-lg shadow-lg hover:scale-105 active:scale-95 transition-all ${
+            className={`p-3 border rounded-lg transition-colors ${
               clusteringEnabled
-                ? 'bg-primary/30 border-primary/30 shadow-primary/20 dark:bg-primary dark:border-primary dark:shadow-primary/50'
-                : 'bg-surface border-primary/30 shadow-border/20 hover:bg-surface-elevated dark:bg-surface dark:border-border dark:hover:bg-surface-elevated'
+                ? 'bg-primary/20 border-primary/40 dark:bg-primary dark:border-primary'
+                : 'bg-surface border-border hover:bg-surface-elevated'
             }`}
             aria-label={t('clusterByGroup')}
             title={t('clusterByGroup')}
           >
             <svg
-              className="w-5 h-5 text-primary drop-shadow-lg dark:text-white"
+              className="w-5 h-5 text-primary dark:text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -623,12 +623,12 @@ export default function UnifiedNetworkGraph({
           </button>
           <button
             onClick={recenterGraph}
-            className="p-3 bg-surface border-2 border-primary/30 shadow-lg shadow-border/20 rounded-lg hover:scale-105 active:scale-95 transition-all dark:bg-surface dark:border-border dark:hover:bg-surface-elevated dark:hover:border-secondary/50"
+            className="p-3 bg-surface border border-border rounded-lg hover:bg-surface-elevated transition-colors"
             aria-label={t('recenterGraph')}
             title={t('recenterGraph')}
           >
             <svg
-              className="w-5 h-5 text-primary drop-shadow-lg dark:text-white"
+              className="w-5 h-5 text-primary dark:text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

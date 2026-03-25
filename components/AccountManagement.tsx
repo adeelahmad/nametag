@@ -456,7 +456,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                 checked={exportMode === 'all'}
                 onChange={() => setExportMode('all')}
                 disabled={peopleCount === 0 && groups.length === 0}
-                className="w-4 h-4 text-blue-600 bg-surface-elevated border-border focus:ring-blue-500 disabled:opacity-50"
+                className="w-4 h-4 text-primary bg-surface-elevated border-border focus:ring-primary disabled:opacity-50"
               />
               <span className={`text-sm ${peopleCount === 0 && groups.length === 0 ? 'text-muted' : 'text-muted'}`}>
                 {t('exportEverything')}
@@ -470,7 +470,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                 checked={exportMode === 'groups'}
                 onChange={() => setExportMode('groups')}
                 disabled={groups.length === 0}
-                className="w-4 h-4 text-blue-600 bg-surface-elevated border-border focus:ring-blue-500 disabled:opacity-50"
+                className="w-4 h-4 text-primary bg-surface-elevated border-border focus:ring-primary disabled:opacity-50"
               />
               <span className={`text-sm ${groups.length === 0 ? 'text-muted' : 'text-muted'}`}>
                 {t('exportSpecificGroups')}
@@ -665,7 +665,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                             value="all"
                             checked={importMode === 'all'}
                             onChange={() => setImportMode('all')}
-                            className="w-4 h-4 text-blue-600 bg-surface-elevated border-border focus:ring-blue-500"
+                            className="w-4 h-4 text-primary bg-surface-elevated border-border focus:ring-primary"
                           />
                           <span className="text-sm text-blue-800 dark:text-blue-300">
                             {t('importEverything')}
@@ -678,7 +678,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                             value="groups"
                             checked={importMode === 'groups'}
                             onChange={() => setImportMode('groups')}
-                            className="w-4 h-4 text-blue-600 bg-surface-elevated border-border focus:ring-blue-500"
+                            className="w-4 h-4 text-primary bg-surface-elevated border-border focus:ring-primary"
                           />
                           <span className="text-sm text-blue-800 dark:text-blue-300">
                             {t('importSpecificGroups')}
@@ -706,7 +706,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                                       );
                                     }
                                   }}
-                                  className="w-4 h-4 text-blue-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500"
+                                  className="w-4 h-4 text-primary bg-surface border-border rounded focus:ring-2 focus:ring-primary"
                                 />
                                 <div
                                   className="w-4 h-4 rounded-full flex-shrink-0"
@@ -737,7 +737,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                   <button
                     onClick={handleImport}
                     disabled={isImporting || (importMode === 'groups' && selectedImportGroupIds.length === 0)}
-                    className="mt-3 px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark shadow-lg hover:shadow-primary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-3 px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isImporting ? t('importing') : t('confirmImport')}
                   </button>

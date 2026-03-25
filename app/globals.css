@@ -23,7 +23,7 @@
   --secondary: #6DA8FF;
   --tertiary: #6DA8FF;
   --accent: #6DA8FF;
-  --muted: rgba(27, 29, 33, 0.6);
+  --muted: rgba(27, 29, 33, 0.75);
   --warning: #ff4800;
 }
 
@@ -45,7 +45,7 @@
   --secondary: #2C3E9F;
   --tertiary: #2C3E9F;
   --accent: #2C3E9F;
-  --muted: rgba(231, 234, 240, 0.65);
+  --muted: rgba(231, 234, 240, 0.78);
   --warning: #ff4800;
 }
 

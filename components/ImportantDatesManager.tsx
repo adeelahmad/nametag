@@ -306,7 +306,7 @@ export default function ImportantDatesManager({
                     name={`${idPrefix}-reminder-type`}
                     checked={date.reminderType === 'ONCE'}
                     onChange={() => onChange({ reminderType: 'ONCE' })}
-                    className="h-4 w-4 text-blue-600 border-border focus:ring-blue-500"
+                    className="h-4 w-4 text-primary border-border focus:ring-primary"
                   />
                   <span className="text-xs text-muted">
                     {t('onlyOnce')}
@@ -319,7 +319,7 @@ export default function ImportantDatesManager({
                   name={`${idPrefix}-reminder-type`}
                   checked={date.reminderType === 'RECURRING'}
                   onChange={() => onChange({ reminderType: 'RECURRING' })}
-                  className="h-4 w-4 text-blue-600 border-border focus:ring-blue-500"
+                  className="h-4 w-4 text-primary border-border focus:ring-primary"
                 />
                 <span className="text-xs text-muted">{t('every')}</span>
                 <input
@@ -329,13 +329,13 @@ export default function ImportantDatesManager({
                   value={date.reminderInterval ?? 1}
                   onChange={(e) => onChange({ reminderInterval: Math.max(1, parseInt(e.target.value) || 1) })}
                   disabled={date.reminderType !== 'RECURRING'}
-                  className="w-14 px-2 py-1 text-xs border border-border rounded bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-14 px-2 py-1 text-xs border border-border rounded bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <select
                   value={date.reminderIntervalUnit ?? 'YEARS'}
                   onChange={(e) => onChange({ reminderIntervalUnit: e.target.value as ReminderIntervalUnit })}
                   disabled={date.reminderType !== 'RECURRING'}
-                  className="px-2 py-1 text-xs border border-border rounded bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-2 py-1 text-xs border border-border rounded bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="DAYS">{tForm('days')}</option>
                   <option value="WEEKS">{tForm('weeks')}</option>
@@ -437,7 +437,7 @@ export default function ImportantDatesManager({
                     type="button"
                     onClick={handleSaveEdit}
                     disabled={(!editingDate.type && !editingDate.title.trim()) || !editingDate.date}
-                    className="px-3 py-1.5 text-sm bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark shadow-lg hover:shadow-primary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1.5 text-sm bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {t('save')}
                   </button>
@@ -569,7 +569,7 @@ export default function ImportantDatesManager({
                 type="button"
                 onClick={handleAdd}
                 disabled={(!newDate.type && !newDate.title.trim()) || !newDate.date}
-                className="px-3 py-1.5 text-sm bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark shadow-lg hover:shadow-primary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 text-sm bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('add')}
               </button>

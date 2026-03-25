@@ -163,7 +163,7 @@ export default function BulkExportList({ people }: BulkExportListProps) {
               type="checkbox"
               checked={allSelected}
               onChange={handleSelectAll}
-              className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
             />
             <span className="font-medium text-foreground">
               {allSelected ? t('deselectAll') : t('selectAll')}
@@ -194,7 +194,7 @@ export default function BulkExportList({ people }: BulkExportListProps) {
                   checked={isSelected}
                   onChange={() => handleTogglePerson(person.id)}
                   onClick={(e) => e.stopPropagation()}
-                  className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                  className="mt-1 w-4 h-4 rounded border-border text-primary focus:ring-primary"
                 />
 
                 <div className="flex-1">

@@ -131,7 +131,7 @@ export default function ComboboxInput({
       <div className="flex items-center">
         {selectedOption ? (
           <div
-            className="w-full flex items-center justify-between px-3 py-2 text-sm border border-border rounded-lg bg-surface text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full flex items-center justify-between px-3 py-2 text-sm border border-border rounded-lg bg-surface text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
             onClick={() => !disabled && setIsOpen(!isOpen)}
             onKeyDown={handleKeyDown}
             tabIndex={0}
@@ -171,7 +171,7 @@ export default function ComboboxInput({
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
               disabled={disabled}
-              className="w-full px-3 py-2 pr-8 text-sm border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 pr-8 text-sm border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               role="combobox"
               aria-expanded={isOpen}
               aria-controls={listboxId}
@@ -194,11 +194,11 @@ export default function ComboboxInput({
       {isOpen && !disabled && (
         <div id={listboxId} className="absolute z-50 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg overflow-hidden" role="listbox">
           {filteredOptions.map((option, index) => (
-            <button
+            <div
               key={option.value}
-              type="button"
               onClick={() => handleSelectOption(option.value)}
-              className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelectOption(option.value); } }}
+              className={`w-full text-left px-3 py-2 text-sm transition-colors cursor-pointer ${
                 highlightedIndex === index
                   ? 'bg-blue-600 text-white'
                   : option.value === value
@@ -206,25 +206,27 @@ export default function ComboboxInput({
                     : 'text-foreground hover:bg-surface-elevated'
               }`}
               role="option"
+              tabIndex={0}
               aria-selected={option.value === value}
             >
               {option.label}
-            </button>
+            </div>
           ))}
           <div className="border-t border-border">
-            <button
-              type="button"
+            <div
               onClick={handleSelectOther}
-              className={`w-full text-left px-3 py-2 text-sm italic transition-colors ${
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelectOther(); } }}
+              className={`w-full text-left px-3 py-2 text-sm italic transition-colors cursor-pointer ${
                 highlightedIndex === filteredOptions.length
                   ? 'bg-blue-600 text-white'
                   : 'text-muted hover:bg-surface-elevated'
               }`}
               role="option"
+              tabIndex={0}
               aria-selected={false}
             >
               {otherLabel}
-            </button>
+            </div>
           </div>
         </div>
       )}
