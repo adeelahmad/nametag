@@ -266,11 +266,19 @@ export default async function PersonDetailsPage({
           </div>
 
           <div className="bg-surface shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-5 border-b border-border flex flex-col sm:flex-row justify-between items-start gap-4">
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground break-words">
-                  {formatFullName(person, nameOrder)}
-                </h1>
+            <div className="px-6 py-6 border-b border-border flex flex-col sm:flex-row justify-between items-start gap-5">
+              <div className="flex items-start gap-5 flex-1 min-w-0">
+                <PersonAvatar
+                  personId={person.id}
+                  name={formatFullName(person, nameOrder)}
+                  photo={person.photo}
+                  size={72}
+                  loading="eager"
+                />
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground break-words">
+                    {formatFullName(person, nameOrder)}
+                  </h1>
                 {person.groups.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {person.groups.map((pg) => (
@@ -280,8 +288,8 @@ export default async function PersonDetailsPage({
                         style={{
                           backgroundColor: pg.group.color
                             ? `${pg.group.color}20`
-                            : '#E5E7EB',
-                          color: pg.group.color || '#374151',
+                            : 'var(--badge-bg)',
+                          color: pg.group.color || 'var(--badge-text)',
                         }}
                       >
                         {pg.group.name}
@@ -305,11 +313,12 @@ export default async function PersonDetailsPage({
                     </span>
                   </div>
                 )}
+                </div>
               </div>
               <div className="flex flex-shrink-0 space-x-3 w-full sm:w-auto">
                 <Link
                   href={`/people/${person.id}/edit`}
-                  className="flex-1 sm:flex-none px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors shadow-lg hover:shadow-primary/50 text-center"
+                  className="flex-1 sm:flex-none px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors text-center"
                 >
                   {t('edit')}
                 </Link>
@@ -324,22 +333,7 @@ export default async function PersonDetailsPage({
               </div>
             </div>
 
-            <div className="px-6 py-5 space-y-6">
-              {/* Photo */}
-              {person.photo && (
-                <div className="border border-border rounded-lg p-4">
-                  <div className="flex justify-center">
-                    <PersonAvatar
-                      personId={person.id}
-                      name={formatFullName(person, nameOrder)}
-                      photo={person.photo}
-                      size={80}
-                      loading="eager"
-                    />
-                  </div>
-                </div>
-              )}
-
+            <div className="px-6 py-6 space-y-8">
               {/* Personal Details */}
               <div className="border border-border rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-foreground mb-4">
