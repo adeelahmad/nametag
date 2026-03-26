@@ -66,8 +66,8 @@ export default async function DashboardPage() {
 
           {/* Upcoming Events */}
           {upcomingEvents.length > 0 && (
-            <div className="mb-12">
-              <h2 className="text-lg font-semibold text-muted mb-4">
+            <div className="bg-surface rounded-lg p-6 mb-8 border border-border">
+              <h2 className="text-xl font-bold text-foreground mb-4">
                 {t('upcomingEvents')}
               </h2>
               <div className="space-y-2">
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
                   <Link
                     key={event.id}
                     href={`/people/${event.personId}`}
-                    className="flex items-center justify-between p-4 bg-surface rounded-lg transition-colors border border-border hover:border-primary/30"
+                    className="flex items-center justify-between p-4 bg-surface-elevated hover:bg-surface-elevated/80 rounded-lg transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       <PersonAvatar personId={event.personId} name={event.personName} photo={event.personPhoto} size={40} />
@@ -112,19 +112,17 @@ export default async function DashboardPage() {
 
           {/* Network Graph */}
           {peopleCount > 0 ? (
-            <div className="mb-8">
-              <h2 className="text-lg font-semibold text-muted mb-4">
+            <div className="bg-surface rounded-lg p-6 mb-8 border border-border">
+              <h2 className="text-xl font-bold text-foreground mb-4">
                 {t('yourNetwork')}
               </h2>
-              <div className="bg-surface rounded-lg border border-border overflow-hidden">
-                <UnifiedNetworkGraph
-                  apiEndpoint="/api/dashboard/graph"
-                  groups={groups}
-                  centerNodeNonClickable={true}
-                  linkDistance={120}
-                  chargeStrength={-400}
-                />
-              </div>
+              <UnifiedNetworkGraph
+                apiEndpoint="/api/dashboard/graph"
+                groups={groups}
+                centerNodeNonClickable={true}
+                linkDistance={120}
+                chargeStrength={-400}
+              />
             </div>
           ) : (
             <div className="bg-surface rounded-lg p-6 mb-8 border border-border">
