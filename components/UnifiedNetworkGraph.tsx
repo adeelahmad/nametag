@@ -540,7 +540,6 @@ export default function UnifiedNetworkGraph({
       {groups && (
         <div className="mb-4">
           <PillSelector
-            label={t('filterByGroups')}
             selectedItems={groups
               .filter((g) => selectedGroupIds.includes(g.id))
               .map((g) => ({
