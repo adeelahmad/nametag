@@ -197,7 +197,7 @@ export default function MarkdownEditor({
             onClick={() => setShowPreview(!showPreview)}
             className={`text-xs px-2 py-1 rounded transition-colors ${
               showPreview
-                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                ? 'bg-primary/10 text-primary'
                 : 'text-muted hover:bg-surface-elevated'
             }`}
           >

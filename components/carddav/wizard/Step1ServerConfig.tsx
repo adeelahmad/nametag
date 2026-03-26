@@ -121,7 +121,7 @@ export default function Step1ServerConfig({
     <div className="space-y-6">
       {/* Provider Selection */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-foreground mb-2">
           {t('providerLabel')}
         </label>
         <select
@@ -140,7 +140,7 @@ export default function Step1ServerConfig({
 
       {/* Server URL */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-foreground mb-2">
           {t('serverUrlLabel')}
         </label>
         <input
@@ -156,7 +156,7 @@ export default function Step1ServerConfig({
 
       {/* Username */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-foreground mb-2">
           {t('usernameLabel')}
         </label>
         <input
@@ -171,7 +171,7 @@ export default function Step1ServerConfig({
 
       {/* Password */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-foreground mb-2">
           {t('passwordLabel')}
         </label>
         <input
@@ -216,8 +216,8 @@ export default function Step1ServerConfig({
 
       {/* Info messages */}
       {!isFormComplete && (
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="p-4 bg-surface-elevated rounded-lg border border-border">
+          <p className="text-sm text-muted">
             {t('fillAllFields')}
           </p>
         </div>
@@ -233,7 +233,7 @@ export default function Step1ServerConfig({
             type="button"
             onClick={handleTestConnection}
             disabled={!isFormComplete || isTesting}
-            className="bg-gray-600 text-white hover:bg-gray-700 border-0"
+            className="bg-muted text-white hover:bg-muted/80 border-0"
           >
             {isTesting ? t('testing') : t('testConnection')}
           </Button>

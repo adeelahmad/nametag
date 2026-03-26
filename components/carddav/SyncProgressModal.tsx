@@ -203,7 +203,7 @@ export default function SyncProgressModal({
         {/* Syncing state */}
         {isSyncing && (
           <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
             <p className="text-muted">
               {getProgressMessage()}
             </p>
@@ -292,13 +292,13 @@ export default function SyncProgressModal({
 
                 {/* Pending imports */}
                 {syncResult.pendingImports > 0 && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+                  <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                    <p className="text-sm font-medium text-primary mb-2">
                       {t('syncPendingImports', { count: syncResult.pendingImports })}
                     </p>
                     <Link
                       href="/carddav/import"
-                      className="text-sm text-blue-700 dark:text-blue-300 hover:underline font-medium"
+                      className="text-sm text-primary hover:underline font-medium"
                     >
                       {t('viewPendingButton')} →
                     </Link>

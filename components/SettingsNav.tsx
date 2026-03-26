@@ -140,15 +140,15 @@ export default function SettingsNav({ isSaasMode }: { isSaasMode: boolean }) {
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 transition-colors ${
                     isActive
-                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-l-4 border-blue-600'
+                      ? 'bg-primary/10 text-primary border-l-4 border-primary'
                       : 'text-muted hover:bg-surface-elevated/50 border-l-4 border-transparent'
                   }`}
                 >
-                  <span className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-muted'}>
+                  <span className={isActive ? 'text-primary' : 'text-muted'}>
                     {item.icon}
                   </span>
                   <div className="min-w-0">
-                    <p className={`font-medium ${isActive ? 'text-blue-700 dark:text-blue-400' : ''}`}>
+                    <p className={`font-medium ${isActive ? 'text-primary' : ''}`}>
                       {t(item.labelKey)}
                       {item.badgeKey && (
                         <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">

@@ -169,11 +169,11 @@ export default function RelationshipTypeAutocomplete({
               onClick={() => handleSelect(type)}
               className={`w-full text-left px-3 py-2 hover:bg-surface-elevated transition-colors ${
                 index === highlightedIndex
-                  ? 'bg-blue-50 dark:bg-blue-900/20'
+                  ? 'bg-primary/10'
                   : ''
               } ${
                 type.id === value
-                  ? 'bg-blue-100 dark:bg-blue-900/30 font-medium'
+                  ? 'bg-primary/15 font-medium'
                   : ''
               }`}
               onMouseEnter={() => setHighlightedIndex(index)}
