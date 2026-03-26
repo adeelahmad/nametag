@@ -205,7 +205,7 @@ function ConnectionEditModal({
       <div className="space-y-6">
         {/* Provider Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             {t('providerLabel')}
           </label>
           <select
@@ -224,7 +224,7 @@ function ConnectionEditModal({
 
         {/* Server URL */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             {t('serverUrlLabel')}
           </label>
           <input
@@ -243,7 +243,7 @@ function ConnectionEditModal({
 
         {/* Username */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             {t('usernameLabel')}
           </label>
           <input
@@ -261,9 +261,9 @@ function ConnectionEditModal({
 
         {/* Password */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             {t('passwordLabel')}
-            <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+            <span className="ml-2 text-xs text-muted">
               ({t('leaveBlankToKeep')})
             </span>
           </label>
@@ -311,8 +311,8 @@ function ConnectionEditModal({
 
         {/* Form validation message */}
         {!isFormComplete && (
-          <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="p-4 bg-surface-elevated rounded-lg border border-border">
+            <p className="text-sm text-muted">
               {t('fillAllFields')}
             </p>
           </div>
@@ -331,7 +331,7 @@ function ConnectionEditModal({
             type="button"
             onClick={handleTestConnection}
             disabled={!isFormComplete || isTesting}
-            className="bg-gray-600 text-white hover:bg-gray-700 border-0"
+            className="bg-muted text-white hover:bg-muted/80 border-0"
           >
             {isTesting ? t('testing') : t('testConnection')}
           </Button>

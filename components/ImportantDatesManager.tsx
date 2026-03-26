@@ -274,7 +274,7 @@ export default function ImportantDatesManager({
               });
             }}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ${
-              date.reminderEnabled ? 'bg-blue-600' : 'bg-surface-elevated'
+              date.reminderEnabled ? 'bg-primary' : 'bg-surface-elevated'
             } ${!canToggle ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <span
@@ -360,7 +360,7 @@ export default function ImportantDatesManager({
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+            className="text-sm text-primary hover:text-primary-dark transition-colors"
           >
             {t('addDate')}
           </button>
@@ -455,7 +455,7 @@ export default function ImportantDatesManager({
                       : formatDate(parseAsLocalDate(date.date), dateFormat)}
                   </div>
                   {getReminderDescription(date) && (
-                    <div className="text-xs text-blue-600 dark:text-blue-400 mt-1 flex items-center gap-1">
+                    <div className="text-xs text-primary mt-1 flex items-center gap-1">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                       </svg>
@@ -468,7 +468,7 @@ export default function ImportantDatesManager({
                     type="button"
                     onClick={() => handleStartEdit(index)}
                     disabled={editingIndex !== null || isAdding}
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-primary hover:text-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     title={t('edit')}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -34,9 +34,9 @@ export default function ConnectionStatus({
       <div className="bg-surface shadow rounded-lg p-6">
         <EmptyState
           icon={
-            <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
+            <div className="p-4 bg-primary/10 rounded-lg">
               <svg
-                className="w-12 h-12 text-blue-600 dark:text-blue-400"
+                className="w-12 h-12 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -124,13 +124,13 @@ export default function ConnectionStatus({
 
       {/* Pending imports notice */}
       {pendingImportsCount > 0 && (
-        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <p className="text-sm text-blue-900 dark:text-blue-100">
+        <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+          <p className="text-sm text-primary">
             {t('pendingImportsLink', { count: pendingImportsCount })}
           </p>
           <Link
             href="/carddav/import"
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium mt-1 inline-block"
+            className="text-sm text-primary hover:underline font-medium mt-1 inline-block"
           >
             {t('viewPendingImports')} →
           </Link>

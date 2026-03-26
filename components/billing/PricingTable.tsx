@@ -132,14 +132,14 @@ export default function PricingTable({ currentTier, currentFrequency }: PricingT
               key={tier}
               className={`relative bg-surface rounded-lg border-2 p-6 flex flex-col ${
                 isCurrent
-                  ? 'border-blue-500'
+                  ? 'border-primary'
                   : tier === 'PERSONAL'
                   ? 'border-purple-500'
                   : 'border-border'
               }`}
             >
               {isCurrent && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-medium px-3 py-1 rounded-full">
                   {t('currentPlan')}
                 </span>
               )}

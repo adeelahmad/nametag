@@ -431,7 +431,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
         </p>
 
         {/* Export Format Explanation */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
           <h4 className="font-medium text-foreground mb-2">
             {t('exportFormats')}
           </h4>
@@ -561,7 +561,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
         </p>
 
         {/* Import Format Explanation */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
           <h4 className="font-medium text-foreground mb-2">
             {t('importFormats')}
           </h4>
@@ -586,7 +586,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-full border-2 border-dashed border-border rounded-lg p-6 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-surface-elevated/50 transition-colors cursor-pointer"
+            className="w-full border-2 border-dashed border-border rounded-lg p-6 hover:border-primary hover:bg-surface-elevated/50 transition-colors cursor-pointer"
           >
             <div className="flex flex-col items-center gap-2">
               <svg
@@ -635,12 +635,12 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
           {importPreview && !isValidating && importValidation && (
             <div className={`border rounded-lg p-4 ${
               importValidation.valid
-                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                ? 'bg-primary/10 border-primary/20'
                 : 'bg-warning/10 border-2 border-warning'
             }`}>
               <h4 className={`font-medium mb-2 ${
                 importValidation.valid
-                  ? 'text-blue-900 dark:text-blue-300'
+                  ? 'text-primary'
                   : 'text-warning'
               }`}>
                 {importValidation.valid ? t('importPreview') : t('importLimitExceeded')}
@@ -648,7 +648,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
 
               {importValidation.valid ? (
                 <>
-                  <ul className="text-sm text-blue-800 dark:text-blue-400 space-y-1 mb-4">
+                  <ul className="text-sm text-primary space-y-1 mb-4">
                     <li>• {t('groupsNew', { count: importPreview.groups, newCount: importValidation.newGroupsCount || 0 })}</li>
                     <li>• {t('peopleNew', { count: importPreview.people, newCount: importValidation.newPeopleCount || 0 })}</li>
                     <li>• {t('customRelationshipTypes', { count: importPreview.customRelationshipTypes })}</li>
@@ -656,7 +656,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
 
                   {/* Import Mode Toggle - only show if there are groups */}
                   {importPreview.groups > 0 && importData && (
-                    <div className="mb-4 space-y-3 border-t border-blue-200 dark:border-blue-700 pt-3">
+                    <div className="mb-4 space-y-3 border-t border-primary/20 pt-3">
                       <div className="flex gap-4">
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -667,7 +667,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                             onChange={() => setImportMode('all')}
                             className="w-4 h-4 text-primary bg-surface-elevated border-border focus:ring-primary"
                           />
-                          <span className="text-sm text-blue-800 dark:text-blue-300">
+                          <span className="text-sm text-primary">
                             {t('importEverything')}
                           </span>
                         </label>
@@ -680,7 +680,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                             onChange={() => setImportMode('groups')}
                             className="w-4 h-4 text-primary bg-surface-elevated border-border focus:ring-primary"
                           />
-                          <span className="text-sm text-blue-800 dark:text-blue-300">
+                          <span className="text-sm text-primary">
                             {t('importSpecificGroups')}
                           </span>
                         </label>
@@ -692,7 +692,7 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                             {importData.groups.map((group) => (
                               <label
                                 key={group.id}
-                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 cursor-pointer transition-colors"
+                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 cursor-pointer transition-colors"
                               >
                                 <input
                                   type="checkbox"
@@ -714,14 +714,14 @@ export default function AccountManagement({ groups, peopleCount }: AccountManage
                                     backgroundColor: group.color || 'var(--badge-bg)',
                                   }}
                                 />
-                                <span className="text-sm font-medium text-blue-900 dark:text-blue-200">
+                                <span className="text-sm font-medium text-primary">
                                   {group.name}
                                 </span>
                               </label>
                             ))}
                           </div>
                           {selectedImportGroupIds.length > 0 && (
-                            <p className="text-xs text-blue-700 dark:text-blue-400">
+                            <p className="text-xs text-primary">
                               {t('willImport', {
                                 count: selectedImportGroupIds.length,
                                 type: selectedImportGroupIds.length === 1 ? t('group') : t('groups_plural'),
