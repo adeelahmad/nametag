@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.40.0](https://github.com/mattogodoy/nametag/compare/v0.39.2...v0.40.0) (2026-03-26)
+
+
+### Features
+
+* UI overhaul — warm palette, accessibility, design tokens, performance ([7b45f74](https://github.com/mattogodoy/nametag/commit/7b45f7454e42de31b1b932f545b44dc1bce193d8))
+* UI overhaul — warm palette, accessibility, design tokens, performance ([1374679](https://github.com/mattogodoy/nametag/commit/137467965cf89beae83eec21897f742dc2a00e5f))
+
 ## [0.39.2](https://github.com/mattogodoy/nametag/compare/v0.39.1...v0.39.2) (2026-03-23)
 
 
