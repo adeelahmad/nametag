@@ -6,8 +6,8 @@
 
 /* PALETTE — Warm Personal */
 :root {
-  --a-primary: #4B6CA8;
-  --a-secondary: #8EADD4;
+  --a-primary: #2A66D4;
+  --a-secondary: #7CA3D8;
   --a-text: #1C1917;
   --a-bg: #F7F6F3;
   --a-surface: #FFFFFF;
@@ -17,9 +17,9 @@
   --surface: #FFFFFF;
   --surface-elevated: #F3F2EF;
   --border: rgba(28, 25, 23, 0.1);
-  --primary: #4B6CA8;
-  --primary-dark: #3D5A91;
-  --secondary: #8EADD4;
+  --primary: #2A66D4;
+  --primary-dark: #2358B8;
+  --secondary: #7CA3D8;
   --tertiary: #8EADD4;
   --accent: #8EADD4;
   --muted: rgba(28, 25, 23, 0.63);
@@ -29,8 +29,8 @@
 }
 
 .dark {
-  --a-primary: #8EADD4;
-  --a-secondary: #3D5A91;
+  --a-primary: #7CA3D8;
+  --a-secondary: #2358B8;
   --a-text: #EDE9E1;
   --a-bg: #121110;
   --a-surface: #1C1A17;
@@ -40,9 +40,9 @@
   --surface: #1C1A17;
   --surface-elevated: #252320;
   --border: rgba(237, 233, 225, 0.1);
-  --primary: #8EADD4;
-  --primary-dark: #7B9AC4;
-  --secondary: #3D5A91;
+  --primary: #7CA3D8;
+  --primary-dark: #6B94CC;
+  --secondary: #2358B8;
   --tertiary: #3D5A91;
   --accent: #3D5A91;
   --muted: rgba(237, 233, 225, 0.6);
