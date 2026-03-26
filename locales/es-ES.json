@@ -596,6 +596,7 @@
   },
   "dashboard": {
     "title": "Panel",
+    "greeting": "Bienvenido de nuevo, {name}",
     "upcomingEvents": "Próximos Eventos",
     "yourNetwork": "Tu Red",
     "emptyNetwork": {

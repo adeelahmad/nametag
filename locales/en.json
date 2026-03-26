@@ -596,6 +596,7 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "greeting": "Welcome back, {name}",
     "upcomingEvents": "Upcoming Events",
     "yourNetwork": "Your Network",
     "emptyNetwork": {

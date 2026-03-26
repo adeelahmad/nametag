@@ -596,6 +596,7 @@
   },
   "dashboard": {
     "title": "仪表盘",
+    "greeting": "欢迎回来，{name}",
     "upcomingEvents": "即将发生的事件",
     "yourNetwork": "您的网络",
     "emptyNetwork": {
