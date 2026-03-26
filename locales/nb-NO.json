@@ -596,6 +596,7 @@
   },
   "dashboard": {
     "title": "Oversikt",
+    "greeting": "Velkommen tilbake, {name}",
     "upcomingEvents": "Kommende hendelser",
     "yourNetwork": "Nettverket ditt",
     "emptyNetwork": {
