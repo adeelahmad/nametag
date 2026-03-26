@@ -39,6 +39,18 @@ export default function NavigationSearch() {
   }, []);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Cmd+K / Ctrl+K global shortcut to focus search
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleGlobalKeyDown);
+    return () => document.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const itemRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
 
@@ -170,9 +182,12 @@ export default function NavigationSearch() {
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           placeholder={t('placeholder')}
-          className="w-full pl-9 pr-3 py-1.5 text-sm border border-border rounded-lg bg-surface-elevated text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+          className="w-full pl-9 pr-12 py-1.5 text-sm border border-border rounded-lg bg-surface-elevated text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
           autoComplete="off"
         />
+        <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted bg-background border border-border rounded">
+          <span className="text-xs">⌘</span>K
+        </kbd>
         <svg
           className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary"
           fill="none"
