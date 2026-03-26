@@ -146,7 +146,7 @@ export default async function DashboardPage() {
                 </p>
                 <Link
                   href="/people/new"
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-semibold rounded-lg bg-primary hover:bg-primary-dark text-black transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-semibold rounded-lg bg-primary hover:bg-primary-dark text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                 >
                   {t('emptyNetwork.action')}
                 </Link>

@@ -190,7 +190,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-lg relative block w-full px-4 py-3 border-2 border-border placeholder-muted text-foreground bg-surface-elevated focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border placeholder-muted text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
                 placeholder="you@example.com"
               />
             </div>
@@ -206,7 +206,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-lg relative block w-full px-4 py-3 border-2 border-border placeholder-muted text-foreground bg-surface-elevated focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border placeholder-muted text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
                 placeholder="••••••••"
               />
             </div>
@@ -216,7 +216,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-3 px-6 border border-transparent text-base font-bold rounded-lg text-black bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="group relative w-full flex justify-center py-3 px-6 border border-transparent text-base font-bold rounded-lg text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? t('signingIn') : t('login')}
             </button>
