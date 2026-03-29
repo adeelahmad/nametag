@@ -130,7 +130,7 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
         {/* Bottom row: Nav items as tab bar (desktop) */}
         <div className="hidden md:flex items-center justify-center gap-1">
           {navItems.map((item) => (
-            <div key={item.href} className="relative flex items-center">
+            <div key={item.href} className="relative">
               <Link
                 href={item.href}
                 className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors ${
@@ -142,22 +142,6 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
                 {navIcons[item.labelKey]}
                 {tNav(item.labelKey)}
               </Link>
-              {item.createHref && (
-                <Link
-                  href={item.createHref}
-                  className={`p-1 rounded transition-colors -ml-1 ${
-                    isActive(item.href)
-                      ? 'text-primary hover:bg-primary/10'
-                      : 'text-muted hover:text-primary hover:bg-primary/5'
-                  }`}
-                  title={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
-                  aria-label={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </Link>
-              )}
               {/* Active indicator bar */}
               {isActive(item.href) && (
                 <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
