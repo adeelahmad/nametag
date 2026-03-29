@@ -141,6 +141,7 @@ export default function JournalEntryForm({
         <div
           className="bg-warning/10 border border-warning/30 text-warning px-4 py-3 rounded"
           role="alert"
+          aria-live="polite"
         >
           {error}
         </div>
@@ -272,7 +273,7 @@ export default function JournalEntryForm({
         <Button variant="secondary" href={cancelHref}>
           {t('cancel')}
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} aria-busy={isLoading}>
           {isLoading ? '…' : t('save')}
         </Button>
       </div>

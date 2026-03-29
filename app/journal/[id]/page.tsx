@@ -116,9 +116,9 @@ export default async function JournalEntryDetailPage({
               </div>
             )}
 
-            <div className="prose prose-sm dark:prose-invert max-w-none">
+            <article className="prose prose-sm dark:prose-invert max-w-none">
               <MarkdownRenderer content={entry.body} />
-            </div>
+            </article>
           </div>
         </div>
       </main>
