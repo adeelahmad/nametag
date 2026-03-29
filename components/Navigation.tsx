@@ -124,59 +124,43 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
           </div>
         </div>
 
-        {/* Bottom row: Nav items (desktop) */}
-        <div className="hidden md:flex items-center justify-center space-x-3 pb-3">
+        {/* Separator between rows */}
+        <div className="hidden md:block border-t border-border" />
+
+        {/* Bottom row: Nav items as tab bar (desktop) */}
+        <div className="hidden md:flex items-center justify-center gap-1">
           {navItems.map((item) => (
-            <div key={item.href}>
-              {item.createHref ? (
-                <div className={`flex items-center rounded-md overflow-hidden border ${
+            <div key={item.href} className="relative flex items-center">
+              <Link
+                href={item.href}
+                className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors ${
                   isActive(item.href)
-                    ? 'bg-primary/10 border-primary'
-                    : 'bg-surface-elevated border-border hover:bg-surface-elevated hover:border-primary/50'
-                }`}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium ${
-                      isActive(item.href)
-                        ? 'text-primary'
-                        : 'text-foreground'
-                    }`}
-                  >
-                    {navIcons[item.labelKey]}
-                    {tNav(item.labelKey)}
-                  </Link>
-                  <div className={`w-px h-5 ${
-                    isActive(item.href)
-                      ? 'bg-primary/30'
-                      : 'bg-border'
-                  }`} />
-                  <Link
-                    href={item.createHref}
-                    className={`px-2 py-1.5 transition-colors ${
-                      isActive(item.href)
-                        ? 'text-primary hover:text-primary-dark'
-                        : 'text-muted hover:text-primary'
-                    }`}
-                    title={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
-                    aria-label={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  </Link>
-                </div>
-              ) : (
+                    ? 'text-primary'
+                    : 'text-muted hover:text-foreground'
+                }`}
+              >
+                {navIcons[item.labelKey]}
+                {tNav(item.labelKey)}
+              </Link>
+              {item.createHref && (
                 <Link
-                  href={item.href}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium border ${
+                  href={item.createHref}
+                  className={`p-1 rounded transition-colors -ml-1 ${
                     isActive(item.href)
-                      ? 'text-primary bg-primary/10 border-primary'
-                      : 'text-foreground bg-surface-elevated border-border hover:bg-surface-elevated hover:border-primary/50'
+                      ? 'text-primary hover:bg-primary/10'
+                      : 'text-muted hover:text-primary hover:bg-primary/5'
                   }`}
+                  title={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
+                  aria-label={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
                 >
-                  {navIcons[item.labelKey]}
-                  {tNav(item.labelKey)}
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
                 </Link>
+              )}
+              {/* Active indicator bar */}
+              {isActive(item.href) && (
+                <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
               )}
             </div>
           ))}
