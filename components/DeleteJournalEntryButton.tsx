@@ -55,11 +55,8 @@ export default function DeleteJournalEntryButton({ entryId }: DeleteJournalEntry
         isLoading={isDeleting}
         error={error}
         variant="danger"
-      >
-        <p className="text-muted">
-          {t('confirmDeleteDescription')}
-        </p>
-      </ConfirmationModal>
+      />
+
     </>
   );
 }
