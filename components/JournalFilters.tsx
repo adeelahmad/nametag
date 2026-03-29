@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import PillSelector from '@/components/PillSelector';
+import { formatFullName } from '@/lib/nameUtils';
 
 interface PersonOption {
   id: string;
@@ -10,33 +13,60 @@ interface PersonOption {
   nickname: string | null;
 }
 
-interface JournalFiltersProps {
-  people: PersonOption[];
-  currentPerson?: string;
-  currentSearch?: string;
+interface PillPerson {
+  id: string;
+  label: string;
 }
 
-export default function JournalFilters({ people, currentPerson, currentSearch }: JournalFiltersProps) {
+interface JournalFiltersProps {
+  people: PersonOption[];
+  currentPersonIds: string[];
+  currentSearch?: string;
+  nameOrder: string;
+}
+
+export default function JournalFilters({ people, currentPersonIds, currentSearch, nameOrder }: JournalFiltersProps) {
   const t = useTranslations('journal');
   const router = useRouter();
 
-  function buildUrl(params: Record<string, string | undefined>) {
+  const pillPeople: PillPerson[] = people.map((p) => ({
+    id: p.id,
+    label: formatFullName(p, nameOrder),
+  }));
+
+  const initialSelected = currentPersonIds
+    .map((id) => pillPeople.find((p) => p.id === id))
+    .filter((p): p is PillPerson => p !== undefined);
+
+  const [selectedPeople, setSelectedPeople] = useState<PillPerson[]>(initialSelected);
+
+  function navigate(personIds: string[], search?: string) {
     const url = new URL('/journal', window.location.origin);
-    for (const [key, value] of Object.entries(params)) {
-      if (value) url.searchParams.set(key, value);
-    }
-    return url.pathname + url.search;
+    if (personIds.length > 0) url.searchParams.set('person', personIds.join(','));
+    if (search) url.searchParams.set('q', search);
+    router.push(url.pathname + url.search);
+  }
+
+  function handleAddPerson(person: PillPerson) {
+    const updated = [...selectedPeople, person];
+    setSelectedPeople(updated);
+    navigate(updated.map((p) => p.id), currentSearch);
+  }
+
+  function handleRemovePerson(personId: string) {
+    const updated = selectedPeople.filter((p) => p.id !== personId);
+    setSelectedPeople(updated);
+    navigate(updated.map((p) => p.id), currentSearch);
   }
 
   return (
-    <div className="flex gap-3 mb-6">
+    <div className="space-y-3 mb-6">
       <form
-        className="flex-1"
         onSubmit={(e) => {
           e.preventDefault();
           const formData = new FormData(e.currentTarget);
           const q = formData.get('q') as string;
-          router.push(buildUrl({ q: q || undefined, person: currentPerson }));
+          navigate(selectedPeople.map((p) => p.id), q || undefined);
         }}
       >
         <input
@@ -47,22 +77,15 @@ export default function JournalFilters({ people, currentPerson, currentSearch }:
           className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary text-sm"
         />
       </form>
-      <select
-        value={currentPerson ?? ''}
-        onChange={(e) => {
-          const person = e.target.value || undefined;
-          router.push(buildUrl({ person, q: currentSearch }));
-        }}
-        className="px-3 py-2 bg-surface border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-      >
-        <option value="">{t('allPeople')}</option>
-        {people.map((person) => (
-          <option key={person.id} value={person.id}>
-            {person.nickname ?? person.name}
-            {person.surname ? ` ${person.surname}` : ''}
-          </option>
-        ))}
-      </select>
+      <PillSelector
+        label={t('filterByPerson')}
+        selectedItems={selectedPeople}
+        availableItems={pillPeople.filter((p) => !selectedPeople.some((s) => s.id === p.id))}
+        onAdd={handleAddPerson}
+        onRemove={handleRemovePerson}
+        placeholder={t('filterByPerson')}
+        showAllOnFocus
+      />
     </div>
   );
 }

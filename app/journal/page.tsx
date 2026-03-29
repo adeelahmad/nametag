@@ -20,7 +20,8 @@ export default async function JournalPage({
   }
 
   const params = await searchParams;
-  const personFilter = params.person;
+  const personFilterParam = params.person;
+  const personFilterIds = personFilterParam ? personFilterParam.split(',').filter(Boolean) : [];
   const searchQuery = params.q;
 
   const [user, people, entries] = await Promise.all([
@@ -45,11 +46,11 @@ export default async function JournalPage({
       where: {
         userId: session.user.id,
         deletedAt: null,
-        ...(personFilter
+        ...(personFilterIds.length > 0
           ? {
-              people: {
-                some: { personId: personFilter },
-              },
+              AND: personFilterIds.map((pid) => ({
+                people: { some: { personId: pid } },
+              })),
             }
           : {}),
         ...(searchQuery
@@ -116,8 +117,9 @@ export default async function JournalPage({
 
           <JournalFilters
             people={people}
-            currentPerson={personFilter}
+            currentPersonIds={personFilterIds}
             currentSearch={searchQuery}
+            nameOrder={nameOrder}
           />
 
           <JournalTimeline
