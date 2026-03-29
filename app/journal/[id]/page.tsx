@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server';
 import Navigation from '@/components/Navigation';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { formatFullName } from '@/lib/nameUtils';
+import { Button } from '@/components/ui/Button';
 
 export default async function JournalEntryDetailPage({
   params,
@@ -91,12 +92,9 @@ export default async function JournalEntryDetailPage({
                 </h1>
                 <p className="text-sm text-muted">{formattedDate}</p>
               </div>
-              <Link
-                href={`/journal/${entry.id}/edit`}
-                className="px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors text-sm"
-              >
+              <Button href={`/journal/${entry.id}/edit`} size="sm" variant="secondary">
                 {t('detail.editButton')}
-              </Link>
+              </Button>
             </div>
 
             {entry.people.length > 0 && (

@@ -101,7 +101,7 @@ export default function JournalSection({
                 .map((p) => (
                   <span
                     key={p.person.id}
-                    className="bg-primary/10 text-primary text-[11px] px-2 py-0.5 rounded-full"
+                    className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full"
                   >
                     {formatPersonName(p.person, nameOrder)}
                   </span>

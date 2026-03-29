@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server';
 import Navigation from '@/components/Navigation';
 import JournalTimeline from '@/components/JournalTimeline';
 import JournalFilters from '@/components/JournalFilters';
+import { Button } from '@/components/ui/Button';
 
 export default async function JournalPage({
   searchParams,
@@ -107,12 +108,9 @@ export default async function JournalPage({
             <h1 className="text-3xl font-bold text-foreground">
               {t('title')}
             </h1>
-            <Link
-              href="/journal/new"
-              className="px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors"
-            >
+            <Button href="/journal/new" size="sm">
               {t('addEntry')}
-            </Link>
+            </Button>
           </div>
 
           <JournalFilters
