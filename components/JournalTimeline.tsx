@@ -187,7 +187,7 @@ export default function JournalTimeline({ entries, nameOrder, locale }: JournalT
                   {/* Entry card */}
                   <div className={`flex-1 ${isLast ? 'pb-0' : 'pb-6'}`}>
                     <Link href={`/journal/${entry.id}`} className="block group focus:outline-none">
-                      <article className="bg-surface-elevated border border-border rounded-lg px-4 py-4 hover:border-primary/30 transition-colors focus-within:ring-2 focus-within:ring-primary group-focus:ring-2 group-focus:ring-primary">
+                      <article className="bg-surface-elevated border border-border rounded-lg px-4 py-4 hover:border-primary/60 hover:shadow-sm transition-all focus-within:ring-2 focus-within:ring-primary group-focus:ring-2 group-focus:ring-primary">
                         <h3 className="text-sm font-semibold text-foreground leading-snug mb-1 group-hover:text-primary transition-colors">
                           {entry.title}
                         </h3>
