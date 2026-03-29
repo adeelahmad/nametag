@@ -45,7 +45,7 @@ vi.mock('../../lib/billing', () => ({
 }));
 
 import { GET, POST } from '../../app/api/journal/route';
-import { GET as GET_DETAIL, PUT, DELETE } from '../../app/api/journal/[id]/route';
+import { GET as GET_DETAIL, PUT as _PUT, DELETE } from '../../app/api/journal/[id]/route';
 
 describe('Journal API', () => {
   beforeEach(() => {

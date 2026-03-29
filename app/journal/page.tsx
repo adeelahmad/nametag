@@ -1,6 +1,5 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { getTranslations } from 'next-intl/server';
 import Navigation from '@/components/Navigation';

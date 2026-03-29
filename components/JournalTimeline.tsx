@@ -53,7 +53,7 @@ function formatPersonName(
 
 function truncateBody(body: string, maxLength = 150): string {
   // Strip markdown formatting
-  let stripped = body
+  const stripped = body
     .replace(/#{1,6}\s+/g, '')           // headings
     .replace(/\*\*([^*]+)\*\*/g, '$1')   // bold
     .replace(/\*([^*]+)\*/g, '$1')       // italic
@@ -113,6 +113,7 @@ function groupByMonth(entries: TimelineEntry[], locale: string): MonthGroup[] {
 
 export default function JournalTimeline({ entries, nameOrder, locale }: JournalTimelineProps) {
   const t = useTranslations('journal');
+  const groups = useMemo(() => groupByMonth(entries, locale), [entries, locale]);
 
   if (entries.length === 0) {
     return (
@@ -128,8 +129,6 @@ export default function JournalTimeline({ entries, nameOrder, locale }: JournalT
       </div>
     );
   }
-
-  const groups = useMemo(() => groupByMonth(entries, locale), [entries, locale]);
 
   return (
     <div className="space-y-10">
