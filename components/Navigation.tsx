@@ -164,7 +164,12 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
           />
 
           {/* Mobile menu panel */}
-          <div className="md:hidden fixed top-0 right-0 bottom-0 w-[90%] max-w-md bg-surface shadow-xl z-50 transform transition-transform duration-300 ease-in-out">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+            className="md:hidden fixed top-0 right-0 bottom-0 w-[90%] max-w-md bg-surface shadow-xl z-50 transform transition-transform duration-300 ease-in-out"
+          >
             <div className="h-full flex flex-col">
               {/* Menu header with close button */}
               <div className="flex items-center justify-between p-4 border-b border-border">
