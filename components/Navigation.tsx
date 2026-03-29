@@ -78,8 +78,8 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
   return (
     <nav className="bg-surface border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top row: Logo, Search, User menu */}
         <div className="flex justify-between items-center h-16">
-          {/* Left section: Logo, Search (desktop), Nav items (desktop) */}
           <div className="flex items-center space-x-4 md:space-x-8">
             <Link href="/dashboard" className="flex items-center flex-shrink-0">
               <Image
@@ -95,66 +95,6 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
             <div className="hidden md:block">
               <NavigationSearch />
             </div>
-
-            {/* Desktop nav items */}
-            <div className="hidden xl:flex space-x-3">
-              {navItems.map((item) => (
-                <div key={item.href}>
-                  {item.createHref ? (
-                    <div className={`flex items-center rounded-md overflow-hidden border ${
-                      isActive(item.href)
-                        ? 'bg-primary/10 border-primary'
-                        : 'bg-surface-elevated border-border hover:bg-surface-elevated hover:border-primary/50'
-                    }`}>
-                      <Link
-                        href={item.href}
-                        className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium ${
-                          isActive(item.href)
-                            ? 'text-primary'
-                            : 'text-foreground'
-                        }`}
-                      >
-                        {navIcons[item.labelKey]}
-                        {tNav(item.labelKey)}
-                      </Link>
-                      <div className={`w-px h-5 ${
-                        isActive(item.href)
-                          ? 'bg-primary/30'
-                          : 'bg-border'
-                      }`} />
-                      <Link
-                        href={item.createHref}
-                        className={`px-2 py-2 transition-colors ${
-                          isActive(item.href)
-                            ? 'text-primary hover:text-primary-dark'
-                            : 'text-muted hover:text-primary'
-                        }`}
-                        title={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
-                        aria-label={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <Link
-                        href={item.href}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium border ${
-                          isActive(item.href)
-                            ? 'text-primary bg-primary/10 border-primary'
-                            : 'text-foreground bg-surface-elevated border-border hover:bg-surface-elevated hover:border-primary/50'
-                        }`}
-                      >
-                        {navIcons[item.labelKey]}
-                        {tNav(item.labelKey)}
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Right section: User menu (all screens), Hamburger (mobile) */}
@@ -166,7 +106,7 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="xl:hidden p-3 rounded-md text-foreground hover:bg-surface-elevated transition-colors"
+              className="md:hidden p-3 rounded-md text-foreground hover:bg-surface-elevated transition-colors"
               aria-label="Toggle menu"
             >
               <svg
@@ -186,6 +126,64 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
           </div>
         </div>
 
+        {/* Bottom row: Nav items (desktop) */}
+        <div className="hidden md:flex items-center justify-center space-x-3 pb-3">
+          {navItems.map((item) => (
+            <div key={item.href}>
+              {item.createHref ? (
+                <div className={`flex items-center rounded-md overflow-hidden border ${
+                  isActive(item.href)
+                    ? 'bg-primary/10 border-primary'
+                    : 'bg-surface-elevated border-border hover:bg-surface-elevated hover:border-primary/50'
+                }`}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium ${
+                      isActive(item.href)
+                        ? 'text-primary'
+                        : 'text-foreground'
+                    }`}
+                  >
+                    {navIcons[item.labelKey]}
+                    {tNav(item.labelKey)}
+                  </Link>
+                  <div className={`w-px h-5 ${
+                    isActive(item.href)
+                      ? 'bg-primary/30'
+                      : 'bg-border'
+                  }`} />
+                  <Link
+                    href={item.createHref}
+                    className={`px-2 py-1.5 transition-colors ${
+                      isActive(item.href)
+                        ? 'text-primary hover:text-primary-dark'
+                        : 'text-muted hover:text-primary'
+                    }`}
+                    title={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
+                    aria-label={`${tCommon('create')} ${tNav(item.createLabelKey || item.labelKey)}`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </Link>
+                </div>
+              ) : (
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium border ${
+                    isActive(item.href)
+                      ? 'text-primary bg-primary/10 border-primary'
+                      : 'text-foreground bg-surface-elevated border-border hover:bg-surface-elevated hover:border-primary/50'
+                  }`}
+                >
+                  {navIcons[item.labelKey]}
+                  {tNav(item.labelKey)}
+                </Link>
+              )}
+            </div>
+          ))}
+        </div>
+
       </div>
 
       {/* Mobile menu overlay - slides in from right */}
@@ -193,13 +191,13 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
         <>
           {/* Backdrop */}
           <div
-            className="xl:hidden fixed inset-0 bg-black/50 z-40 transition-opacity"
+            className="md:hidden fixed inset-0 bg-black/50 z-40 transition-opacity"
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
 
           {/* Mobile menu panel */}
-          <div className="xl:hidden fixed top-0 right-0 bottom-0 w-[90%] max-w-md bg-surface shadow-xl z-50 transform transition-transform duration-300 ease-in-out">
+          <div className="md:hidden fixed top-0 right-0 bottom-0 w-[90%] max-w-md bg-surface shadow-xl z-50 transform transition-transform duration-300 ease-in-out">
             <div className="h-full flex flex-col">
               {/* Menu header with close button */}
               <div className="flex items-center justify-between p-4 border-b border-border">
