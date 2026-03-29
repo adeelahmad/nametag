@@ -57,7 +57,9 @@
     "userMenu": {
       "settings": "设置",
       "signOut": "退出登录"
-    }
+    },
+    "journal": "日记",
+    "createJournal": "新条目"
   },
   "settings": {
     "title": "设置",
@@ -1639,5 +1641,47 @@
     "today": "今天",
     "yearUnknown": "年份未知",
     "yearUnknownTooltip": "选中时，仅保存月份和日期。年份将被忽略。"
+  },
+  "journal": {
+    "title": "日记",
+    "newEntry": "新条目",
+    "editEntry": "编辑条目",
+    "addEntry": "添加新条目",
+    "searchPlaceholder": "搜索条目...",
+    "filterByPerson": "按人物筛选",
+    "allPeople": "所有人",
+    "noEntries": "暂无日记条目",
+    "noEntriesDescription": "开始记录您与他人的相遇和会面。",
+    "writeFirstEntry": "写下第一条记录",
+    "noMatchingEntries": "没有与搜索匹配的条目",
+    "form": {
+      "titleLabel": "标题",
+      "titlePlaceholder": "给这条记录起个标题...",
+      "dateLabel": "日期",
+      "peopleLabel": "人物",
+      "peoplePlaceholder": "输入以添加人物...",
+      "bodyLabel": "记录",
+      "bodyPlaceholder": "写下您的相遇经历...",
+      "updateLastContact": "更新已标记人物的最近联系日期",
+      "updateLastContactTooltip": "将每位已标记人物的「最近联系」日期设置为本条目的日期，以便追踪上次互动的时间。",
+      "save": "保存条目",
+      "cancel": "取消",
+      "markdownSupport": "支持 Markdown 格式"
+    },
+    "detail": {
+      "editButton": "编辑",
+      "deleteButton": "删除",
+      "confirmDelete": "确定要删除这条日记记录吗？",
+      "confirmDeleteDescription": "此操作可从回收站撤销。",
+      "deleted": "日记条目已删除",
+      "taggedPeople": "人物"
+    },
+    "personSection": {
+      "title": "日记",
+      "noEntries": "暂无日记条目",
+      "writeOne": "写一条",
+      "viewAll": "查看所有条目",
+      "newEntry": "新条目"
+    }
   }
 }

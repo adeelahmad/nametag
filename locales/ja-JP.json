@@ -57,7 +57,9 @@
     "userMenu": {
       "settings": "設定",
       "signOut": "サインアウト"
-    }
+    },
+    "journal": "ジャーナル",
+    "createJournal": "新しいエントリー"
   },
   "settings": {
     "title": "設定",
@@ -1639,5 +1641,47 @@
     "today": "今日",
     "yearUnknown": "年不明",
     "yearUnknownTooltip": "チェックすると、月と日のみが保存されます。年は無視されます。"
+  },
+  "journal": {
+    "title": "ジャーナル",
+    "newEntry": "新しいエントリー",
+    "editEntry": "エントリーを編集",
+    "addEntry": "新しいエントリーを追加",
+    "searchPlaceholder": "エントリーを検索...",
+    "filterByPerson": "人物でフィルター",
+    "allPeople": "すべての人物",
+    "noEntries": "ジャーナルエントリーがまだありません",
+    "noEntriesDescription": "人々との出会いや会議の記録を始めましょう。",
+    "writeFirstEntry": "最初のエントリーを書く",
+    "noMatchingEntries": "検索に一致するエントリーがありません",
+    "form": {
+      "titleLabel": "タイトル",
+      "titlePlaceholder": "このエントリーにタイトルを付けてください...",
+      "dateLabel": "日付",
+      "peopleLabel": "人物",
+      "peoplePlaceholder": "人物を追加するには入力してください...",
+      "bodyLabel": "エントリー",
+      "bodyPlaceholder": "出会いについて書いてください...",
+      "updateLastContact": "タグ付けした人物の最終連絡日を更新する",
+      "updateLastContactTooltip": "タグ付けした各人物の「最終連絡」日をこのエントリーの日付に設定し、最後にいつ交流したかを追跡できるようにします。",
+      "save": "エントリーを保存",
+      "cancel": "キャンセル",
+      "markdownSupport": "Markdown形式をサポート"
+    },
+    "detail": {
+      "editButton": "編集",
+      "deleteButton": "削除",
+      "confirmDelete": "このジャーナルエントリーを削除してもよろしいですか？",
+      "confirmDeleteDescription": "この操作はゴミ箱から元に戻すことができます。",
+      "deleted": "ジャーナルエントリーが削除されました",
+      "taggedPeople": "人物"
+    },
+    "personSection": {
+      "title": "ジャーナル",
+      "noEntries": "ジャーナルエントリーがまだありません",
+      "writeOne": "書いてみる",
+      "viewAll": "すべてのエントリーを見る",
+      "newEntry": "新しいエントリー"
+    }
   }
 }

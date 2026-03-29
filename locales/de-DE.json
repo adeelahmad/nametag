@@ -57,7 +57,9 @@
     "userMenu": {
       "settings": "Einstellungen",
       "signOut": "Abmelden"
-    }
+    },
+    "journal": "Tagebuch",
+    "createJournal": "Neuer Eintrag"
   },
   "settings": {
     "title": "Einstellungen",
@@ -1639,5 +1641,47 @@
     "today": "Heute",
     "yearUnknown": "Jahr unbekannt",
     "yearUnknownTooltip": "Wenn aktiviert, werden nur der Monat und der Tag gespeichert. Das Jahr wird ignoriert."
+  },
+  "journal": {
+    "title": "Tagebuch",
+    "newEntry": "Neuer Eintrag",
+    "editEntry": "Eintrag bearbeiten",
+    "addEntry": "Neuen Eintrag hinzufügen",
+    "searchPlaceholder": "Einträge suchen...",
+    "filterByPerson": "Nach Person filtern",
+    "allPeople": "Alle Personen",
+    "noEntries": "Noch keine Tagebucheinträge",
+    "noEntriesDescription": "Beginne damit, deine Begegnungen und Treffen mit Personen zu dokumentieren.",
+    "writeFirstEntry": "Schreib deinen ersten Eintrag",
+    "noMatchingEntries": "Keine Einträge entsprechen deiner Suche",
+    "form": {
+      "titleLabel": "Titel",
+      "titlePlaceholder": "Gib diesem Eintrag einen Titel...",
+      "dateLabel": "Datum",
+      "peopleLabel": "Personen",
+      "peoplePlaceholder": "Tippen um Personen hinzuzufügen...",
+      "bodyLabel": "Eintrag",
+      "bodyPlaceholder": "Schreibe über deine Begegnung...",
+      "updateLastContact": "Letzten Kontaktzeitpunkt für markierte Personen aktualisieren",
+      "updateLastContactTooltip": "Setzt das Datum des 'letzten Kontakts' jeder markierten Person auf das Datum dieses Eintrags, damit du nachverfolgen kannst, wann du zuletzt mit ihnen interagiert hast.",
+      "save": "Eintrag speichern",
+      "cancel": "Abbrechen",
+      "markdownSupport": "Unterstützt Markdown-Formatierung"
+    },
+    "detail": {
+      "editButton": "Bearbeiten",
+      "deleteButton": "Löschen",
+      "confirmDelete": "Bist du sicher, dass du diesen Tagebucheintrag löschen möchtest?",
+      "confirmDeleteDescription": "Diese Aktion kann aus dem Papierkorb rückgängig gemacht werden.",
+      "deleted": "Tagebucheintrag gelöscht",
+      "taggedPeople": "Personen"
+    },
+    "personSection": {
+      "title": "Tagebuch",
+      "noEntries": "Noch keine Tagebucheinträge",
+      "writeOne": "Einen schreiben",
+      "viewAll": "Alle Einträge anzeigen",
+      "newEntry": "Neuer Eintrag"
+    }
   }
 }
