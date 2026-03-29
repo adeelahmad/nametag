@@ -111,7 +111,7 @@ export default async function JournalEntryDetailPage({
                     <Link
                       key={person.id}
                       href={`/people/${person.id}`}
-                      className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors"
                     >
                       {formatFullName(person, nameOrder)}
                     </Link>
