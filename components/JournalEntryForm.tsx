@@ -255,7 +255,7 @@ export default function JournalEntryForm({
               <div
                 id="update-last-contact-tooltip"
                 role="tooltip"
-                className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 px-3 py-2 text-xs text-foreground bg-surface-elevated border border-border rounded-lg shadow-lg z-50 transition-opacity ${
+                className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 max-w-[calc(100vw-2rem)] px-3 py-2 text-xs text-foreground bg-surface-elevated border border-border rounded-lg shadow-lg z-50 transition-opacity ${
                   showTooltip ? 'opacity-100 visible' : 'opacity-0 invisible'
                 }`}
               >

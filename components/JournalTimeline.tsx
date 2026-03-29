@@ -157,7 +157,7 @@ export default function JournalTimeline({ entries, nameOrder, locale }: JournalT
               return (
                 <div key={entry.id} className="flex gap-0">
                   {/* Date column */}
-                  <div className="w-16 flex-shrink-0 flex flex-col items-center pt-1 pr-3">
+                  <div className="w-12 sm:w-16 flex-shrink-0 flex flex-col items-center pt-1 pr-2 sm:pr-3">
                     <span
                       className="text-2xl font-bold text-foreground leading-none tabular-nums"
                       aria-label={entryDate.toLocaleDateString(locale, {

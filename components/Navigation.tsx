@@ -91,7 +91,7 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
           </Link>
 
           {/* Desktop search — absolutely centered in the row */}
-          <div className="hidden md:block absolute left-1/2 -translate-x-1/2 w-full max-w-md lg:max-w-lg px-24">
+          <div className="hidden md:block absolute left-1/2 -translate-x-1/2 w-full max-w-md lg:max-w-lg px-20 lg:px-24">
             <NavigationSearch />
           </div>
 
