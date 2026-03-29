@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
@@ -128,7 +129,7 @@ export default function JournalTimeline({ entries, nameOrder, locale }: JournalT
     );
   }
 
-  const groups = groupByMonth(entries, locale);
+  const groups = useMemo(() => groupByMonth(entries, locale), [entries, locale]);
 
   return (
     <div className="space-y-10">
