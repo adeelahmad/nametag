@@ -137,7 +137,7 @@ export default function JournalTimeline({ entries, nameOrder, locale }: JournalT
         <section key={group.monthKey} aria-label={group.label}>
           {/* Month header */}
           <div className="flex items-center gap-3 mb-6">
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary whitespace-nowrap">
+            <span className="text-xs font-semibold uppercase tracking-widest text-accent whitespace-nowrap">
               {group.label}
             </span>
             <div className="flex-1 h-px bg-border" aria-hidden="true" />
@@ -176,7 +176,7 @@ export default function JournalTimeline({ entries, nameOrder, locale }: JournalT
                   {/* Timeline spine */}
                   <div className="flex flex-col items-center flex-shrink-0 w-6 mr-4">
                     <div
-                      className="w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface mt-1.5 z-10 flex-shrink-0"
+                      className="w-2.5 h-2.5 rounded-full bg-accent ring-2 ring-surface mt-1.5 z-10 flex-shrink-0"
                       aria-hidden="true"
                     />
                     {!isLast && (
