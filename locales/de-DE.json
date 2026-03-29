@@ -1666,7 +1666,8 @@
       "updateLastContactTooltip": "Setzt das Datum des 'letzten Kontakts' jeder markierten Person auf das Datum dieses Eintrags, damit du nachverfolgen kannst, wann du zuletzt mit ihnen interagiert hast.",
       "save": "Eintrag speichern",
       "cancel": "Abbrechen",
-      "markdownSupport": "Unterstützt Markdown-Formatierung"
+      "markdownSupport": "Unterstützt Markdown-Formatierung",
+      "saved": "Eintrag gespeichert"
     },
     "detail": {
       "editButton": "Bearbeiten",

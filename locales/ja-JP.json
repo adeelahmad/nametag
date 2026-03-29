@@ -1666,7 +1666,8 @@
       "updateLastContactTooltip": "タグ付けした各人物の「最終連絡」日をこのエントリーの日付に設定し、最後にいつ交流したかを追跡できるようにします。",
       "save": "エントリーを保存",
       "cancel": "キャンセル",
-      "markdownSupport": "Markdown形式をサポート"
+      "markdownSupport": "Markdown形式をサポート",
+      "saved": "エントリーを保存しました"
     },
     "detail": {
       "editButton": "編集",

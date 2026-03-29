@@ -124,6 +124,7 @@ export default function JournalEntryForm({
       }
 
       const newId = data.entry?.id ?? entryId;
+      toast.success(t('saved'));
       router.push(`/journal/${newId}`);
       router.refresh();
     } catch {

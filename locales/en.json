@@ -1662,7 +1662,8 @@
       "updateLastContactTooltip": "Sets the 'last contacted' date for each tagged person to this entry's date, so you can track when you last interacted with them.",
       "save": "Save entry",
       "cancel": "Cancel",
-      "markdownSupport": "Supports Markdown formatting"
+      "markdownSupport": "Supports Markdown formatting",
+      "saved": "Entry saved"
     },
     "detail": {
       "editButton": "Edit",

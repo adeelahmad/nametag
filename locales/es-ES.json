@@ -1666,7 +1666,8 @@
       "updateLastContactTooltip": "Establece la fecha de 'último contacto' de cada persona etiquetada a la fecha de esta entrada, para que puedas hacer un seguimiento de cuándo interactuaste por última vez con ellas.",
       "save": "Guardar entrada",
       "cancel": "Cancelar",
-      "markdownSupport": "Admite formato Markdown"
+      "markdownSupport": "Admite formato Markdown",
+      "saved": "Entrada guardada"
     },
     "detail": {
       "editButton": "Editar",

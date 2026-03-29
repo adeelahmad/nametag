@@ -1666,7 +1666,8 @@
       "updateLastContactTooltip": "将每位已标记人物的「最近联系」日期设置为本条目的日期，以便追踪上次互动的时间。",
       "save": "保存条目",
       "cancel": "取消",
-      "markdownSupport": "支持 Markdown 格式"
+      "markdownSupport": "支持 Markdown 格式",
+      "saved": "条目已保存"
     },
     "detail": {
       "editButton": "编辑",

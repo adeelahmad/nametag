@@ -1666,7 +1666,8 @@
       "updateLastContactTooltip": "Setter datoen for «sist kontaktet» for hver merket person til datoen for denne oppføringen, slik at du kan holde styr på når du sist hadde kontakt med dem.",
       "save": "Lagre oppføring",
       "cancel": "Avbryt",
-      "markdownSupport": "Støtter Markdown-formatering"
+      "markdownSupport": "Støtter Markdown-formatering",
+      "saved": "Oppføring lagret"
     },
     "detail": {
       "editButton": "Rediger",
