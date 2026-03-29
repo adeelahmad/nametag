@@ -7,6 +7,7 @@ import Navigation from '@/components/Navigation';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { formatFullName } from '@/lib/nameUtils';
 import { Button } from '@/components/ui/Button';
+import DeleteJournalEntryButton from '@/components/DeleteJournalEntryButton';
 
 export default async function JournalEntryDetailPage({
   params,
@@ -92,9 +93,12 @@ export default async function JournalEntryDetailPage({
                 </h1>
                 <p className="text-sm text-muted">{formattedDate}</p>
               </div>
-              <Button href={`/journal/${entry.id}/edit`} size="sm" variant="secondary">
-                {t('detail.editButton')}
-              </Button>
+              <div className="flex gap-2">
+                <Button href={`/journal/${entry.id}/edit`} size="sm" variant="secondary">
+                  {t('detail.editButton')}
+                </Button>
+                <DeleteJournalEntryButton entryId={entry.id} />
+              </div>
             </div>
 
             {entry.people.length > 0 && (
