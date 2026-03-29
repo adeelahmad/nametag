@@ -213,21 +213,22 @@ export default function JournalEntryForm({
       {/* Update last contact checkbox — only visible when people are tagged */}
       {selectedPeople.length > 0 && (
         <div className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            id="update-last-contact"
-            checked={updateLastContact}
-            onChange={(e) => setUpdateLastContact(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded border-border text-primary focus:ring-primary focus:ring-2 cursor-pointer"
-          />
-          <div className="flex items-center gap-1.5">
-            <label
-              htmlFor="update-last-contact"
-              className="text-sm text-foreground cursor-pointer select-none"
-            >
+          <label
+            htmlFor="update-last-contact"
+            className="flex items-center gap-2.5 py-2 cursor-pointer select-none -my-1"
+          >
+            <input
+              type="checkbox"
+              id="update-last-contact"
+              checked={updateLastContact}
+              onChange={(e) => setUpdateLastContact(e.target.checked)}
+              className="w-4 h-4 rounded border-border text-primary focus:ring-primary focus:ring-2 cursor-pointer"
+            />
+            <span className="text-sm text-foreground">
               {t('updateLastContact')}
-            </label>
-            {/* Tooltip */}
+            </span>
+          </label>
+          {/* Tooltip */}
             <div className="relative inline-flex items-center">
               <button
                 type="button"
@@ -264,7 +265,6 @@ export default function JournalEntryForm({
                 <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-2 h-2 bg-surface-elevated border-r border-b border-border rotate-45" />
               </div>
             </div>
-          </div>
         </div>
       )}
 
