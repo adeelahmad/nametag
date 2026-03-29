@@ -79,8 +79,8 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
     <nav className="bg-surface border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top row: Logo, Search (centered), User menu */}
-        <div className="flex items-center h-16 gap-4">
-          <Link href="/dashboard" className="flex items-center flex-shrink-0">
+        <div className="relative flex items-center justify-between h-16">
+          <Link href="/dashboard" className="flex items-center flex-shrink-0 z-10">
             <Image
               src="/logo.svg"
               alt="Nametag Logo"
@@ -90,13 +90,13 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
             />
           </Link>
 
-          {/* Desktop search — fills available space between logo and user menu */}
-          <div className="hidden md:block flex-1 max-w-xl">
+          {/* Desktop search — absolutely centered in the row */}
+          <div className="hidden md:block absolute left-1/2 -translate-x-1/2 w-full max-w-md lg:max-w-lg px-24">
             <NavigationSearch />
           </div>
 
           {/* Right section: User menu (all screens), Hamburger (mobile) */}
-          <div className="flex items-center space-x-2 ml-auto">
+          <div className="flex items-center space-x-2 z-10">
             {userEmail && (
               <UserMenu userEmail={userEmail} userName={userName} userNickname={userNickname} userPhoto={userPhoto} />
             )}
