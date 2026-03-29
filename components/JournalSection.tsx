@@ -110,15 +110,18 @@ export default function JournalSection({
           )}
         </Link>
       ) : (
-        <p className="text-sm text-muted">
-          {t('noEntries')}{' '}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted">{t('noEntries')}</span>
           <Link
             href={`/journal/new?person=${personId}`}
-            className="text-primary hover:underline"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full border border-border text-muted hover:text-primary hover:border-primary transition-colors"
           >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
             {t('writeOne')}
           </Link>
-        </p>
+        </div>
       )}
     </div>
   );
