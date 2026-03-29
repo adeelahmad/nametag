@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import PillSelector from '@/components/PillSelector';
@@ -29,16 +29,18 @@ export default function JournalFilters({ people, currentPersonIds, currentSearch
   const t = useTranslations('journal');
   const router = useRouter();
 
-  const pillPeople: PillPerson[] = people.map((p) => ({
-    id: p.id,
-    label: formatFullName(p, nameOrder),
-  }));
+  const pillPeople: PillPerson[] = useMemo(
+    () => people.map((p) => ({ id: p.id, label: formatFullName(p, nameOrder) })),
+    [people, nameOrder],
+  );
 
-  const initialSelected = currentPersonIds
-    .map((id) => pillPeople.find((p) => p.id === id))
-    .filter((p): p is PillPerson => p !== undefined);
-
-  const [selectedPeople, setSelectedPeople] = useState<PillPerson[]>(initialSelected);
+  const selectedPeople = useMemo(
+    () =>
+      currentPersonIds
+        .map((id) => pillPeople.find((p) => p.id === id))
+        .filter((p): p is PillPerson => p !== undefined),
+    [currentPersonIds, pillPeople],
+  );
 
   function navigate(personIds: string[], search?: string) {
     const url = new URL('/journal', window.location.origin);
@@ -48,15 +50,14 @@ export default function JournalFilters({ people, currentPersonIds, currentSearch
   }
 
   function handleAddPerson(person: PillPerson) {
-    const updated = [...selectedPeople, person];
-    setSelectedPeople(updated);
-    navigate(updated.map((p) => p.id), currentSearch);
+    navigate([...selectedPeople.map((p) => p.id), person.id], currentSearch);
   }
 
   function handleRemovePerson(personId: string) {
-    const updated = selectedPeople.filter((p) => p.id !== personId);
-    setSelectedPeople(updated);
-    navigate(updated.map((p) => p.id), currentSearch);
+    navigate(
+      selectedPeople.filter((p) => p.id !== personId).map((p) => p.id),
+      currentSearch,
+    );
   }
 
   return (
@@ -72,6 +73,7 @@ export default function JournalFilters({ people, currentPersonIds, currentSearch
         <input
           type="search"
           name="q"
+          key={currentSearch ?? ''}
           defaultValue={currentSearch ?? ''}
           placeholder={t('searchPlaceholder')}
           className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary text-sm"
