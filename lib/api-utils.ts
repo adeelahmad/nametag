@@ -1,0 +1,336 @@
+import { NextResponse } from 'next/server';
+import { Session } from 'next-auth';
+import { auth } from './auth';
+import { logger, createModuleLogger } from './logger';
+import { validateOrigin } from '@/lib/csrf';
+
+const httpLog = createModuleLogger('http');
+
+/**
+ * Maximum request body size in bytes (1MB default)
+ * This helps prevent denial of service attacks with large payloads
+ */
+export const MAX_REQUEST_SIZE = 1 * 1024 * 1024; // 1MB
+
+/**
+ * Check if a request body exceeds the size limit
+ * Returns the parsed JSON body if within limits, or throws an error if exceeded
+ *
+ * @example
+ * const body = await parseRequestBody(request);
+ * // throws if body > 1MB
+ *
+ * @example
+ * const body = await parseRequestBody(request, 512 * 1024); // 512KB limit
+ */
+export async function parseRequestBody<T = unknown>(
+  request: Request,
+  maxSize = MAX_REQUEST_SIZE
+): Promise<T> {
+  // Check Content-Length header first (fast path)
+  const contentLength = request.headers.get('content-length');
+  if (contentLength && parseInt(contentLength, 10) > maxSize) {
+    throw new RequestTooLargeError(maxSize);
+  }
+
+  // Clone the request to read the body
+  const clonedRequest = request.clone();
+  const text = await clonedRequest.text();
+
+  // Check actual body size
+  const bodySize = new TextEncoder().encode(text).length;
+  if (bodySize > maxSize) {
+    throw new RequestTooLargeError(maxSize);
+  }
+
+  // Parse JSON
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new InvalidJsonError();
+  }
+}
+
+/**
+ * Custom error for request too large
+ */
+export class RequestTooLargeError extends Error {
+  constructor(maxSize: number) {
+    super(`Request body exceeds maximum size of ${Math.round(maxSize / 1024)}KB`);
+    this.name = 'RequestTooLargeError';
+  }
+}
+
+/**
+ * Custom error for invalid JSON
+ */
+export class InvalidJsonError extends Error {
+  constructor() {
+    super('Invalid JSON in request body');
+    this.name = 'InvalidJsonError';
+  }
+}
+
+/**
+ * Standard API response helpers
+ * Provides consistent response formatting across all API endpoints
+ */
+export const apiResponse = {
+  /**
+   * Return successful response with data
+   * @example apiResponse.ok({ people }) // returns { people: [...] }
+   * @example apiResponse.ok({ user }, 201) // returns { user: {...} } with 201 status
+   */
+  ok: <T extends Record<string, unknown>>(data: T, status = 200) =>
+    NextResponse.json(data, { status }),
+
+  /**
+   * Return created response (201) with data
+   * @example apiResponse.created({ person }) // returns { person: {...} } with 201 status
+   */
+  created: <T extends Record<string, unknown>>(data: T) =>
+    NextResponse.json(data, { status: 201 }),
+
+  /**
+   * Return success message
+   * @example apiResponse.message('Password changed successfully')
+   */
+  message: (message: string, status = 200) =>
+    NextResponse.json({ message }, { status }),
+
+  /**
+   * Return success with boolean flag
+   * @example apiResponse.success() // returns { success: true }
+   */
+  success: () =>
+    NextResponse.json({ success: true }),
+
+  /**
+   * Return error response
+   * @example apiResponse.error('Invalid input') // returns { error: '...' } with 400 status
+   */
+  error: (message: string, status = 400) =>
+    NextResponse.json({ error: message }, { status }),
+
+  /**
+   * Return 401 Unauthorized
+   */
+  unauthorized: (message = 'Unauthorized') =>
+    NextResponse.json({ error: message }, { status: 401 }),
+
+  /**
+   * Return 403 Forbidden
+   */
+  forbidden: (message = 'Forbidden') =>
+    NextResponse.json({ error: message }, { status: 403 }),
+
+  /**
+   * Return 404 Not Found
+   */
+  notFound: (message = 'Not found') =>
+    NextResponse.json({ error: message }, { status: 404 }),
+
+  /**
+   * Return 413 Payload Too Large
+   */
+  payloadTooLarge: (message = 'Request body too large') =>
+    NextResponse.json({ error: message }, { status: 413 }),
+
+  /**
+   * Return 500 Internal Server Error
+   */
+  serverError: (message = 'Internal server error') =>
+    NextResponse.json({ error: message }, { status: 500 }),
+};
+
+/**
+ * Handle API errors consistently
+ * Logs the error and returns an appropriate response
+ */
+export function handleApiError(
+  error: unknown,
+  context: string,
+  additionalInfo?: Record<string, unknown>
+): NextResponse {
+  // Handle specific error types with appropriate status codes
+  if (error instanceof RequestTooLargeError) {
+    logger.warn({ context, ...additionalInfo }, `Request too large in ${context}`);
+    return apiResponse.payloadTooLarge(error.message);
+  }
+
+  if (error instanceof InvalidJsonError) {
+    logger.warn({ context, ...additionalInfo }, `Invalid JSON in ${context}`);
+    return apiResponse.error(error.message);
+  }
+
+  const errorObj = error instanceof Error ? error : new Error(String(error));
+
+  // Detect database connection errors - return friendly message in all environments
+  const isDbConnectionError =
+    (typeof error === 'object' && error !== null && 'code' in error &&
+      ((error as Record<string, unknown>).code === 'ECONNREFUSED' ||
+        (error as Record<string, unknown>).code === 'ETIMEDOUT' ||
+        (error as Record<string, unknown>).code === 'ENOTFOUND')) ||
+    errorObj.message.includes('ECONNREFUSED') ||
+    errorObj.message.includes('Can\'t reach database server');
+
+  if (isDbConnectionError) {
+    logger.error({ err: errorObj, context, ...additionalInfo }, `Database connection error in ${context}`);
+    return NextResponse.json(
+      { error: 'Service temporarily unavailable. Please try again later.' },
+      { status: 503 }
+    );
+  }
+
+  logger.error({ err: errorObj, context, ...additionalInfo }, `API Error in ${context}`);
+
+  // Don't expose internal error details in production
+  const message = process.env.NODE_ENV === 'production'
+    ? 'Something went wrong'
+    : errorObj.message;
+
+  return apiResponse.serverError(message);
+}
+
+/**
+ * Get client IP from request for logging purposes
+ */
+export function getClientIp(request: Request): string {
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0].trim();
+  }
+
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) {
+    return realIp;
+  }
+
+  return 'unknown';
+}
+
+/**
+ * Normalize email address to lowercase for consistent storage and lookup
+ * Prevents case-sensitivity issues where Bob@test.com and bob@test.com
+ * would be treated as different users
+ *
+ * @example
+ * normalizeEmail('Bob@Test.COM') // returns 'bob@test.com'
+ * normalizeEmail('user@DOMAIN.com') // returns 'user@domain.com'
+ */
+export function normalizeEmail(email: string): string {
+  return email.toLowerCase().trim();
+}
+
+/**
+ * Session with guaranteed user (for authenticated handlers)
+ */
+export interface AuthenticatedSession extends Session {
+  user: Session['user'] & { id: string };
+}
+
+/**
+ * Route context for dynamic routes with params
+ */
+export interface RouteContext {
+  params: Promise<Record<string, string>>;
+}
+
+/**
+ * Handler function type for authenticated API routes.
+ * Context is always typed as required so that dynamic route handlers
+ * get proper type inference without non-null assertions.
+ * Handlers that don't need params can simply omit the third parameter.
+ */
+export type AuthenticatedHandler = (
+  request: Request,
+  session: AuthenticatedSession,
+  context: RouteContext,
+) => Promise<Response | NextResponse>;
+
+/**
+ * Higher-order function that wraps API handlers with request-level HTTP logging.
+ * Logs method, path, status, duration, and client IP for every request.
+ * On success, logs at info level; on unhandled throw, logs at error level and re-throws.
+ *
+ * The generic signature preserves the handler's parameter types so that
+ * Next.js route-type validation (`.next/types/validator.ts`) sees the
+ * original handler shape, not a narrowed `(Request, RouteContext?)` type.
+ *
+ * @example
+ * export const GET = withLogging(async (request) => {
+ *   return NextResponse.json({ ok: true });
+ * });
+ */
+export function withLogging<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Args extends [Request, ...any[]],
+  R extends Response | NextResponse,
+>(
+  handler: (...args: Args) => Promise<R>
+): (...args: Args) => Promise<R> {
+  return async (...args: Args): Promise<R> => {
+    const request = args[0];
+    const start = Date.now();
+    const method = request.method;
+    const path = new URL(request.url).pathname;
+    const ip = getClientIp(request);
+
+    try {
+      const response = await handler(...args);
+      const durationMs = Date.now() - start;
+
+      httpLog.info(
+        { method, path, status: response.status, durationMs, ip },
+        `${method} ${path} ${response.status}`
+      );
+
+      return response;
+    } catch (error) {
+      const durationMs = Date.now() - start;
+
+      httpLog.error(
+        { method, path, status: 500, durationMs, ip, err: error instanceof Error ? error : new Error(String(error)) },
+        `${method} ${path} 500`
+      );
+
+      throw error;
+    }
+  };
+}
+
+/**
+ * Higher-order function that wraps API handlers with authentication.
+ * Automatically checks for valid session and returns 401 if not authenticated.
+ *
+ * @example
+ * // Without route params
+ * export const GET = withAuth(async (request, session) => {
+ *   const userId = session.user.id;
+ *   return NextResponse.json({ data });
+ * });
+ *
+ * // With route params (context is required, no need for non-null assertion)
+ * export const GET = withAuth(async (request, session, context) => {
+ *   const { id } = await context.params;
+ *   return NextResponse.json({ data });
+ * });
+ */
+export function withAuth(handler: AuthenticatedHandler) {
+  return withLogging(async (
+    request: Request,
+    context?: RouteContext
+  ): Promise<Response | NextResponse> => {
+    if (!validateOrigin(request)) {
+      return apiResponse.forbidden('Invalid request origin');
+    }
+
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return apiResponse.unauthorized();
+    }
+
+    return handler(request, session as AuthenticatedSession, context as RouteContext);
+  });
+}
