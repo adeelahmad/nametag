@@ -432,7 +432,6 @@ All PRs automatically run these checks via GitHub Actions. See [docs/PR_WORKFLOW
 Future features and improvements, ordered by priority:
 
 - [ ] **[HELP NEEDED]** Mobile app (Native apps for Android and iOS are preferred)
-- [ ] Add journaling capabilities [[Issue #28](https://github.com/mattogodoy/nametag/issues/28)]
 - [ ] Add support for SQLite databases
 - [ ] Implement OIDC [[Issue #10](https://github.com/mattogodoy/nametag/issues/10)]
 - [ ] Add notification support [[Issue #6](https://github.com/mattogodoy/nametag/issues/6)]
@@ -455,6 +454,7 @@ Features and improvements that have already been implemented:
 - [x] ~~API for third-party integrations~~ [[Issue #29](https://github.com/mattogodoy/nametag/issues/29), [PR #70](https://github.com/mattogodoy/nametag/pull/70)]
 - [x] ~~Add photos to people~~ [[Issue #19](https://github.com/mattogodoy/nametag/issues/19), [PR #135](https://github.com/mattogodoy/nametag/pull/135)]
 - [x] ~~Add custom template titles for important dates~~ [[Issue #23](https://github.com/mattogodoy/nametag/issues/23), [PR #176](https://github.com/mattogodoy/nametag/pull/176)]
+- [x] ~~Add journaling capabilities~~ [[Issue #28](https://github.com/mattogodoy/nametag/issues/28), [PR #192](https://github.com/mattogodoy/nametag/pull/192)]
 
 ## License
 
