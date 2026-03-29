@@ -78,27 +78,25 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
   return (
     <nav className="bg-surface border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top row: Logo, Search, User menu */}
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-4 md:space-x-8">
-            <Link href="/dashboard" className="flex items-center flex-shrink-0">
-              <Image
-                src="/logo.svg"
-                alt="Nametag Logo"
-                width={64}
-                height={64}
-                className="text-foreground"
-              />
-            </Link>
+        {/* Top row: Logo, Search (centered), User menu */}
+        <div className="flex items-center h-16 gap-4">
+          <Link href="/dashboard" className="flex items-center flex-shrink-0">
+            <Image
+              src="/logo.svg"
+              alt="Nametag Logo"
+              width={64}
+              height={64}
+              className="text-foreground"
+            />
+          </Link>
 
-            {/* Desktop search */}
-            <div className="hidden md:block">
-              <NavigationSearch />
-            </div>
+          {/* Desktop search — centered, fills available space */}
+          <div className="hidden md:block flex-1 max-w-xl mx-auto">
+            <NavigationSearch />
           </div>
 
           {/* Right section: User menu (all screens), Hamburger (mobile) */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 ml-auto">
             {userEmail && (
               <UserMenu userEmail={userEmail} userName={userName} userNickname={userNickname} userPhoto={userPhoto} />
             )}
