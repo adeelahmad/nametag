@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.42.0](https://github.com/mattogodoy/nametag/compare/v0.41.0...v0.42.0) (2026-03-31)
+
+
+### Features
+
+* redesign release notes to be warmer and less technical ([869b9e6](https://github.com/mattogodoy/nametag/commit/869b9e62b815dcd93cdd885f1803ff0d7c523fcd))
+
+
+### Bug Fixes
+
+* prevent UniqueConstraintViolation on personId during CardDAV import ([e7c809f](https://github.com/mattogodoy/nametag/commit/e7c809f80c67d76cec5bb02e1bf2d3db5eb62766))
+* prevent UniqueConstraintViolation on personId during CardDAV import ([f1841de](https://github.com/mattogodoy/nametag/commit/f1841de340acaa6825d2d24ea1acd44a27c1d307)), closes [#197](https://github.com/mattogodoy/nametag/issues/197)
+* suppress already-mapped contacts from CardDAV import UI ([e2a87c5](https://github.com/mattogodoy/nametag/commit/e2a87c51e865c3bffd1ae089c0bdbab308e5bbd2))
+* suppress already-mapped contacts from CardDAV import UI ([ef05544](https://github.com/mattogodoy/nametag/commit/ef05544612279124c5ce1998f672de2d58e465d7))
+
 ## [0.41.0](https://github.com/mattogodoy/nametag/compare/v0.40.0...v0.41.0) (2026-03-29)
 
 
