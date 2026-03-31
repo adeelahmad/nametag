@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getAlreadyMappedPersonUids } from '@/lib/carddav/mapped-uids';
 import { createModuleLogger } from '@/lib/logger';
 import { withLogging } from '@/lib/api-utils';
 
@@ -23,34 +24,17 @@ export const GET = withLogging(async function GET(_request: Request) {
       return NextResponse.json({ count: 0 });
     }
 
-    // Get UIDs of persons already mapped (under any UID) to exclude stale
-    // pending imports that would just be skipped during import.
-    const alreadyMappedPersonUids = new Set(
-      (await prisma.person.findMany({
-        where: {
-          userId: session.user.id,
-          deletedAt: null,
-          uid: { not: null },
-          cardDavMapping: { isNot: null },
-        },
-        select: { uid: true },
-      })).map((p) => p.uid!)
-    );
+    // Exclude pending imports whose person is already mapped (under any UID)
+    const alreadyMappedPersonUids = await getAlreadyMappedPersonUids(session.user.id);
 
-    // Count pending imports, excluding already-mapped contacts
-    if (alreadyMappedPersonUids.size === 0) {
-      const count = await prisma.cardDavPendingImport.count({
-        where: { connectionId: connection.id },
-      });
-      return NextResponse.json({ count });
-    }
-
-    // When there are mapped UIDs to exclude, fetch and filter
-    const allPending = await prisma.cardDavPendingImport.findMany({
-      where: { connectionId: connection.id },
-      select: { uid: true },
+    const count = await prisma.cardDavPendingImport.count({
+      where: {
+        connectionId: connection.id,
+        ...(alreadyMappedPersonUids.size > 0
+          ? { uid: { notIn: [...alreadyMappedPersonUids] } }
+          : {}),
+      },
     });
-    const count = allPending.filter((p) => !alreadyMappedPersonUids.has(p.uid)).length;
 
     return NextResponse.json({ count });
   } catch (error) {

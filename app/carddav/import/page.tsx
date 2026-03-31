@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getTranslations } from 'next-intl/server';
+import { getAlreadyMappedPersonUids } from '@/lib/carddav/mapped-uids';
 import ImportContactsList from '@/components/ImportContactsList';
 import Navigation from '@/components/Navigation';
 
@@ -64,17 +65,7 @@ export default async function ImportPage({
   // be created but old ones may still exist until cleaned up.
   let pendingImports = allPendingImports;
   if (!isFileImport && allPendingImports.length > 0) {
-    const alreadyMappedPersonUids = new Set(
-      (await prisma.person.findMany({
-        where: {
-          userId: session.user.id,
-          deletedAt: null,
-          uid: { not: null },
-          cardDavMapping: { isNot: null },
-        },
-        select: { uid: true },
-      })).map((p) => p.uid!)
-    );
+    const alreadyMappedPersonUids = await getAlreadyMappedPersonUids(session.user.id);
     pendingImports = allPendingImports.filter(
       (p) => !alreadyMappedPersonUids.has(p.uid)
     );
