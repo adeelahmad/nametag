@@ -61,11 +61,12 @@ export const GET = withAuth(async (request, session) => {
     const includeGroupIds = parseGroupIds(searchParams.get('includeGroupIds'));
     const excludeGroupIds = parseGroupIds(searchParams.get('excludeGroupIds'));
     const limit = searchParams.get('limit');
-    const groupPredicates: Array<Record<string, unknown>> = [];
+    const includePredicates: Array<Record<string, unknown>> = [];
+    const excludePredicates: Array<Record<string, unknown>> = [];
 
-    // Build atomic predicates and combine them with the selected operator.
+    // Build atomic predicates for included and excluded groups
     includeGroupIds.forEach((groupId) => {
-      groupPredicates.push({
+      includePredicates.push({
         groups: {
           some: {
             groupId,
@@ -78,7 +79,7 @@ export const GET = withAuth(async (request, session) => {
     });
 
     excludeGroupIds.forEach((groupId) => {
-      groupPredicates.push({
+      excludePredicates.push({
         NOT: {
           groups: {
             some: {
@@ -94,12 +95,23 @@ export const GET = withAuth(async (request, session) => {
 
     // Build where clause
     const groupOperator = searchParams.get('groupMatchOperator') === 'and' ? 'AND' : 'OR';
+    const includeGroupClause =
+      includePredicates.length > 0 ? { [groupOperator]: includePredicates } : null;
     const whereClause = {
       userId: session.user.id,
       deletedAt: null,
-      ...(groupPredicates.length > 0 && {
-        [groupOperator]: groupPredicates,
-      }),
+      ...(includeGroupClause && excludePredicates.length === 0
+        ? includeGroupClause
+        : {}),
+      ...(includeGroupClause && excludePredicates.length > 0
+        ? {
+            AND: [includeGroupClause, ...excludePredicates],
+          }
+        : excludePredicates.length > 0
+          ? {
+              AND: excludePredicates,
+            }
+          : {}),
     };
 
     // Fetch people with optimized select to minimize payload
