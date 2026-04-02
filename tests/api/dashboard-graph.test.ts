@@ -305,9 +305,9 @@ describe('Dashboard Graph API Route', () => {
   });
 
 
-  it('should build AND filter for: g3 and NOT g1 and NOT g2', async () => {
+  it('should build AND include filter with AND exclusions', async () => {
     const request = new NextRequest(
-      'http://localhost:3000/api/dashboard/graph?groupMatchOperator=and&includeGroupIds=g3&excludeGroupIds=g1,g2',
+      'http://localhost:3000/api/dashboard/graph?groupMatchOperator=and&includeGroupIds=g1,g2&excludeGroupIds=g3,g4',
     );
 
     personFindMany.mockResolvedValue([]);
@@ -318,25 +318,40 @@ describe('Dashboard Graph API Route', () => {
     expect(personFindMany).toHaveBeenCalledTimes(1);
 
     const queryArg = personFindMany.mock.calls[0][0];
+    // Result should be: (g1 AND g2) AND (NOT g3) AND (NOT g4)
     expect(queryArg.where).toEqual({
       userId: 'user123',
       deletedAt: null,
       AND: [
         {
-          groups: {
-            some: {
-              groupId: 'g3',
-              group: {
-                deletedAt: null,
+          AND: [
+            {
+              groups: {
+                some: {
+                  groupId: 'g1',
+                  group: {
+                    deletedAt: null,
+                  },
+                },
               },
             },
-          },
+            {
+              groups: {
+                some: {
+                  groupId: 'g2',
+                  group: {
+                    deletedAt: null,
+                  },
+                },
+              },
+            },
+          ],
         },
         {
           NOT: {
             groups: {
               some: {
-                groupId: 'g1',
+                groupId: 'g3',
                 group: {
                   deletedAt: null,
                 },
@@ -348,7 +363,7 @@ describe('Dashboard Graph API Route', () => {
           NOT: {
             groups: {
               some: {
-                groupId: 'g2',
+                groupId: 'g4',
                 group: {
                   deletedAt: null,
                 },
@@ -360,9 +375,9 @@ describe('Dashboard Graph API Route', () => {
     });
   });
 
-  it('should build OR filter for: g3 or NOT g1 or NOT g2', async () => {
+  it('should build OR include filter with AND exclusions', async () => {
     const request = new NextRequest(
-      'http://localhost:3000/api/dashboard/graph?groupMatchOperator=or&includeGroupIds=g3&excludeGroupIds=g1,g2',
+      'http://localhost:3000/api/dashboard/graph?groupMatchOperator=or&includeGroupIds=g1,g2&excludeGroupIds=g3,g4',
     );
 
     personFindMany.mockResolvedValue([]);
@@ -373,25 +388,40 @@ describe('Dashboard Graph API Route', () => {
     expect(personFindMany).toHaveBeenCalledTimes(1);
 
     const queryArg = personFindMany.mock.calls[0][0];
+    // Result should be: (g1 OR g2) AND (NOT g3) AND (NOT g4)
     expect(queryArg.where).toEqual({
       userId: 'user123',
       deletedAt: null,
-      OR: [
+      AND: [
         {
-          groups: {
-            some: {
-              groupId: 'g3',
-              group: {
-                deletedAt: null,
+          OR: [
+            {
+              groups: {
+                some: {
+                  groupId: 'g1',
+                  group: {
+                    deletedAt: null,
+                  },
+                },
               },
             },
-          },
+            {
+              groups: {
+                some: {
+                  groupId: 'g2',
+                  group: {
+                    deletedAt: null,
+                  },
+                },
+              },
+            },
+          ],
         },
         {
           NOT: {
             groups: {
               some: {
-                groupId: 'g1',
+                groupId: 'g3',
                 group: {
                   deletedAt: null,
                 },
@@ -403,7 +433,7 @@ describe('Dashboard Graph API Route', () => {
           NOT: {
             groups: {
               some: {
-                groupId: 'g2',
+                groupId: 'g4',
                 group: {
                   deletedAt: null,
                 },
