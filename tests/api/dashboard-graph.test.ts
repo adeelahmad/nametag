@@ -303,4 +303,115 @@ describe('Dashboard Graph API Route', () => {
       targetLabel: 'Bob',
     });
   });
+
+
+  it('should build AND filter for: g3 and NOT g1 and NOT g2', async () => {
+    const request = new NextRequest(
+      'http://localhost:3000/api/dashboard/graph?groupMatchOperator=and&includeGroupIds=g3&excludeGroupIds=g1,g2',
+    );
+
+    personFindMany.mockResolvedValue([]);
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(200);
+    expect(personFindMany).toHaveBeenCalledTimes(1);
+
+    const queryArg = personFindMany.mock.calls[0][0];
+    expect(queryArg.where).toEqual({
+      userId: 'user123',
+      deletedAt: null,
+      AND: [
+        {
+          groups: {
+            some: {
+              groupId: 'g3',
+              group: {
+                deletedAt: null,
+              },
+            },
+          },
+        },
+        {
+          NOT: {
+            groups: {
+              some: {
+                groupId: 'g1',
+                group: {
+                  deletedAt: null,
+                },
+              },
+            },
+          },
+        },
+        {
+          NOT: {
+            groups: {
+              some: {
+                groupId: 'g2',
+                group: {
+                  deletedAt: null,
+                },
+              },
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  it('should build OR filter for: g3 or NOT g1 or NOT g2', async () => {
+    const request = new NextRequest(
+      'http://localhost:3000/api/dashboard/graph?groupMatchOperator=or&includeGroupIds=g3&excludeGroupIds=g1,g2',
+    );
+
+    personFindMany.mockResolvedValue([]);
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(200);
+    expect(personFindMany).toHaveBeenCalledTimes(1);
+
+    const queryArg = personFindMany.mock.calls[0][0];
+    expect(queryArg.where).toEqual({
+      userId: 'user123',
+      deletedAt: null,
+      OR: [
+        {
+          groups: {
+            some: {
+              groupId: 'g3',
+              group: {
+                deletedAt: null,
+              },
+            },
+          },
+        },
+        {
+          NOT: {
+            groups: {
+              some: {
+                groupId: 'g1',
+                group: {
+                  deletedAt: null,
+                },
+              },
+            },
+          },
+        },
+        {
+          NOT: {
+            groups: {
+              some: {
+                groupId: 'g2',
+                group: {
+                  deletedAt: null,
+                },
+              },
+            },
+          },
+        },
+      ],
+    });
+  });
 });
