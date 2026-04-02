@@ -620,7 +620,28 @@
       "filterPlaceholder": "输入以按分组筛选...",
       "noGroupsFound": "未找到匹配的分组",
       "clusterByGroup": "按分组群集",
-      "recenterGraph": "重新居中图形"
+      "recenterGraph": "重新居中图形",
+      "matchMode": {
+        "any": "任意",
+        "all": "全部",
+        "anyTitle": "匹配任意分组",
+        "allTitle": "匹配全部分组",
+        "ariaLabel": "{title}。点击切换。"
+      },
+      "filterState": {
+        "included": "已包含。点击以排除。",
+        "excluded": "已排除。点击以包含。"
+      },
+      "filterAction": {
+        "include": "包含",
+        "exclude": "排除",
+        "remove": "移除"
+      },
+      "filterHelp": {
+        "ariaLabel": "图筛选帮助",
+        "pillTip": "点击分组名称即可将其包含或排除。",
+        "modeTip": "模式：匹配一个或所有已包含的分组。"
+      }
     }
   },
   "people": {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { select } from 'd3-selection';
 import {
   forceSimulation, forceLink, forceManyBody, forceCenter,
@@ -37,6 +37,15 @@ interface Group {
   name: string;
   color: string | null;
 }
+
+type IncludeMode = 'or' | 'and';
+
+type GroupFilterItem = {
+  id: string;
+  label: string;
+  color: string | null;
+  isNegative: boolean;
+};
 
 interface UnifiedNetworkGraphProps {
   // Data source: either fetch from API or use provided data
@@ -82,10 +91,21 @@ export default function UnifiedNetworkGraph({
   const previousNodeIdsRef = useRef<Set<string> | null>(null);
   const zoomTransformRef = useRef<ZoomTransform | null>(null);
   const zoomBehaviorRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
-  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
+  const [selectedGroupFilters, setSelectedGroupFilters] = useState<
+    GroupFilterItem[]
+  >([]);
+  const [includeMode, setIncludeMode] = useState<IncludeMode>('or');
   const [isMobile, setIsMobile] = useState(false);
   const [clusteringEnabled, setClusteringEnabled] = useState(enableGroupClustering);
   const capitalizeType = useLocale().startsWith('de');
+  const includeGroupIds = useMemo(
+    () => selectedGroupFilters.filter((f) => !f.isNegative).map((f) => f.id),
+    [selectedGroupFilters],
+  );
+  const excludeGroupIds = useMemo(
+    () => selectedGroupFilters.filter((f) => f.isNegative).map((f) => f.id),
+    [selectedGroupFilters],
+  );
 
   // Detect mobile screen size
   useEffect(() => {
@@ -114,6 +134,16 @@ export default function UnifiedNetworkGraph({
     // Clear the stored transform
     zoomTransformRef.current = null;
   }, []);
+
+  const toggleFilterSign = (id: string) => {
+    setSelectedGroupFilters((prev) =>
+      prev.map((filter) =>
+        filter.id === id
+          ? { ...filter, isNegative: !filter.isNegative }
+          : filter,
+      ),
+    );
+  };
 
   const renderGraph = useCallback((data: { nodes: GraphNode[]; edges: GraphEdge[] }) => {
     if (!svgRef.current) return;
@@ -520,11 +550,13 @@ export default function UnifiedNetworkGraph({
     const fetchData = async () => {
       // Build URL with query parameters
       const url = new URL(apiEndpoint, window.location.origin);
-      // Add all selected group IDs as query parameters
-      if (selectedGroupIds.length > 0) {
-        selectedGroupIds.forEach((groupId) => {
-          url.searchParams.append('groupIds', groupId);
-        });
+      url.searchParams.set('groupMatchOperator', includeMode);
+
+      if (includeGroupIds.length > 0) {
+        url.searchParams.set('includeGroupIds', includeGroupIds.join(','));
+      }
+      if (excludeGroupIds.length > 0) {
+        url.searchParams.set('excludeGroupIds', excludeGroupIds.join(','));
       }
 
       const response = await fetch(url.toString());
@@ -533,66 +565,138 @@ export default function UnifiedNetworkGraph({
     };
 
     fetchData();
-  }, [apiEndpoint, refreshKey, selectedGroupIds, isMobile, clusteringEnabled, renderGraph]);
+  }, [
+    apiEndpoint,
+    refreshKey,
+    includeMode,
+    includeGroupIds,
+    excludeGroupIds,
+    isMobile,
+    clusteringEnabled,
+    renderGraph,
+  ]);
 
   return (
     <div className="w-full h-full">
       {groups && (
-        <div className="mb-4">
-          <PillSelector
-            selectedItems={groups
-              .filter((g) => selectedGroupIds.includes(g.id))
-              .map((g) => ({
-                id: g.id,
-                label: g.name,
-                color: g.color,
-              }))}
-            availableItems={groups.map((g) => ({
-              id: g.id,
-              label: g.name,
-              color: g.color,
-            }))}
-            onAdd={(item) => setSelectedGroupIds([...selectedGroupIds, item.id])}
-            onRemove={(itemId) =>
-              setSelectedGroupIds(selectedGroupIds.filter((id) => id !== itemId))
-            }
-            onClearAll={() => setSelectedGroupIds([])}
-            placeholder={t('filterPlaceholder')}
-            emptyMessage={t('noGroupsFound')}
-            showAllOnFocus={true}
-            renderPill={(item, onRemove) => (
-              <div
-                key={item.id}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/20 border border-primary/40 rounded-full text-sm font-medium shadow-sm"
-              >
-                <div
-                  className="w-3 h-3 rounded-full flex-shrink-0 ring-1 ring-white/50"
-                  style={{ backgroundColor: item.color || '#7bf080' }}
-                />
-                <span className="text-foreground">{item.label}</span>
-                <button
-                  type="button"
-                  onClick={onRemove}
-                  className="hover:bg-primary/30 rounded-full p-0.5 transition-colors text-primary"
-                  aria-label={`Remove ${item.label}`}
+        <div className="mb-4 space-y-2">
+          <div className="flex items-stretch gap-3">
+            <div className="shrink-0">
+              <label className="flex h-full items-center text-sm placeholder-muted">
+                <span
+                  className="inline-flex h-full items-stretch rounded-md border border-border bg-surface-elevated p-0.5 focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setIncludeMode((prev) => (prev === 'or' ? 'and' : 'or'))
+                    }
+                    className="inline-flex h-full px-3 items-center justify-center whitespace-nowrap text-base font-normal rounded border border-transparent text-foreground transition-all hover:bg-surface focus:outline-none"
+                    aria-label={t('matchMode.ariaLabel', {
+                      title:
+                        includeMode === 'or'
+                          ? t('matchMode.anyTitle')
+                          : t('matchMode.allTitle'),
+                    })}
+                    title={
+                      includeMode === 'or'
+                        ? t('matchMode.anyTitle')
+                        : t('matchMode.allTitle')
+                    }
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
+                    {includeMode === 'or'
+                      ? t('matchMode.any')
+                      : t('matchMode.all')}
+                  </button>
+                </span>
+              </label>
+            </div>
+
+            <div className="flex-1">
+              <PillSelector<GroupFilterItem>
+                selectedItems={selectedGroupFilters}
+                availableItems={groups.map((g) => ({
+                  id: g.id,
+                  label: g.name,
+                  color: g.color,
+                  isNegative: false,
+                }))}
+                onAdd={(item) => {
+                  setSelectedGroupFilters((prev) =>
+                    prev.some((f) => f.id === item.id)
+                      ? prev
+                      : [...prev, { ...item, isNegative: false }],
+                  );
+                }}
+                onRemove={(itemId) =>
+                  setSelectedGroupFilters((prev) =>
+                    prev.filter((f) => f.id !== itemId),
+                  )
+                }
+                onClearAll={() => setSelectedGroupFilters([])}
+                placeholder={t('filterPlaceholder')}
+                emptyMessage={t('noGroupsFound')}
+                showAllOnFocus={true}
+                renderPill={(item, onRemove) => (
+                  <div
+                    key={item.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => toggleFilterSign(item.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleFilterSign(item.id);
+                      }
+                    }}
+                    title={
+                      item.isNegative
+                        ? t('filterState.excluded')
+                        : t('filterState.included')
+                    }
+                    aria-label={`${item.label}: ${item.isNegative ? t('filterAction.exclude') : t('filterAction.include')}`}
+                    className={`inline-flex h-8 items-center gap-1.5 px-3 border rounded-full text-sm font-medium shadow-sm cursor-pointer select-none transition-colors ${
+                      item.isNegative
+                        ? 'bg-red-100 border-red-300 hover:bg-red-200 dark:bg-red-900/30 dark:border-red-700/50 dark:hover:bg-red-900/45'
+                        : 'bg-green-100 border-green-300 hover:bg-green-200 dark:bg-green-900/30 dark:border-green-700/50 dark:hover:bg-green-900/45'
+                    }`}
+                  >
+                    <div
+                      className="w-3 h-3 rounded-full shrink-0 ring-1 ring-white/50"
+                      style={{ backgroundColor: item.color || '#7bf080' }}
                     />
-                  </svg>
-                </button>
-              </div>
-            )}
-          />
+                    <span className="text-foreground">{item.label}</span>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove();
+                      }}
+                      onKeyDown={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className="hover:bg-foreground/10 rounded-full p-0.5 transition-colors"
+                      aria-label={`${t('filterAction.remove')} ${item.label}`}
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              />
+            </div>
+          </div>
         </div>
       )}
       <div className="relative">

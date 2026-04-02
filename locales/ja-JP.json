@@ -620,7 +620,28 @@
       "filterPlaceholder": "グループでフィルタリングするには入力してください...",
       "noGroupsFound": "一致するグループは見つかりませんでした",
       "clusterByGroup": "グループごとにクラスタリング",
-      "recenterGraph": "グラフを再中心に配置"
+      "recenterGraph": "グラフを再中心に配置",
+      "matchMode": {
+        "any": "いずれか",
+        "all": "すべて",
+        "anyTitle": "いずれかのグループに一致",
+        "allTitle": "すべてのグループに一致",
+        "ariaLabel": "{title}。クリックして切り替え。"
+      },
+      "filterState": {
+        "included": "含める。クリックして除外。",
+        "excluded": "除外中。クリックして含める。"
+      },
+      "filterAction": {
+        "include": "含める",
+        "exclude": "除外する",
+        "remove": "削除"
+      },
+      "filterHelp": {
+        "ariaLabel": "グラフフィルターのヘルプ",
+        "pillTip": "グループ名をクリックして、含める/除外を切り替えます。",
+        "modeTip": "モード: 含めたグループの1つまたはすべてに一致。"
+      }
     }
   },
   "people": {

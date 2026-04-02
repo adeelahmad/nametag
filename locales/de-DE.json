@@ -620,7 +620,28 @@
       "filterPlaceholder": "Tippen, um nach Gruppen zu filtern...",
       "noGroupsFound": "Keine Gruppen gefunden passend zu",
       "clusterByGroup": "Nach Gruppe clustern",
-      "recenterGraph": "Graph neu zentrieren"
+      "recenterGraph": "Graph neu zentrieren",
+      "matchMode": {
+        "any": "Beliebig",
+        "all": "Alle",
+        "anyTitle": "Übereinstimmung mit beliebiger Gruppe",
+        "allTitle": "Übereinstimmung mit allen Gruppen",
+        "ariaLabel": "{title}. Klicken zum Wechseln."
+      },
+      "filterState": {
+        "included": "Eingeschlossen. Klicken zum Ausschließen.",
+        "excluded": "Ausgeschlossen. Klicken zum Einschließen."
+      },
+      "filterAction": {
+        "include": "einschließen",
+        "exclude": "ausschließen",
+        "remove": "Entfernen"
+      },
+      "filterHelp": {
+        "ariaLabel": "Hilfe zum Graph-Filter",
+        "pillTip": "Klicke auf einen Gruppennamen um ihn ein- oder auszuschließen.",
+        "modeTip": "Modus: eine oder alle eingeschlossenen Gruppen abgleichen."
+      }
     }
   },
   "people": {

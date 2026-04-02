@@ -620,7 +620,28 @@
       "filterPlaceholder": "Skriv for å filtrere etter grupper...",
       "noGroupsFound": "Fant ingen grupper som samsvarer",
       "clusterByGroup": "Klynge etter gruppe",
-      "recenterGraph": "Sentrer grafen på nytt"
+      "recenterGraph": "Sentrer grafen på nytt",
+      "matchMode": {
+        "any": "Noen",
+        "all": "Alle",
+        "anyTitle": "Treff på noen gruppe",
+        "allTitle": "Treff på alle grupper",
+        "ariaLabel": "{title}. Klikk for å bytte."
+      },
+      "filterState": {
+        "included": "Inkludert. Klikk for å ekskludere.",
+        "excluded": "Ekskludert. Klikk for å inkludere."
+      },
+      "filterAction": {
+        "include": "inkluder",
+        "exclude": "ekskluder",
+        "remove": "Fjern"
+      },
+      "filterHelp": {
+        "ariaLabel": "Hjelp for graffilter",
+        "pillTip": "Klikk på et gruppenavn for å inkludere eller ekskludere det.",
+        "modeTip": "Modus: match én eller alle inkluderte grupper."
+      }
     }
   },
   "people": {

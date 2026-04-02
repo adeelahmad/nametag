@@ -620,7 +620,28 @@
       "filterPlaceholder": "Type to filter by groups...",
       "noGroupsFound": "No groups found matching",
       "clusterByGroup": "Cluster by group",
-      "recenterGraph": "Re-center graph"
+      "recenterGraph": "Re-center graph",
+      "matchMode": {
+        "any": "Any",
+        "all": "All",
+        "anyTitle": "Matching any group",
+        "allTitle": "Matching all groups",
+        "ariaLabel": "{title}. Click to switch."
+      },
+      "filterState": {
+        "included": "Included. Click to exclude.",
+        "excluded": "Excluded. Click to include."
+      },
+      "filterAction": {
+        "include": "include",
+        "exclude": "exclude",
+        "remove": "Remove"
+      },
+      "filterHelp": {
+        "ariaLabel": "Graph filter help",
+        "pillTip": "Click a group name to include or exclude it.",
+        "modeTip": "Mode: match one or all selected groups."
+      }
     }
   },
   "people": {

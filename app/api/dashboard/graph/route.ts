@@ -47,25 +47,58 @@ export const GET = withAuth(async (request, session) => {
   try {
     // Parse query parameters for filtering
     const { searchParams } = new URL(request.url);
-    const groupIds = searchParams.getAll('groupIds'); // Get all groupIds parameters
-    const limit = searchParams.get('limit');
 
-    // Build where clause
-    const whereClause = {
-      userId: session.user.id,
-      deletedAt: null,
-      // Filter by groups if specified (show people who belong to ANY of the selected groups)
-      ...(groupIds.length > 0 && {
+    const parseGroupIds = (value: string | null) =>
+      Array.from(
+        new Set(
+          (value ?? '')
+            .split(',')
+            .map((groupId) => groupId.trim())
+            .filter(Boolean),
+        ),
+      );
+
+    const includeGroupIds = parseGroupIds(searchParams.get('includeGroupIds'));
+    const excludeGroupIds = parseGroupIds(searchParams.get('excludeGroupIds'));
+    const limit = searchParams.get('limit');
+    const groupPredicates: Array<Record<string, unknown>> = [];
+
+    // Build atomic predicates and combine them with the selected operator.
+    includeGroupIds.forEach((groupId) => {
+      groupPredicates.push({
         groups: {
           some: {
-            groupId: {
-              in: groupIds,
-            },
+            groupId,
             group: {
               deletedAt: null,
             },
           },
         },
+      });
+    });
+
+    excludeGroupIds.forEach((groupId) => {
+      groupPredicates.push({
+        NOT: {
+          groups: {
+            some: {
+              groupId,
+              group: {
+                deletedAt: null,
+              },
+            },
+          },
+        },
+      });
+    });
+
+    // Build where clause
+    const groupOperator = searchParams.get('groupMatchOperator') === 'and' ? 'AND' : 'OR';
+    const whereClause = {
+      userId: session.user.id,
+      deletedAt: null,
+      ...(groupPredicates.length > 0 && {
+        [groupOperator]: groupPredicates,
       }),
     };
 

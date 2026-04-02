@@ -620,7 +620,28 @@
       "filterPlaceholder": "Escribe para filtrar por grupos...",
       "noGroupsFound": "No se encontraron grupos que coincidan",
       "clusterByGroup": "Agrupar por grupo",
-      "recenterGraph": "Volver a centrar el gráfico"
+      "recenterGraph": "Volver a centrar el gráfico",
+      "matchMode": {
+        "any": "Cualquiera",
+        "all": "Todo",
+        "anyTitle": "Coincidiendo con cualquier grupo",
+        "allTitle": "Coincidiendo con todos los grupos",
+        "ariaLabel": "{title}. Haz clic para cambiar."
+      },
+      "filterState": {
+        "included": "Incluido. Haz clic para excluir.",
+        "excluded": "Excluido. Haz clic para incluir."
+      },
+      "filterAction": {
+        "include": "incluir",
+        "exclude": "excluir",
+        "remove": "Eliminar"
+      },
+      "filterHelp": {
+        "ariaLabel": "Ayuda de filtro de gráfico",
+        "pillTip": "Haz clic en el nombre de un grupo para incluirlo o excluirlo.",
+        "modeTip": "Modo: coincidir con uno o todos los grupos incluidos."
+      }
     }
   },
   "people": {
