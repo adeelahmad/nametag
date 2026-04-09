@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.42.1](https://github.com/mattogodoy/nametag/compare/v0.42.0...v0.42.1) (2026-04-09)
+
+
+### Bug Fixes
+
+* add z-index for navbar to fix search stacking issue ([d213f06](https://github.com/mattogodoy/nametag/commit/d213f0632a865ae84e2320ea48f721f32779e1cf))
+* add z-index for navbar to fix search stacking issue ([3db785d](https://github.com/mattogodoy/nametag/commit/3db785d2d950def517fa15f8d5cdeedbb92109c4))
+* make orphan warning tooltip readable in light mode ([2571814](https://github.com/mattogodoy/nametag/commit/2571814f2a1055b389a5708218c34e4180248c1b))
+* make orphan warning tooltip readable in light mode ([b48876f](https://github.com/mattogodoy/nametag/commit/b48876f2e5a5450d1d8d5cd347e1bd44f182612b)), closes [#209](https://github.com/mattogodoy/nametag/issues/209)
+
 ## [0.42.0](https://github.com/mattogodoy/nametag/compare/v0.41.0...v0.42.0) (2026-03-31)
 
 
