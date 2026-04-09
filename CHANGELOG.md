@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.42.2](https://github.com/mattogodoy/nametag/compare/v0.42.1...v0.42.2) (2026-04-09)
+
+
+### Bug Fixes
+
+* use native ARM64 runner instead of QEMU emulation ([0a3b224](https://github.com/mattogodoy/nametag/commit/0a3b224062dc640a22d7e04cc74b7e928f57ac19))
+* use native ARM64 runner instead of QEMU emulation ([fb1e053](https://github.com/mattogodoy/nametag/commit/fb1e05300ba1128bf875631f11c6c92a7d17b7dd))
+
 ## [0.42.1](https://github.com/mattogodoy/nametag/compare/v0.42.0...v0.42.1) (2026-04-09)
 
 
