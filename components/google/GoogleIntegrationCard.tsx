@@ -23,7 +23,7 @@ interface GoogleIntegrationCardProps {
 }
 
 export default function GoogleIntegrationCard({ integration }: GoogleIntegrationCardProps) {
-  const t = useTranslations('settings.integrations.google');
+  const t = useTranslations('google');
   const [syncing, setSyncing] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
   const [gmailEnabled, setGmailEnabled] = useState(integration?.gmailSyncEnabled ?? false);
