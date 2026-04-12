@@ -1769,7 +1769,19 @@
     "connectionSuccess": "Connection successful",
     "connectionFailed": "Connection failed",
     "syncComplete": "Sync completed successfully",
-    "syncFailed": "Sync failed"
+    "syncFailed": "Sync failed",
+    "calendarSync": "Birthday Calendar Sync",
+    "calendarSyncDescription": "Sync birthdays and important dates to Google Calendar",
+    "calendarSyncNow": "Sync Birthdays Now",
+    "calendarSyncing": "Syncing...",
+    "calendarSyncSuccess": "Birthdays synced to Google Calendar",
+    "calendarSyncError": "Calendar sync failed",
+    "calendarSyncHelp": "Syncs birthdays & anniversaries as recurring calendar events",
+    "driveFolderLabel": "Drive Folder Name",
+    "driveFolderHelp": "Root folder in Google Drive where documents are stored (e.g., \"Nametag\")",
+    "folderSaved": "Folder name saved",
+    "folderSaveError": "Failed to save folder name",
+    "save": "Save"
   },
   "emails": {
     "title": "Emails",

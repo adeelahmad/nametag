@@ -828,7 +828,13 @@ model GoogleIntegration {
   lastGmailSyncAt   DateTime?
   gmailHistoryId    String?   // For incremental Gmail sync
   autoSyncInterval  Int       @default(3600) // 1 hour in seconds
-  driveRootFolderId String?   // "Nametag" folder ID in user's Drive
+  driveRootFolderId String?   // Root folder ID in user's Drive
+  driveFolderName   String    @default("Nametag") // User-configurable root folder name
+
+  // Calendar config
+  calendarSyncEnabled Boolean  @default(false)
+  birthdayCalendarId  String?  // Google Calendar ID for birthday events
+  lastCalendarSyncAt  DateTime?
 
   // Error tracking
   lastError         String?

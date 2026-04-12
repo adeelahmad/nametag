@@ -58,6 +58,9 @@ export const POST = withLogging(async function POST(request: Request) {
       gmailSyncEnabled,
       driveSyncEnabled,
       autoSyncInterval,
+      driveFolderName,
+      calendarSyncEnabled,
+      birthdayCalendarId,
     } = body;
 
     if (!authMode || !['oauth', 'service_account'].includes(authMode)) {
@@ -117,6 +120,23 @@ export const POST = withLogging(async function POST(request: Request) {
       }
       data.autoSyncInterval = autoSyncInterval;
     }
+    if (driveFolderName !== undefined) {
+      if (typeof driveFolderName !== 'string' || driveFolderName.trim().length === 0) {
+        return NextResponse.json(
+          { error: 'driveFolderName must be a non-empty string' },
+          { status: 400 },
+        );
+      }
+      data.driveFolderName = driveFolderName.trim();
+      // Reset the cached folder ID since the name changed
+      data.driveRootFolderId = null;
+    }
+    if (calendarSyncEnabled !== undefined) {
+      data.calendarSyncEnabled = calendarSyncEnabled;
+    }
+    if (birthdayCalendarId !== undefined) {
+      data.birthdayCalendarId = birthdayCalendarId;
+    }
 
     // Upsert the integration
     const integration = await prisma.googleIntegration.upsert({
@@ -135,8 +155,12 @@ export const POST = withLogging(async function POST(request: Request) {
       delegatedEmail: integration.delegatedEmail,
       gmailSyncEnabled: integration.gmailSyncEnabled,
       driveSyncEnabled: integration.driveSyncEnabled,
+      driveFolderName: integration.driveFolderName,
+      calendarSyncEnabled: integration.calendarSyncEnabled,
+      birthdayCalendarId: integration.birthdayCalendarId,
       autoSyncInterval: integration.autoSyncInterval,
       lastGmailSyncAt: integration.lastGmailSyncAt,
+      lastCalendarSyncAt: integration.lastCalendarSyncAt,
       lastError: integration.lastError,
       syncInProgress: integration.syncInProgress,
       createdAt: integration.createdAt,
