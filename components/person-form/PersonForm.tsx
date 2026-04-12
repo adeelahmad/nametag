@@ -57,6 +57,7 @@ export interface PersonFormProps {
     contactReminderInterval?: number | null;
     contactReminderIntervalUnit?: ReminderIntervalUnit | null;
     cardDavSyncEnabled?: boolean;
+    emailKeywords?: string[];
     cardDavMapping?: { id: string } | null;
     importantDates?: Array<{
       id: string;
@@ -288,6 +289,10 @@ export default function PersonForm({
 
       const payload = {
         ...formData,
+        // Convert comma-separated keywords string to array
+        emailKeywords: formData.emailKeywords
+          ? formData.emailKeywords.split(',').map((k: string) => k.trim()).filter(Boolean)
+          : [],
         importantDates,
         phoneNumbers,
         emails,
@@ -519,6 +524,22 @@ export default function PersonForm({
           dateFormat={dateFormat}
           reminderLimit={reminderLimit}
         />
+      </Section>
+
+      {/* Email Keywords Section */}
+      <Section>
+        <SectionHeader>{t('sectionEmailKeywords')}</SectionHeader>
+        <div>
+          <input
+            id="emailKeywords"
+            type="text"
+            value={formData.emailKeywords}
+            onChange={(e) => setFormData({ emailKeywords: e.target.value })}
+            placeholder={t('emailKeywordsPlaceholder')}
+            className="block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary text-sm p-2"
+          />
+          <p className="text-xs text-muted mt-1">{t('emailKeywordsHelp')}</p>
+        </div>
       </Section>
 
       {/* Notes Section */}

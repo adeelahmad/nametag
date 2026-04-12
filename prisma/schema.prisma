@@ -95,6 +95,9 @@ model Person {
   gender                      String?               // GENDER
   anniversary                 DateTime?             // ANNIVERSARY
 
+  // Gmail keyword matching - emails matching these keywords get linked to this person
+  emailKeywords               String[]              // e.g., ["invoice", "project-x", "acme corp"]
+
   // Relations
   user               User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   relationshipToUser RelationshipType?      @relation("UserRelationship", fields: [relationshipToUserId], references: [id])
