@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { google } from 'googleapis';
+import { drive as createDrive } from '@googleapis/drive';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { handleApiError, withLogging } from '@/lib/api-utils';
@@ -83,8 +83,8 @@ export const DELETE = withLogging(async function DELETE(
     // Delete from Google Drive
     try {
       const { auth: googleAuth } = await getGoogleAuth(session.user.id);
-      const drive = google.drive({ version: 'v3', auth: googleAuth });
-      await deleteFileFromDrive(drive, document.driveFileId);
+      const driveClient = createDrive({ version: 'v3', auth: googleAuth });
+      await deleteFileFromDrive(driveClient, document.driveFileId);
     } catch (driveError) {
       // Log but continue with DB deletion even if Drive deletion fails
       // (file may have been manually deleted from Drive)

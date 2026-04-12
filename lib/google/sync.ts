@@ -1,4 +1,5 @@
-import { google } from 'googleapis';
+import { gmail as createGmail } from '@googleapis/gmail';
+import { drive as createDrive } from '@googleapis/drive';
 import { prisma } from '@/lib/prisma';
 import { getGoogleAuth } from './auth';
 import { syncGmailForUser } from './gmail';
@@ -75,8 +76,8 @@ async function processNewAttachments(userId: string): Promise<number> {
     return 0;
   }
 
-  const gmail = google.gmail({ version: 'v1', auth });
-  const drive = google.drive({ version: 'v3', auth });
+  const gmailClient = createGmail({ version: 'v1', auth });
+  const driveClient = createDrive({ version: 'v3', auth });
 
   // Find emails with attachments that don't have associated documents yet
   const emailsWithAttachments = await prisma.emailLog.findMany({
@@ -108,13 +109,13 @@ async function processNewAttachments(userId: string): Promise<number> {
   }
 
   // Ensure root folder exists
-  const rootFolderId = await ensureRootFolder(drive, integration);
+  const rootFolderId = await ensureRootFolder(driveClient, integration);
   let processedCount = 0;
 
   for (const emailLog of emailsWithAttachments) {
     try {
       // Fetch the full message to get attachment data
-      const message = await gmail.users.messages.get({
+      const message = await gmailClient.users.messages.get({
         userId: 'me',
         id: emailLog.gmailMessageId,
         format: 'full',
@@ -129,7 +130,7 @@ async function processNewAttachments(userId: string): Promise<number> {
           if (!attachment.body?.attachmentId) continue;
 
           // Download attachment data
-          const attachmentData = await gmail.users.messages.attachments.get({
+          const attachmentData = await gmailClient.users.messages.attachments.get({
             userId: 'me',
             messageId: emailLog.gmailMessageId,
             id: attachment.body.attachmentId,
@@ -150,12 +151,12 @@ async function processNewAttachments(userId: string): Promise<number> {
             const firstPerson = emailLog.people[0].person;
             personId = firstPerson.id;
             const contactName = formatFullName(firstPerson);
-            folderId = await ensureContactFolder(drive, rootFolderId, contactName);
+            folderId = await ensureContactFolder(driveClient, rootFolderId, contactName);
           }
 
           // Upload to Drive
           const { fileId, webViewLink } = await uploadFileToDrive(
-            drive,
+            driveClient,
             folderId,
             fileName,
             mimeType,
@@ -240,7 +241,7 @@ export async function uploadDocumentForPerson(
   data: Buffer,
 ): Promise<{ documentId: string; driveWebViewUrl: string | null }> {
   const { auth, integration } = await getGoogleAuth(userId);
-  const drive = google.drive({ version: 'v3', auth });
+  const driveClient = createDrive({ version: 'v3', auth });
 
   // Get person name for folder
   const person = await prisma.person.findUnique({
@@ -253,12 +254,12 @@ export async function uploadDocumentForPerson(
   }
 
   // Ensure folder structure
-  const rootFolderId = await ensureRootFolder(drive, integration);
+  const rootFolderId = await ensureRootFolder(driveClient, integration);
   const contactName = formatFullName(person);
-  const folderId = await ensureContactFolder(drive, rootFolderId, contactName);
+  const folderId = await ensureContactFolder(driveClient, rootFolderId, contactName);
 
   // Upload
-  const { fileId, webViewLink } = await uploadFileToDrive(drive, folderId, fileName, mimeType, data);
+  const { fileId, webViewLink } = await uploadFileToDrive(driveClient, folderId, fileName, mimeType, data);
 
   // Create Document record
   const document = await prisma.document.create({

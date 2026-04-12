@@ -1,5 +1,4 @@
-import { google } from 'googleapis';
-import { OAuth2Client } from 'google-auth-library';
+import { OAuth2Client, GoogleAuth } from 'google-auth-library';
 import type { GoogleIntegration } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { env } from '@/lib/env';
@@ -284,7 +283,7 @@ async function buildServiceAccountClient(integration: GoogleIntegration): Promis
     );
   }
 
-  const auth = new google.auth.GoogleAuth({
+  const googleAuth = new GoogleAuth({
     credentials: keyJson,
     scopes: SCOPES,
     clientOptions: {
@@ -294,7 +293,7 @@ async function buildServiceAccountClient(integration: GoogleIntegration): Promis
 
   // getClient() returns a JWT or Compute client; for domain-wide delegation
   // it will be a JWT client which is compatible with OAuth2Client interface.
-  const client = await auth.getClient();
+  const client = await googleAuth.getClient();
 
   log.info(
     { integrationId: integration.id, delegatedEmail },

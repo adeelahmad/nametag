@@ -1,4 +1,4 @@
-import { google, gmail_v1 } from 'googleapis';
+import { gmail as createGmail, gmail_v1 } from '@googleapis/gmail';
 import { prisma } from '@/lib/prisma';
 import { getGoogleAuth } from './auth';
 import { createModuleLogger } from '@/lib/logger';
@@ -62,16 +62,16 @@ export async function syncGmailForUser(userId: string): Promise<SyncResult> {
   }
 
   const { auth } = await getGoogleAuth(userId);
-  const gmail = google.gmail({ version: 'v1', auth });
+  const gmailClient = createGmail({ version: 'v1', auth });
 
   let result: SyncResult;
 
   if (!integration.gmailHistoryId) {
     log.info({ userId }, 'No historyId found — performing initial sync');
-    result = await initialGmailSync(userId, integration.id, gmail);
+    result = await initialGmailSync(userId, integration.id, gmailClient);
   } else {
     log.info({ userId, historyId: integration.gmailHistoryId }, 'Performing incremental sync');
-    result = await incrementalGmailSync(userId, integration.id, gmail, integration.gmailHistoryId);
+    result = await incrementalGmailSync(userId, integration.id, gmailClient, integration.gmailHistoryId);
   }
 
   // Update last sync timestamp
