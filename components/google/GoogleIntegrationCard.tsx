@@ -8,6 +8,11 @@ type GoogleIntegrationStatus = {
   authMode: string;
   gmailSyncEnabled: boolean;
   driveSyncEnabled: boolean;
+  driveFolderName: string;
+  calendarSyncEnabled: boolean;
+  birthdayCalendarId: string | null;
+  ocrEnabled: boolean;
+  autoSyncInterval: number;
   lastGmailSyncAt: string | null;
   lastError: string | null;
   syncInProgress: boolean;
@@ -18,11 +23,19 @@ interface GoogleIntegrationCardProps {
 }
 
 export default function GoogleIntegrationCard({ integration }: GoogleIntegrationCardProps) {
-  const t = useTranslations('settings.integrations.google');
+  const t = useTranslations('google');
   const [syncing, setSyncing] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
   const [gmailEnabled, setGmailEnabled] = useState(integration?.gmailSyncEnabled ?? false);
   const [driveEnabled, setDriveEnabled] = useState(integration?.driveSyncEnabled ?? false);
+  const [calendarEnabled, setCalendarEnabled] = useState(integration?.calendarSyncEnabled ?? false);
+  const [ocrEnabled, setOcrEnabled] = useState(integration?.ocrEnabled ?? true);
+  const [syncInterval, setSyncInterval] = useState(integration?.autoSyncInterval ?? 3600);
+  const [folderName, setFolderName] = useState(integration?.driveFolderName ?? 'Nametag');
+  const [editingFolder, setEditingFolder] = useState(false);
+  const [calendarSyncing, setCalendarSyncing] = useState(false);
+  const [calendars, setCalendars] = useState<Array<{ id: string; summary: string; primary: boolean }>>([]);
+  const [loadingCalendars, setLoadingCalendars] = useState(false);
 
   if (!integration) {
     return null;
@@ -66,7 +79,7 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
     }
   }
 
-  async function handleToggle(field: 'gmailSyncEnabled' | 'driveSyncEnabled', value: boolean) {
+  async function handleToggle(field: 'gmailSyncEnabled' | 'driveSyncEnabled' | 'calendarSyncEnabled' | 'ocrEnabled', value: boolean) {
     try {
       const res = await fetch('/api/google/connect', {
         method: 'POST',
@@ -82,11 +95,74 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       }
       if (field === 'gmailSyncEnabled') setGmailEnabled(value);
       if (field === 'driveSyncEnabled') setDriveEnabled(value);
+      if (field === 'calendarSyncEnabled') setCalendarEnabled(value);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to update setting');
-      // Revert the toggle
       if (field === 'gmailSyncEnabled') setGmailEnabled(!value);
       if (field === 'driveSyncEnabled') setDriveEnabled(!value);
+      if (field === 'calendarSyncEnabled') setCalendarEnabled(!value);
+    }
+  }
+
+  async function handleSyncInterval(value: number) {
+    setSyncInterval(value);
+    try {
+      await fetch('/api/google/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authMode: currentIntegration.authMode, autoSyncInterval: value }),
+      });
+    } catch { /* silent */ }
+  }
+
+  async function loadCalendars() {
+    setLoadingCalendars(true);
+    try {
+      const res = await fetch('/api/google/calendar');
+      const data = await res.json();
+      if (data.success) setCalendars(data.data);
+    } catch { /* silent */ }
+    setLoadingCalendars(false);
+  }
+
+  async function handleCalendarSelect(calendarId: string) {
+    try {
+      await fetch('/api/google/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authMode: currentIntegration.authMode, birthdayCalendarId: calendarId }),
+      });
+      toast.success(t('calendarSelected'));
+    } catch {
+      toast.error(t('calendarSelectError'));
+    }
+  }
+
+  async function handleSaveFolderName() {
+    try {
+      const res = await fetch('/api/google/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authMode: currentIntegration.authMode, driveFolderName: folderName }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      toast.success(t('folderSaved'));
+      setEditingFolder(false);
+    } catch {
+      toast.error(t('folderSaveError'));
+    }
+  }
+
+  async function handleCalendarSync() {
+    setCalendarSyncing(true);
+    try {
+      const res = await fetch('/api/google/calendar', { method: 'POST' });
+      if (!res.ok) throw new Error('Calendar sync failed');
+      toast.success(t('calendarSyncSuccess'));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('calendarSyncError'));
+    } finally {
+      setCalendarSyncing(false);
     }
   }
 
@@ -166,6 +242,130 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
             />
           </button>
         </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-foreground">{t('calendarSync')}</span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={calendarEnabled}
+            onClick={() => handleToggle('calendarSyncEnabled', !calendarEnabled)}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+              calendarEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                calendarEnabled ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* Drive folder name */}
+      {driveEnabled && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-foreground mb-1">{t('driveFolderLabel')}</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={folderName}
+              onChange={(e) => { setFolderName(e.target.value); setEditingFolder(true); }}
+              className="flex-1 rounded-md border border-border bg-background text-foreground text-sm p-2"
+              placeholder="Nametag"
+            />
+            {editingFolder && (
+              <button
+                onClick={handleSaveFolderName}
+                className="px-3 py-2 text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark transition-colors"
+              >
+                {t('save')}
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-muted mt-1">{t('driveFolderHelp')}</p>
+        </div>
+      )}
+
+      {/* Calendar options */}
+      {calendarEnabled && (
+        <div className="mb-4 space-y-3">
+          {/* Calendar picker */}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">{t('calendarPicker')}</label>
+            <div className="flex gap-2">
+              <select
+                value={integration.birthdayCalendarId || ''}
+                onChange={(e) => handleCalendarSelect(e.target.value)}
+                onFocus={() => { if (calendars.length === 0) loadCalendars(); }}
+                className="flex-1 rounded-md border border-border bg-background text-foreground text-sm p-2"
+              >
+                <option value="">{t('calendarAutoCreate')}</option>
+                {loadingCalendars && <option disabled>{t('loading')}</option>}
+                {calendars.map((cal) => (
+                  <option key={cal.id} value={cal.id}>
+                    {cal.summary}{cal.primary ? ' (primary)' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <p className="text-xs text-muted mt-1">{t('calendarPickerHelp')}</p>
+          </div>
+
+          {/* Sync now button */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleCalendarSync}
+              disabled={calendarSyncing}
+              className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md border border-border text-foreground hover:bg-surface-elevated disabled:opacity-50 transition-colors"
+            >
+              {calendarSyncing ? t('calendarSyncing') : t('calendarSyncNow')}
+            </button>
+            <span className="text-xs text-muted">{t('calendarSyncHelp')}</span>
+          </div>
+        </div>
+      )}
+
+      {/* OCR toggle */}
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <span className="text-sm text-foreground">{t('ocrToggle')}</span>
+          <p className="text-xs text-muted">{t('ocrToggleHelp')}</p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={ocrEnabled}
+          onClick={() => {
+            const newVal = !ocrEnabled;
+            setOcrEnabled(newVal);
+            handleToggle('ocrEnabled', newVal);
+          }}
+          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+            ocrEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
+          }`}
+        >
+          <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${ocrEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+        </button>
+      </div>
+
+      {/* Auto sync interval */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-foreground mb-1">{t('syncIntervalLabel')}</label>
+        <select
+          value={syncInterval}
+          onChange={(e) => handleSyncInterval(Number(e.target.value))}
+          className="block w-full rounded-md border border-border bg-background text-foreground text-sm p-2"
+        >
+          <option value={900}>{t('interval15min')}</option>
+          <option value={1800}>{t('interval30min')}</option>
+          <option value={3600}>{t('interval1hour')}</option>
+          <option value={7200}>{t('interval2hours')}</option>
+          <option value={14400}>{t('interval4hours')}</option>
+          <option value={43200}>{t('interval12hours')}</option>
+          <option value={86400}>{t('interval24hours')}</option>
+        </select>
+        <p className="text-xs text-muted mt-1">{t('syncIntervalHelp')}</p>
       </div>
 
       {/* Last sync time */}

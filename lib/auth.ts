@@ -3,7 +3,8 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import { randomUUID } from 'crypto';
 import { env } from '@/lib/env';
-import { isSaasMode } from '@/lib/features';
+// isSaasMode is no longer needed here since Google OAuth is available
+// for all deployment modes (SaaS and self-hosted) when credentials are configured
 import { createModuleLogger } from '@/lib/logger';
 import { normalizeLocale } from '@/lib/locale';
 
@@ -124,8 +125,8 @@ const providers = [
         return authorizeCredentials(credentials as { email?: string; password?: string });
       },
     }),
-  // Add Google provider only in SaaS mode
-  ...(isSaasMode() && env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
+  // Add Google provider when credentials are configured (enables OAuth sign-in + Gmail/Drive integration)
+  ...(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
     ? [
         Google({
           clientId: env.GOOGLE_CLIENT_ID,
@@ -140,6 +141,7 @@ const providers = [
                 'profile',
                 'https://www.googleapis.com/auth/gmail.readonly',
                 'https://www.googleapis.com/auth/drive.file',
+                'https://www.googleapis.com/auth/calendar',
               ].join(' '),
             },
           },

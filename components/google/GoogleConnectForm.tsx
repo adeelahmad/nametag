@@ -25,7 +25,7 @@ export default function GoogleConnectForm({
 
   const handleServiceAccountConnect = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!jsonKey.trim() || !delegatedEmail.trim()) return;
+    if (!jsonKey.trim()) return;
 
     setConnecting(true);
     try {
@@ -35,7 +35,7 @@ export default function GoogleConnectForm({
         body: JSON.stringify({
           authMode: 'service_account',
           serviceAccountKey: jsonKey.trim(),
-          delegatedEmail: delegatedEmail.trim(),
+          ...(delegatedEmail.trim() ? { delegatedEmail: delegatedEmail.trim() } : {}),
         }),
       });
 
@@ -151,7 +151,7 @@ export default function GoogleConnectForm({
 
             <div>
               <label htmlFor="delegated-email" className="block text-sm font-medium text-foreground mb-1">
-                {t('delegatedEmailLabel')}
+                {t('delegatedEmailLabel')} <span className="text-muted font-normal">(optional)</span>
               </label>
               <input
                 id="delegated-email"
@@ -160,7 +160,6 @@ export default function GoogleConnectForm({
                 onChange={(e) => setDelegatedEmail(e.target.value)}
                 placeholder={t('delegatedEmailPlaceholder')}
                 className="block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary text-sm p-2"
-                required
               />
             </div>
 

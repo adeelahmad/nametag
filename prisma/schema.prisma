@@ -95,6 +95,9 @@ model Person {
   gender                      String?               // GENDER
   anniversary                 DateTime?             // ANNIVERSARY
 
+  // Gmail keyword matching - emails matching these keywords get linked to this person
+  emailKeywords               String[]              // e.g., ["invoice", "project-x", "acme corp"]
+
   // Relations
   user               User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   relationshipToUser RelationshipType?      @relation("UserRelationship", fields: [relationshipToUserId], references: [id])
@@ -828,7 +831,16 @@ model GoogleIntegration {
   lastGmailSyncAt   DateTime?
   gmailHistoryId    String?   // For incremental Gmail sync
   autoSyncInterval  Int       @default(3600) // 1 hour in seconds
-  driveRootFolderId String?   // "Nametag" folder ID in user's Drive
+  driveRootFolderId String?   // Root folder ID in user's Drive
+  driveFolderName   String    @default("Nametag") // User-configurable root folder name
+
+  // Calendar config
+  calendarSyncEnabled Boolean  @default(false)
+  birthdayCalendarId  String?  // Google Calendar ID for birthday events
+  lastCalendarSyncAt  DateTime?
+
+  // OCR config
+  ocrEnabled          Boolean  @default(true) // User-level OCR toggle
 
   // Error tracking
   lastError         String?
@@ -845,8 +857,31 @@ model GoogleIntegration {
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   emailLogs         EmailLog[]
   documents         Document[]
+  syncLogs          SyncLog[]
 
   @@map("google_integrations")
+}
+
+// Per-user sync log entry - tracks each sync run with details
+model SyncLog {
+  id              String    @id @default(cuid())
+  integrationId   String
+  syncType        String    // "gmail", "calendar", "drive"
+  status          String    // "started", "completed", "failed"
+  newEmails       Int       @default(0)
+  matchedContacts Int       @default(0)
+  attachments     Int       @default(0)
+  ocrProcessed    Int       @default(0)
+  calendarEvents  Int       @default(0)
+  errors          String[]
+  duration        Int?      // milliseconds
+  triggeredBy     String    @default("cron") // "cron", "manual"
+  createdAt       DateTime  @default(now())
+
+  integration     GoogleIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@index([integrationId, createdAt])
+  @@map("sync_logs")
 }
 
 // Logged email from Gmail
@@ -884,7 +919,7 @@ model EmailLogPerson {
   id          String   @id @default(cuid())
   emailLogId  String
   personId    String
-  role        String   // "from", "to", "cc"
+  role        String   // "from", "to", "cc", "keyword"
 
   // Relations
   emailLog    EmailLog @relation(fields: [emailLogId], references: [id], onDelete: Cascade)

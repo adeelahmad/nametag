@@ -106,6 +106,7 @@ export async function createPerson(userId: string, data: PersonInput) {
     contactReminderInterval,
     contactReminderIntervalUnit,
     cardDavSyncEnabled,
+    emailKeywords,
     phoneNumbers,
     emails,
     addresses,
@@ -144,6 +145,7 @@ export async function createPerson(userId: string, data: PersonInput) {
       contactReminderInterval: contactReminderEnabled ? contactReminderInterval : null,
       contactReminderIntervalUnit: contactReminderEnabled ? contactReminderIntervalUnit : null,
       cardDavSyncEnabled: cardDavSyncEnabled ?? true,
+      emailKeywords: emailKeywords ?? [],
       groups: groupIds
         ? { create: groupIds.map((groupId) => ({ groupId })) }
         : undefined,
@@ -269,6 +271,7 @@ export async function updatePerson(id: string, userId: string, data: PersonUpdat
     contactReminderInterval,
     contactReminderIntervalUnit,
     cardDavSyncEnabled,
+    emailKeywords,
     phoneNumbers,
     emails,
     addresses,
@@ -311,6 +314,10 @@ export async function updatePerson(id: string, userId: string, data: PersonUpdat
 
   if (cardDavSyncEnabled !== undefined) {
     updateData.cardDavSyncEnabled = cardDavSyncEnabled;
+  }
+
+  if (emailKeywords !== undefined) {
+    updateData.emailKeywords = emailKeywords;
   }
 
   if (groupIds !== undefined) {
