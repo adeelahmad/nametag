@@ -1,4 +1,4 @@
-import { google, drive_v3 } from 'googleapis';
+import { drive as createDrive, drive_v3 } from '@googleapis/drive';
 import { prisma } from '@/lib/prisma';
 import { getGoogleAuth } from './auth';
 import { createModuleLogger } from '@/lib/logger';
@@ -272,5 +272,5 @@ export async function deleteFileFromDrive(
  */
 export async function getDriveClient(userId: string): Promise<drive_v3.Drive> {
   const { auth } = await getGoogleAuth(userId);
-  return google.drive({ version: 'v3', auth });
+  return createDrive({ version: 'v3', auth });
 }
