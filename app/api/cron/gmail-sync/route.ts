@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { fullSyncForUser } from '@/lib/google/sync';
+import { syncBirthdaysToCalendar } from '@/lib/google/calendar';
 import { env } from '@/lib/env';
 import { handleApiError, withLogging } from '@/lib/api-utils';
 import { logger, securityLogger } from '@/lib/logger';
@@ -33,16 +34,21 @@ export const GET = withLogging(async function GET(request: Request) {
 
     const now = new Date();
 
-    // Find all Google integrations where Gmail sync is enabled
+    // Find all Google integrations where any sync is enabled
     const integrations = await prisma.googleIntegration.findMany({
       where: {
-        gmailSyncEnabled: true,
+        OR: [
+          { gmailSyncEnabled: true },
+          { calendarSyncEnabled: true },
+        ],
       },
       select: {
         id: true,
         userId: true,
         autoSyncInterval: true,
         lastGmailSyncAt: true,
+        gmailSyncEnabled: true,
+        calendarSyncEnabled: true,
       },
     });
 
@@ -67,21 +73,40 @@ export const GET = withLogging(async function GET(request: Request) {
         }
 
         // Perform Gmail sync
-        logger.info({
-          userId: integration.userId,
-          integrationId: integration.id,
-        }, 'Starting background Gmail sync');
+        if (integration.gmailSyncEnabled) {
+          logger.info({
+            userId: integration.userId,
+            integrationId: integration.id,
+          }, 'Starting background Gmail sync');
 
-        const result = await fullSyncForUser(integration.userId);
+          const result = await fullSyncForUser(integration.userId);
 
-        logger.info({
-          userId: integration.userId,
-          integrationId: integration.id,
-          newEmails: result.newEmails,
-          matchedToContacts: result.matchedToContacts,
-          attachmentsProcessed: result.attachmentsProcessed,
-          errors: result.errors,
-        }, 'Background Gmail sync completed');
+          logger.info({
+            userId: integration.userId,
+            integrationId: integration.id,
+            newEmails: result.newEmails,
+            matchedToContacts: result.matchedToContacts,
+            attachmentsProcessed: result.attachmentsProcessed,
+            errors: result.errors,
+          }, 'Background Gmail sync completed');
+        }
+
+        // Perform Calendar sync
+        if (integration.calendarSyncEnabled) {
+          logger.info({
+            userId: integration.userId,
+            integrationId: integration.id,
+          }, 'Starting background Calendar sync');
+
+          const calResult = await syncBirthdaysToCalendar(integration.userId);
+
+          logger.info({
+            userId: integration.userId,
+            integrationId: integration.id,
+            synced: calResult.synced,
+            errors: calResult.errors,
+          }, 'Background Calendar sync completed');
+        }
 
         syncedCount++;
 
