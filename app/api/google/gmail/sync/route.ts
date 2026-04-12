@@ -53,7 +53,7 @@ export const POST = withLogging(async function POST() {
 
     try {
       log.info({ userId: session.user.id }, 'Starting manual Gmail sync');
-      const result = await fullSyncForUser(session.user.id);
+      const result = await fullSyncForUser(session.user.id, 'manual');
 
       // Update sync status
       await prisma.googleIntegration.update({

@@ -5,6 +5,7 @@ import { env } from '@/lib/env';
 import { getTranslations } from 'next-intl/server';
 import GoogleIntegrationCard from '@/components/google/GoogleIntegrationCard';
 import GoogleConnectForm from '@/components/google/GoogleConnectForm';
+import SyncHistory from '@/components/google/SyncHistory';
 
 export default async function IntegrationsSettingsPage() {
   const session = await auth();
@@ -58,7 +59,12 @@ export default async function IntegrationsSettingsPage() {
       </p>
 
       {integration ? (
-        <GoogleIntegrationCard integration={integrationStatus} />
+        <>
+          <GoogleIntegrationCard integration={integrationStatus} />
+          <div className="mt-6">
+            <SyncHistory />
+          </div>
+        </>
       ) : (
         <GoogleConnectForm
           oauthConfigured={oauthConfigured}

@@ -854,8 +854,31 @@ model GoogleIntegration {
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   emailLogs         EmailLog[]
   documents         Document[]
+  syncLogs          SyncLog[]
 
   @@map("google_integrations")
+}
+
+// Per-user sync log entry - tracks each sync run with details
+model SyncLog {
+  id              String    @id @default(cuid())
+  integrationId   String
+  syncType        String    // "gmail", "calendar", "drive"
+  status          String    // "started", "completed", "failed"
+  newEmails       Int       @default(0)
+  matchedContacts Int       @default(0)
+  attachments     Int       @default(0)
+  ocrProcessed    Int       @default(0)
+  calendarEvents  Int       @default(0)
+  errors          String[]
+  duration        Int?      // milliseconds
+  triggeredBy     String    @default("cron") // "cron", "manual"
+  createdAt       DateTime  @default(now())
+
+  integration     GoogleIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@index([integrationId, createdAt])
+  @@map("sync_logs")
 }
 
 // Logged email from Gmail
