@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { drive as createDrive } from '@googleapis/drive';
 import { prisma } from '@/lib/prisma';
 import { getGoogleAuth } from './auth';
 import { env } from '@/lib/env';
@@ -103,10 +103,10 @@ export async function processDocumentOcr(
   try {
     // Get authenticated client
     const { auth } = await getGoogleAuth(userId);
-    const drive = google.drive({ version: 'v3', auth });
+    const driveClient = createDrive({ version: 'v3', auth });
 
     // Download file content from Drive
-    const fileContent = await downloadFileFromDrive(drive, document.driveFileId);
+    const fileContent = await downloadFileFromDrive(driveClient, document.driveFileId);
 
     // Encode content as base64 for the Vision API
     const base64Content = fileContent.toString('base64');
@@ -115,28 +115,42 @@ export async function processDocumentOcr(
     const isPdf = document.mimeType === 'application/pdf';
     const featureType = isPdf ? 'DOCUMENT_TEXT_DETECTION' : 'TEXT_DETECTION';
 
-    // Call the Vision API
-    const vision = google.vision({ version: 'v1', auth });
-
-    const annotateResponse = await vision.images.annotate({
-      requestBody: {
-        requests: [
-          {
-            image: {
-              content: base64Content,
+    // Call the Vision API via direct REST (avoids pulling in the massive googleapis package)
+    const accessToken = await auth.getAccessToken();
+    const visionResponse = await fetch(
+      'https://vision.googleapis.com/v1/images:annotate',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${typeof accessToken === 'string' ? accessToken : accessToken.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          requests: [
+            {
+              image: { content: base64Content },
+              features: [{ type: featureType }],
             },
-            features: [
-              {
-                type: featureType,
-              },
-            ],
-          },
-        ],
+          ],
+        }),
       },
-    });
+    );
+
+    if (!visionResponse.ok) {
+      const errorText = await visionResponse.text();
+      throw new Error(`Vision API HTTP ${visionResponse.status}: ${errorText}`);
+    }
+
+    const annotateData = await visionResponse.json() as {
+      responses?: Array<{
+        fullTextAnnotation?: { text?: string };
+        textAnnotations?: Array<{ description?: string }>;
+        error?: { message?: string; code?: number };
+      }>;
+    };
 
     // Extract text from the response
-    const responses = annotateResponse.data.responses;
+    const responses = annotateData.responses;
     let ocrText: string | null = null;
 
     if (responses && responses.length > 0) {
@@ -148,11 +162,9 @@ export async function processDocumentOcr(
         annotation.textAnnotations &&
         annotation.textAnnotations.length > 0
       ) {
-        // Fallback: use the first text annotation (full text)
         ocrText = annotation.textAnnotations[0].description ?? null;
       }
 
-      // Check for errors in the response
       if (annotation.error) {
         logger.error(
           {
