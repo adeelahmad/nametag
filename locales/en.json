@@ -1784,7 +1784,16 @@
     "driveFolderHelp": "Root folder in Google Drive where documents are stored (e.g., \"Nametag\")",
     "folderSaved": "Folder name saved",
     "folderSaveError": "Failed to save folder name",
-    "save": "Save"
+    "save": "Save",
+    "loading": "Loading...",
+    "syncHistory": "Sync History",
+    "noSyncLogs": "No sync runs yet. Trigger a manual sync or wait for the background job.",
+    "syncDetailEmails": "New Emails",
+    "syncDetailMatched": "Contacts Matched",
+    "syncDetailAttachments": "Attachments",
+    "syncDetailOcr": "OCR Processed",
+    "syncDetailCalendar": "Calendar Events",
+    "syncDetailErrors": "Errors"
   },
   "emails": {
     "title": "Emails",

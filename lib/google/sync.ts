@@ -25,7 +25,8 @@ export interface GmailSyncResult {
  * 2. Process email attachments (download from Gmail, upload to Drive)
  * 3. Run OCR on pending documents
  */
-export async function fullSyncForUser(userId: string): Promise<GmailSyncResult> {
+export async function fullSyncForUser(userId: string, triggeredBy: 'cron' | 'manual' = 'cron'): Promise<GmailSyncResult> {
+  const startTime = Date.now();
   const result: GmailSyncResult = {
     newEmails: 0,
     matchedToContacts: 0,
@@ -34,6 +35,25 @@ export async function fullSyncForUser(userId: string): Promise<GmailSyncResult> 
     ocrFailed: 0,
     errors: [],
   };
+
+  // Get integration for sync log
+  const integration = await prisma.googleIntegration.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+
+  let syncLogId: string | null = null;
+  if (integration) {
+    const syncLog = await prisma.syncLog.create({
+      data: {
+        integrationId: integration.id,
+        syncType: 'gmail',
+        status: 'started',
+        triggeredBy,
+      },
+    });
+    syncLogId = syncLog.id;
+  }
 
   try {
     // Step 1: Sync Gmail
@@ -55,10 +75,37 @@ export async function fullSyncForUser(userId: string): Promise<GmailSyncResult> 
     result.ocrFailed = ocrResult.failed;
 
     log.info({ userId, ...result }, 'Full sync completed');
+
+    // Update sync log
+    if (syncLogId) {
+      await prisma.syncLog.update({
+        where: { id: syncLogId },
+        data: {
+          status: result.errors.length > 0 ? 'completed_with_errors' : 'completed',
+          newEmails: result.newEmails,
+          matchedContacts: result.matchedToContacts,
+          attachments: result.attachmentsProcessed,
+          ocrProcessed: result.ocrProcessed,
+          errors: result.errors,
+          duration: Date.now() - startTime,
+        },
+      });
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     result.errors.push(message);
     log.error({ userId, error: message }, 'Full sync failed');
+
+    if (syncLogId) {
+      await prisma.syncLog.update({
+        where: { id: syncLogId },
+        data: {
+          status: 'failed',
+          errors: result.errors,
+          duration: Date.now() - startTime,
+        },
+      }).catch(() => {}); // Don't let log update failure mask the real error
+    }
   }
 
   return result;
