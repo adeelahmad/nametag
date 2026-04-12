@@ -2,7 +2,6 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { env } from '@/lib/env';
-import { isServiceAccountConfigured } from '@/lib/google/auth';
 import { getTranslations } from 'next-intl/server';
 import GoogleIntegrationCard from '@/components/google/GoogleIntegrationCard';
 import GoogleConnectForm from '@/components/google/GoogleConnectForm';
@@ -27,8 +26,10 @@ export default async function IntegrationsSettingsPage() {
     },
   });
 
+  // OAuth is available if Google client credentials are configured (regardless of SaaS mode)
   const oauthConfigured = !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
-  const serviceAccountAvailable = isServiceAccountConfigured();
+  // Service account form is always shown - users can paste their key even without env vars
+  const serviceAccountAvailable = true;
 
   const integrationStatus = integration
     ? {
