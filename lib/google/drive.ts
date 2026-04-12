@@ -73,9 +73,9 @@ export async function createFolder(
  */
 export async function ensureRootFolder(
   drive: drive_v3.Drive,
-  integration: { id: string; driveRootFolderId: string | null },
+  integration: { id: string; driveRootFolderId: string | null; driveFolderName?: string },
 ): Promise<string> {
-  const folderName = 'Nametag';
+  const folderName = integration.driveFolderName || 'Nametag';
 
   // If we already have a root folder ID, verify it still exists
   if (integration.driveRootFolderId) {

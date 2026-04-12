@@ -352,7 +352,10 @@ async function processMessage(
   log.debug({ emailLogId: emailLog.id, messageId, subject }, 'Created EmailLog record');
 
   // Match participants to Person records and create EmailLogPerson records
-  await matchAndLinkParticipants(userId, emailLog.id, from, toAddresses, ccAddresses);
+  await matchAndLinkParticipants(
+    userId, emailLog.id, from, toAddresses, ccAddresses,
+    subject, message.snippet ?? null, body,
+  );
 
   return {
     emailLog: {
@@ -445,6 +448,57 @@ export async function matchEmailToPersons(
   return matches.map((m) => m.personId);
 }
 
+/**
+ * Find Person records whose emailKeywords match content in the email.
+ * Searches subject, snippet, body, and sender name against each person's keywords.
+ * Keywords are case-insensitive. Returns personIds not already in excludeIds.
+ */
+export async function matchKeywordsToPersons(
+  userId: string,
+  subject: string | null,
+  snippet: string | null,
+  body: string | null,
+  senderName: string | null,
+  excludePersonIds: Set<string>,
+): Promise<string[]> {
+  // Build searchable text from all email fields
+  const searchText = [subject, snippet, body, senderName]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  if (!searchText) return [];
+
+  // Fetch all persons with non-empty emailKeywords for this user
+  const personsWithKeywords = await prisma.person.findMany({
+    where: {
+      userId,
+      deletedAt: null,
+      emailKeywords: { isEmpty: false },
+    },
+    select: {
+      id: true,
+      emailKeywords: true,
+    },
+  });
+
+  const matched: string[] = [];
+
+  for (const person of personsWithKeywords) {
+    if (excludePersonIds.has(person.id)) continue;
+
+    const hasMatch = person.emailKeywords.some((keyword) =>
+      searchText.includes(keyword.toLowerCase()),
+    );
+
+    if (hasMatch) {
+      matched.push(person.id);
+    }
+  }
+
+  return matched;
+}
+
 // ---------------------------------------------------------------------------
 // 7. Recursively extract text/plain body from MIME parts
 // ---------------------------------------------------------------------------
@@ -527,47 +581,59 @@ async function matchAndLinkParticipants(
   from: ParsedEmailAddress,
   toAddresses: ParsedEmailAddress[],
   ccAddresses: ParsedEmailAddress[],
+  subject: string | null,
+  snippet: string | null,
+  body: string | null,
 ): Promise<number> {
   let matchedCount = 0;
+  const linkedPersonIds = new Set<string>();
 
   // Helper to match and link a single participant
-  async function linkParticipant(emailAddress: string, role: string) {
-    const personIds = await matchEmailToPersons(userId, emailAddress);
-    for (const personId of personIds) {
-      try {
-        await prisma.emailLogPerson.create({
-          data: {
-            emailLogId,
-            personId,
-            role,
-          },
-        });
-        matchedCount++;
-      } catch (err) {
-        // Unique constraint violation — already linked (safe to ignore)
-        if (
-          err instanceof Error &&
-          err.message.includes('Unique constraint')
-        ) {
-          log.debug({ emailLogId, personId, role }, 'EmailLogPerson already exists');
-        } else {
-          throw err;
-        }
+  async function linkPerson(personId: string, role: string) {
+    try {
+      await prisma.emailLogPerson.create({
+        data: { emailLogId, personId, role },
+      });
+      linkedPersonIds.add(personId);
+      matchedCount++;
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('Unique constraint')) {
+        linkedPersonIds.add(personId);
+        log.debug({ emailLogId, personId, role }, 'EmailLogPerson already exists');
+      } else {
+        throw err;
       }
     }
   }
 
-  // Match from
-  await linkParticipant(from.email, 'from');
-
-  // Match to
-  for (const addr of toAddresses) {
-    await linkParticipant(addr.email, 'to');
+  // 1. Match by email address (from, to, cc)
+  async function linkByEmail(emailAddress: string, role: string) {
+    const personIds = await matchEmailToPersons(userId, emailAddress);
+    for (const personId of personIds) {
+      await linkPerson(personId, role);
+    }
   }
 
-  // Match cc
+  await linkByEmail(from.email, 'from');
+  for (const addr of toAddresses) {
+    await linkByEmail(addr.email, 'to');
+  }
   for (const addr of ccAddresses) {
-    await linkParticipant(addr.email, 'cc');
+    await linkByEmail(addr.email, 'cc');
+  }
+
+  // 2. Match by keywords (subject, body, sender name)
+  const keywordMatches = await matchKeywordsToPersons(
+    userId,
+    subject,
+    snippet,
+    body,
+    from.name,
+    linkedPersonIds,
+  );
+
+  for (const personId of keywordMatches) {
+    await linkPerson(personId, 'keyword');
   }
 
   return matchedCount;
