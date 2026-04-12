@@ -1774,6 +1774,12 @@
     "connectionFailed": "Connection failed",
     "syncComplete": "Sync completed successfully",
     "syncFailed": "Sync failed",
+    "syncSuccess": "Gmail sync completed successfully",
+    "syncError": "Gmail sync failed",
+    "confirmDisconnect": "Are you sure you want to disconnect Google? All synced emails and documents will be removed.",
+    "disconnecting": "Disconnecting...",
+    "disconnectSuccess": "Google integration disconnected",
+    "disconnectError": "Failed to disconnect",
     "calendarSync": "Birthday Calendar Sync",
     "calendarSyncDescription": "Sync birthdays and important dates to Google Calendar",
     "calendarSyncNow": "Sync Birthdays Now",
@@ -1854,7 +1860,9 @@
     "attachment": "Attachment",
     "attachments": "Attachments",
     "unread": "Unread",
-    "emailCount": "{count} emails"
+    "emailCount": "{count} emails",
+    "count": "{count} emails",
+    "empty": "No emails logged yet"
   },
   "documents": {
     "title": "Documents",
@@ -1874,6 +1882,10 @@
     "ocrSkipped": "Skipped",
     "retryOcr": "Retry OCR",
     "fileSize": "Size",
-    "documentCount": "{count} documents"
+    "documentCount": "{count} documents",
+    "count": "{count} documents",
+    "empty": "No documents yet",
+    "uploadSuccess": "Document uploaded successfully",
+    "uploadError": "Failed to upload document"
   }
 }

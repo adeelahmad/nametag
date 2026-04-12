@@ -97,7 +97,6 @@ export const GET = withLogging(async function GET() {
       where: { userId: session.user.id },
       select: {
         lastGmailSyncAt: true,
-        gmailHistoryId: true,
         syncInProgress: true,
         lastError: true,
       },
