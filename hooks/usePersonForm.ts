@@ -62,6 +62,7 @@ export interface FormData {
   contactReminderInterval: number;
   contactReminderIntervalUnit: ReminderIntervalUnit;
   cardDavSyncEnabled: boolean;
+  emailKeywords: string;  // Comma-separated keywords for Gmail matching
 }
 
 export interface PersonFormState {
@@ -170,6 +171,7 @@ interface PersonProp {
   contactReminderInterval?: number | null;
   contactReminderIntervalUnit?: ReminderIntervalUnit | null;
   cardDavSyncEnabled?: boolean;
+  emailKeywords?: string[];
   cardDavMapping?: { id: string } | null;
   importantDates?: Array<{
     id: string;
@@ -269,6 +271,7 @@ function buildInitialState(params: {
         'MONTHS',
       cardDavSyncEnabled:
         mode === 'edit' ? (person?.cardDavSyncEnabled ?? true) : false,
+      emailKeywords: person?.emailKeywords?.join(', ') || '',
     },
     importantDates:
       person?.importantDates?.map((d) => ({
