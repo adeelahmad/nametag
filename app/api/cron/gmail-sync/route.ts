@@ -49,9 +49,12 @@ export const GET = withLogging(async function GET(request: Request) {
         lastGmailSyncAt: true,
         gmailSyncEnabled: true,
         calendarSyncEnabled: true,
+        syncInProgress: true,
+        syncStartedAt: true,
       },
     });
 
+    const STALE_LOCK_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
     let syncedCount = 0;
     let skippedCount = 0;
     let errorCount = 0;
@@ -72,26 +75,57 @@ export const GET = withLogging(async function GET(request: Request) {
           continue;
         }
 
-        // Perform Gmail sync
-        if (integration.gmailSyncEnabled) {
-          logger.info({
+        // Check sync lock - skip if already in progress (unless stale)
+        if (integration.syncInProgress) {
+          const lockAge = integration.syncStartedAt
+            ? now.getTime() - integration.syncStartedAt.getTime()
+            : Infinity;
+
+          if (lockAge < STALE_LOCK_TIMEOUT_MS) {
+            logger.info({
+              userId: integration.userId,
+              integrationId: integration.id,
+              lockAgeMs: lockAge,
+            }, 'Sync already in progress, skipping');
+            skippedCount++;
+            continue;
+          }
+
+          // Stale lock - force release
+          logger.warn({
             userId: integration.userId,
             integrationId: integration.id,
-          }, 'Starting background Gmail sync');
-
-          const result = await fullSyncForUser(integration.userId);
-
-          logger.info({
-            userId: integration.userId,
-            integrationId: integration.id,
-            newEmails: result.newEmails,
-            matchedToContacts: result.matchedToContacts,
-            attachmentsProcessed: result.attachmentsProcessed,
-            errors: result.errors,
-          }, 'Background Gmail sync completed');
+            lockAgeMs: lockAge,
+          }, 'Releasing stale sync lock');
         }
 
-        // Perform Calendar sync
+        // Acquire sync lock
+        await prisma.googleIntegration.update({
+          where: { id: integration.id },
+          data: { syncInProgress: true, syncStartedAt: now },
+        });
+
+        try {
+          // Perform Gmail sync
+          if (integration.gmailSyncEnabled) {
+            logger.info({
+              userId: integration.userId,
+              integrationId: integration.id,
+            }, 'Starting background Gmail sync');
+
+            const result = await fullSyncForUser(integration.userId);
+
+            logger.info({
+              userId: integration.userId,
+              integrationId: integration.id,
+              newEmails: result.newEmails,
+              matchedToContacts: result.matchedToContacts,
+              attachmentsProcessed: result.attachmentsProcessed,
+              errors: result.errors,
+            }, 'Background Gmail sync completed');
+          }
+
+          // Perform Calendar sync
         if (integration.calendarSyncEnabled) {
           logger.info({
             userId: integration.userId,
@@ -108,10 +142,18 @@ export const GET = withLogging(async function GET(request: Request) {
           }, 'Background Calendar sync completed');
         }
 
-        syncedCount++;
+          syncedCount++;
+        } finally {
+          // Always release sync lock
+          await prisma.googleIntegration.update({
+            where: { id: integration.id },
+            data: { syncInProgress: false, syncStartedAt: null },
+          }).catch((err) => {
+            logger.error({ integrationId: integration.id, err }, 'Failed to release sync lock');
+          });
+        }
 
         // Small delay between users to avoid overwhelming servers
-        // Only delay if there are more integrations to process
         if (integrations.indexOf(integration) < integrations.length - 1) {
           await new Promise((resolve) => setTimeout(resolve, 200));
         }
