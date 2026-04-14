@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
+import { formatFullName } from '@/lib/nameUtils';
 import PersonAvatar from './PersonPhoto';
 
 interface Person {
@@ -23,7 +23,6 @@ export default function NavigationSearch() {
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [nameOrder, setNameOrder] = useState<'WESTERN' | 'EASTERN'>('WESTERN');
-  const [nameDisplayFormat, setNameDisplayFormat] = useState<NameDisplayFormat>('FULL');
 
   // Fetch user's name order preference
   useEffect(() => {
@@ -32,9 +31,6 @@ export default function NavigationSearch() {
       .then(data => {
         if (data.user?.nameOrder) {
           setNameOrder(data.user.nameOrder);
-        }
-        if (data.user?.nameDisplayFormat) {
-          setNameDisplayFormat(data.user.nameDisplayFormat);
         }
       })
       .catch(() => {
@@ -232,8 +228,8 @@ export default function NavigationSearch() {
               onMouseEnter={() => setHighlightedIndex(index)}
             >
               <div className="flex items-center gap-2 text-foreground font-medium">
-                <PersonAvatar personId={person.id} name={formatFullName(person, nameOrder, nameDisplayFormat)} photo={person.photo} size={24} />
-                {formatFullName(person, nameOrder, nameDisplayFormat)}
+                <PersonAvatar personId={person.id} name={formatFullName(person, nameOrder)} photo={person.photo} size={24} />
+                {formatFullName(person, nameOrder)}
               </div>
             </button>
           ))}

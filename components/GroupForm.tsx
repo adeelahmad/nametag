@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import PillSelector from './PillSelector';
-import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
+import { formatFullName } from '@/lib/nameUtils';
 import { Button } from './ui/Button';
 
 interface Person {
@@ -25,7 +25,6 @@ interface GroupFormProps {
   mode: 'create' | 'edit';
   availablePeople?: Person[]; // Only used in create mode
   nameOrder?: 'WESTERN' | 'EASTERN';
-  nameDisplayFormat?: NameDisplayFormat;
 }
 
 const PRESET_COLORS = [
@@ -39,7 +38,7 @@ const PRESET_COLORS = [
   '#14B8A6', // Teal
 ];
 
-export default function GroupForm({ group, mode, availablePeople = [], nameOrder, nameDisplayFormat }: GroupFormProps) {
+export default function GroupForm({ group, mode, availablePeople = [], nameOrder }: GroupFormProps) {
   const t = useTranslations('groups.form');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -194,7 +193,7 @@ export default function GroupForm({ group, mode, availablePeople = [], nameOrder
             selectedItems={selectedPeople}
             availableItems={availablePeople.map(person => ({
               id: person.id,
-              label: formatFullName(person, nameOrder, nameDisplayFormat),
+              label: formatFullName(person, nameOrder),
             }))}
             onAdd={(item) => setSelectedPeople([...selectedPeople, item])}
             onRemove={(itemId) => setSelectedPeople(selectedPeople.filter(p => p.id !== itemId))}

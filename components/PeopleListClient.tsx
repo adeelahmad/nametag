@@ -9,7 +9,7 @@ import BulkDeleteModal from './BulkDeleteModal';
 import BulkGroupAssignModal from './BulkGroupAssignModal';
 import BulkRelationshipModal from './BulkRelationshipModal';
 import PersonAvatar from './PersonPhoto';
-import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
+import { formatFullName } from '@/lib/nameUtils';
 import { formatDate, type DateFormat } from '@/lib/date-format';
 
 interface PersonRow {
@@ -52,7 +52,6 @@ interface PeopleListClientProps {
   availableGroups: Group[];
   relationshipTypes: RelationshipType[];
   nameOrder?: 'WESTERN' | 'EASTERN';
-  nameDisplayFormat?: NameDisplayFormat;
   translations: {
     surname: string;
     nickname: string;
@@ -88,7 +87,6 @@ export default function PeopleListClient({
   availableGroups,
   relationshipTypes,
   nameOrder,
-  nameDisplayFormat,
   translations: tt,
   commonTranslations: tc,
 }: PeopleListClientProps) {
@@ -330,13 +328,13 @@ export default function PeopleListClient({
                         checked={isChecked}
                         onChange={() => togglePerson(person.id)}
                         className="w-4 h-4 text-primary bg-surface-elevated border-border rounded focus:ring-primary"
-                        aria-label={formatFullName(person, nameOrder, nameDisplayFormat)}
+                        aria-label={formatFullName(person, nameOrder)}
                       />
                     </td>
                     <td className="w-[32px] py-4 px-2">
                       <PersonAvatar
                         personId={person.id}
-                        name={formatFullName(person, nameOrder, nameDisplayFormat)}
+                        name={formatFullName(person, nameOrder)}
                         photo={person.photo}
                         size={32}
                       />

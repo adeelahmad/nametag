@@ -371,7 +371,6 @@ export default function RelationshipManager({
                   onCreateNew={handleCreateNewPerson}
                   highlightPersonId={currentUser?.id}
                   nameOrder={nameOrder}
-                  nameDisplayFormat={nameDisplayFormat}
                 />
               </div>
               <div>

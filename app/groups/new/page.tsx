@@ -23,10 +23,9 @@ export default async function NewGroupPage() {
   // Fetch user's name order preference
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { nameOrder: true, nameDisplayFormat: true },
+    select: { nameOrder: true },
   });
   const nameOrder = user?.nameOrder || 'WESTERN';
-  const nameDisplayFormat = user?.nameDisplayFormat || 'FULL';
 
   // Fetch available people to add to the group
   const availablePeople = await prisma.person.findMany({
@@ -70,7 +69,7 @@ export default async function NewGroupPage() {
             />
           ) : (
             <div className="bg-surface shadow rounded-lg p-6">
-              <GroupForm mode="create" availablePeople={availablePeople} nameOrder={nameOrder} nameDisplayFormat={nameDisplayFormat} />
+              <GroupForm mode="create" availablePeople={availablePeople} nameOrder={nameOrder} />
             </div>
           )}
         </div>

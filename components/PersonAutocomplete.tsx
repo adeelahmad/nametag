@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
+import { formatFullName } from '@/lib/nameUtils';
 import { filterPeople } from '@/lib/search';
 
 interface Person {
@@ -21,7 +21,6 @@ interface PersonAutocompleteProps {
   onCreateNew?: (searchTerm: string) => void;
   highlightPersonId?: string;
   nameOrder?: 'WESTERN' | 'EASTERN';
-  nameDisplayFormat?: NameDisplayFormat;
 }
 
 export default function PersonAutocomplete({
@@ -33,7 +32,6 @@ export default function PersonAutocomplete({
   onCreateNew,
   highlightPersonId,
   nameOrder,
-  nameDisplayFormat,
 }: PersonAutocompleteProps) {
   const t = useTranslations('people');
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,7 +42,7 @@ export default function PersonAutocomplete({
 
   // Get the selected person's name
   const selectedPerson = people.find((p) => p.id === value);
-  const displayValue = selectedPerson ? formatFullName(selectedPerson, nameOrder, nameDisplayFormat) : searchTerm;
+  const displayValue = selectedPerson ? formatFullName(selectedPerson, nameOrder) : searchTerm;
 
   // Filter people based on search term - search in name, surname, and nickname
   const filteredPeople = filterPeople(people, searchTerm, ['name', 'surname', 'nickname']);
@@ -82,7 +80,7 @@ export default function PersonAutocomplete({
   };
 
   const handleSelect = (person: Person) => {
-    onChange(person.id, formatFullName(person, nameOrder, nameDisplayFormat));
+    onChange(person.id, formatFullName(person, nameOrder));
     setSearchTerm('');
     setIsOpen(false);
     inputRef.current?.blur();
@@ -173,7 +171,7 @@ export default function PersonAutocomplete({
             >
               <div className="text-foreground">
                 <span className={person.id === highlightPersonId ? 'font-bold' : ''}>
-                  {formatFullName(person, nameOrder, nameDisplayFormat)}
+                  {formatFullName(person, nameOrder)}
                 </span>
                 {person.id === highlightPersonId && (
                   <span className="font-normal"> {t('youLabel')}</span>
