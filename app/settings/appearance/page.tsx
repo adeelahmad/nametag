@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import ThemeToggle from '@/components/ThemeToggle';
 import DateFormatSelector from '@/components/DateFormatSelector';
 import NameOrderSelector from '@/components/NameOrderSelector';
+import NameDisplayFormatSelector from '@/components/NameDisplayFormatSelector';
 import LanguageSelector from '@/components/LanguageSelector';
 import { prisma } from '@/lib/prisma';
 import { getUserLocale, type SupportedLocale } from '@/lib/locale';
@@ -20,13 +21,14 @@ export default async function AppearanceSettingsPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { theme: true, dateFormat: true, language: true, nameOrder: true },
+    select: { theme: true, dateFormat: true, language: true, nameOrder: true, nameDisplayFormat: true },
   });
 
   const currentTheme = user?.theme || 'DARK';
   const currentDateFormat = user?.dateFormat || 'MDY';
   const currentLanguage = (user?.language as SupportedLocale) || (await getUserLocale(session.user.id));
   const currentNameOrder = (user?.nameOrder as 'WESTERN' | 'EASTERN') || 'WESTERN';
+  const currentNameDisplayFormat = (user?.nameDisplayFormat as 'FULL' | 'NICKNAME_PREFERRED' | 'SHORT') || 'FULL';
 
   return (
     <div className="space-y-6">
@@ -69,6 +71,17 @@ export default async function AppearanceSettingsPage() {
           {t('nameOrderDescription')}
         </p>
         <NameOrderSelector currentOrder={currentNameOrder} />
+      </div>
+
+      {/* Name Display Format Settings */}
+      <div className="bg-surface shadow rounded-lg p-6">
+        <h2 className="text-xl font-bold text-foreground mb-4">
+          {t('nameDisplayFormatTitle')}
+        </h2>
+        <p className="text-muted mb-6">
+          {t('nameDisplayFormatDescription')}
+        </p>
+        <NameDisplayFormatSelector currentFormat={currentNameDisplayFormat} />
       </div>
     </div>
   );
