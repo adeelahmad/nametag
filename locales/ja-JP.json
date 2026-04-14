@@ -630,12 +630,15 @@
       },
       "filterState": {
         "included": "含める。クリックして除外。",
-        "excluded": "除外中。クリックして含める。"
+        "excluded": "除外中。クリックして含める。",
+        "includedWithLabel": "{label}: 含める。クリックして除外。",
+        "excludedWithLabel": "{label}: 除外中。クリックして含める。"
       },
       "filterAction": {
         "include": "含める",
         "exclude": "除外する",
-        "remove": "削除"
+        "remove": "削除",
+        "removeWithLabel": "{label}を削除"
       },
       "filterHelp": {
         "ariaLabel": "グラフフィルターのヘルプ",

@@ -37,6 +37,7 @@ export function dashboardPaths(): Record<string, Record<string, unknown>> {
             name: 'includeGroupIds',
             in: 'query',
             schema: { type: 'array', items: { type: 'string' } },
+            style: 'form',
             description:
               'Comma-separated list of group IDs to include. People must belong to at least one (or all, depending on groupMatchOperator) of these groups.',
             explode: false,
@@ -45,6 +46,7 @@ export function dashboardPaths(): Record<string, Record<string, unknown>> {
             name: 'excludeGroupIds',
             in: 'query',
             schema: { type: 'array', items: { type: 'string' } },
+            style: 'form',
             description:
               'Comma-separated list of group IDs to exclude. People in these groups will not be shown.',
             explode: false,

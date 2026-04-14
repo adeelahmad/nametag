@@ -630,12 +630,15 @@
       },
       "filterState": {
         "included": "Inkludert. Klikk for å ekskludere.",
-        "excluded": "Ekskludert. Klikk for å inkludere."
+        "excluded": "Ekskludert. Klikk for å inkludere.",
+        "includedWithLabel": "{label}: Inkludert. Klikk for å ekskludere.",
+        "excludedWithLabel": "{label}: Ekskludert. Klikk for å inkludere."
       },
       "filterAction": {
         "include": "inkluder",
         "exclude": "ekskluder",
-        "remove": "Fjern"
+        "remove": "fjern",
+        "removeWithLabel": "Fjern {label}"
       },
       "filterHelp": {
         "ariaLabel": "Hjelp for graffilter",

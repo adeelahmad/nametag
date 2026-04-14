@@ -630,12 +630,15 @@
       },
       "filterState": {
         "included": "Included. Click to exclude.",
-        "excluded": "Excluded. Click to include."
+        "excluded": "Excluded. Click to include.",
+        "includedWithLabel": "{label}: Included. Click to exclude.",
+        "excludedWithLabel": "{label}: Excluded. Click to include."
       },
       "filterAction": {
         "include": "include",
         "exclude": "exclude",
-        "remove": "Remove"
+        "remove": "remove",
+        "removeWithLabel": "Remove {label}"
       },
       "filterHelp": {
         "ariaLabel": "Graph filter help",

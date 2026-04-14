@@ -175,7 +175,7 @@ export default function GraphFilterHelpModal() {
                       label={t('graph.filterHelp.example')}
                       color="#3b82f6"
                       isNegative={false}
-                      onRemove={() => undefined}
+                      removeDisabled={true}
                     />
                     <p className="text-muted-foreground mt-2">
                       {t('graph.filterHelp.includingDescription')}
@@ -190,7 +190,7 @@ export default function GraphFilterHelpModal() {
                       label={t('graph.filterHelp.example')}
                       color="#3b82f6"
                       isNegative={true}
-                      onRemove={() => undefined}
+                      removeDisabled={true}
                     />
                     <p className="text-muted-foreground mt-2">
                       {t('graph.filterHelp.excludingDescription')}

@@ -652,8 +652,15 @@ export default function UnifiedNetworkGraph({
                         ? t('filterState.excluded')
                         : t('filterState.included')
                     }
-                    ariaLabel={`${item.label}: ${item.isNegative ? t('filterAction.exclude') : t('filterAction.include')}`}
-                    removeAriaLabel={`${t('filterAction.remove')} ${item.label}`}
+                    ariaLabel={
+                      item.isNegative
+                        ? t('filterState.excludedWithLabel', {
+                            label: item.label,
+                          })
+                        : t('filterState.includedWithLabel', {
+                            label: item.label,
+                          })
+                    }
                   />
                 )}
               />
