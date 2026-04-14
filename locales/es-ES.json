@@ -639,6 +639,19 @@
       },
       "filterHelp": {
         "ariaLabel": "Ayuda de filtro de gráfico",
+        "title": "Cómo funcionan los filtros de grupos",
+        "groupsSection": "Incluir o excluir grupos",
+        "groupsDescription": "De forma predeterminada, los grupos seleccionados se incluyen (verde). Haz clic en un grupo para cambiarlo a excluido (rojo), y viceversa.",
+        "includingSection": "Grupo incluido:",
+        "includingDescription": "Las personas de los grupos incluidos se muestran en el gráfico.",
+        "excludingSection": "Grupo excluido:",
+        "excludingDescription": "Las personas de los grupos excluidos no se muestran en el gráfico.",
+        "matchModeSection": "Modo de filtro",
+        "anyMode": "Cualquiera (O):",
+        "anyModeDescription": "Muestra a las personas que cumplen al menos una de las condiciones seleccionadas, es decir, pertenecen al menos a un grupo incluido y a ningún grupo excluido.",
+        "allMode": "Todos (Y):",
+        "allModeDescription": "Muestra solo a las personas que cumplen todas las condiciones seleccionadas, es decir, pertenecen a todos los grupos incluidos y a ningún grupo excluido.",
+        "example": "Amigos",
         "pillTip": "Haz clic en el nombre de un grupo para incluirlo o excluirlo.",
         "modeTip": "Modo: coincidir con uno o todos los grupos incluidos."
       }

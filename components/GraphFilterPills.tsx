@@ -1,3 +1,7 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 type MatchMode = 'or' | 'and';
 
 interface GraphFilterModePillProps {
@@ -56,6 +60,7 @@ export function GraphFilterGroupPill({
   onRemove,
   removeAriaLabel,
 }: GraphFilterGroupPillProps) {
+  const tCommon = useTranslations('common');
   const isInteractive = Boolean(onToggle);
 
   return (
@@ -100,7 +105,7 @@ export function GraphFilterGroupPill({
           onKeyDown={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           className="hover:bg-foreground/10 rounded-full p-0.5 transition-colors"
-          aria-label={removeAriaLabel || `Remove ${label}`}
+          aria-label={removeAriaLabel || `${tCommon('remove')} ${label}`}
         >
           <svg
             className="w-4 h-4"

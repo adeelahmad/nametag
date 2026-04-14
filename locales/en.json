@@ -639,6 +639,19 @@
       },
       "filterHelp": {
         "ariaLabel": "Graph filter help",
+        "title": "How group filters work",
+        "groupsSection": "Include or exclude groups",
+        "groupsDescription": "By default, selected groups are included (green). Click a group to switch it to excluded (red), and vice versa.",
+        "includingSection": "Group included:",
+        "includingDescription": "People from included groups are shown in the graph.",
+        "excludingSection": "Group excluded:",
+        "excludingDescription": "People from excluded groups are not shown in the graph.",
+        "matchModeSection": "Filter mode",
+        "anyMode": "Any (OR):",
+        "anyModeDescription": "Shows people who match at least one selected condition, meaning they belong to at least one included group and no excluded groups.",
+        "allMode": "All (AND):",
+        "allModeDescription": "Shows only people who meet all selected conditions, meaning they belong to all included groups and no excluded groups.",
+        "example": "Friends",
         "pillTip": "Click a group name to include or exclude it.",
         "modeTip": "Mode: match one or all selected groups."
       }

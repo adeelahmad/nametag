@@ -639,6 +639,19 @@
       },
       "filterHelp": {
         "ariaLabel": "Hjelp for graffilter",
+        "title": "Slik fungerer gruppefiltre",
+        "groupsSection": "Inkluder eller ekskluder grupper",
+        "groupsDescription": "Som standard er valgte grupper inkludert (grønn). Klikk på en gruppe for å bytte den til ekskludert (rød), og omvendt.",
+        "includingSection": "Gruppe inkludert:",
+        "includingDescription": "Personer fra inkluderte grupper vises i grafen.",
+        "excludingSection": "Gruppe ekskludert:",
+        "excludingDescription": "Personer fra ekskluderte grupper vises ikke i grafen.",
+        "matchModeSection": "Filtermodus",
+        "anyMode": "Hvilken som helst (ELLER):",
+        "anyModeDescription": "Viser personer som matcher minst én valgt betingelse, altså tilhører minst én inkludert gruppe og ingen ekskluderte grupper.",
+        "allMode": "Alle (OG):",
+        "allModeDescription": "Viser bare personer som oppfyller alle valgte betingelser, altså tilhører alle inkluderte grupper og ingen ekskluderte grupper.",
+        "example": "Venner",
         "pillTip": "Klikk på et gruppenavn for å inkludere eller ekskludere det.",
         "modeTip": "Modus: match én eller alle inkluderte grupper."
       }

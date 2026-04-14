@@ -639,6 +639,19 @@
       },
       "filterHelp": {
         "ariaLabel": "图筛选帮助",
+        "title": "分组筛选的工作方式",
+        "groupsSection": "包含或排除分组",
+        "groupsDescription": "默认情况下，已选择的分组会被包含（绿色）。点击分组可切换为排除（红色），再次点击可切回。",
+        "includingSection": "分组已包含：",
+        "includingDescription": "来自已包含分组的联系人会显示在图中。",
+        "excludingSection": "分组已排除：",
+        "excludingDescription": "来自已排除分组的联系人不会显示在图中。",
+        "matchModeSection": "筛选模式",
+        "anyMode": "任意（OR）：",
+        "anyModeDescription": "显示满足至少一个已选条件的联系人，也就是属于至少一个已包含分组且不属于任何已排除分组。",
+        "allMode": "全部（AND）：",
+        "allModeDescription": "仅显示满足所有已选条件的联系人，也就是属于所有已包含分组且不属于任何已排除分组。",
+        "example": "朋友",
         "pillTip": "点击分组名称即可将其包含或排除。",
         "modeTip": "模式：匹配一个或所有已包含的分组。"
       }
