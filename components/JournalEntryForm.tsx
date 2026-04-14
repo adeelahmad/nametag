@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import MarkdownEditor from '@/components/MarkdownEditor';
 import PillSelector from '@/components/PillSelector';
 import { Button } from '@/components/ui/Button';
-import { formatFullName } from '@/lib/nameUtils';
+import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
 
 interface PersonOption {
   id: string;
@@ -27,6 +27,7 @@ interface JournalEntryFormProps {
   };
   availablePeople: PersonOption[];
   nameOrder?: 'WESTERN' | 'EASTERN';
+  nameDisplayFormat?: NameDisplayFormat;
   dateFormat?: 'MDY' | 'DMY' | 'YMD';
 }
 
@@ -49,6 +50,7 @@ export default function JournalEntryForm({
   initialData,
   availablePeople,
   nameOrder,
+  nameDisplayFormat,
 }: JournalEntryFormProps) {
   const t = useTranslations('journal.form');
   const router = useRouter();
@@ -61,7 +63,7 @@ export default function JournalEntryForm({
   // Build pill-compatible list from availablePeople
   const pillPeople: PillPerson[] = availablePeople.map((p) => ({
     id: p.id,
-    label: formatFullName(p, nameOrder),
+    label: formatFullName(p, nameOrder, nameDisplayFormat),
   }));
 
   // Resolve initial selected people
