@@ -35,6 +35,11 @@ export default function JournalFilters({ people, currentPersonIds, currentSearch
     [people, nameOrder, nameDisplayFormat],
   );
 
+  const dropdownPeople: PillPerson[] = useMemo(
+    () => people.map((p) => ({ id: p.id, label: formatFullName(p, nameOrder) })),
+    [people, nameOrder],
+  );
+
   const selectedPeople = useMemo(
     () =>
       currentPersonIds
@@ -83,7 +88,7 @@ export default function JournalFilters({ people, currentPersonIds, currentSearch
       </form>
       <PillSelector
         selectedItems={selectedPeople}
-        availableItems={pillPeople.filter((p) => !selectedPeople.some((s) => s.id === p.id))}
+        availableItems={dropdownPeople.filter((p) => !selectedPeople.some((s) => s.id === p.id))}
         onAdd={handleAddPerson}
         onRemove={handleRemovePerson}
         placeholder={t('filterByPerson')}

@@ -125,6 +125,7 @@ export default async function JournalPage({
           <JournalTimeline
             entries={serializedEntries}
             nameOrder={nameOrder}
+            nameDisplayFormat={nameDisplayFormat}
             locale={locale}
           />
         </div>

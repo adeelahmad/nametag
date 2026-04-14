@@ -695,6 +695,7 @@ export default async function PersonDetailsPage({
                   date: latestJournalEntry.date.toISOString(),
                 } : null}
                 nameOrder={nameOrder}
+                nameDisplayFormat={nameDisplayFormat}
                 locale={user?.language || 'en'}
               />
 
