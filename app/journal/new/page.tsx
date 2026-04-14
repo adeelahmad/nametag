@@ -16,7 +16,7 @@ export default async function NewJournalEntryPage() {
   const [user, availablePeople] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { nameOrder: true, dateFormat: true },
+      select: { nameOrder: true, nameDisplayFormat: true, dateFormat: true },
     }),
     prisma.person.findMany({
       where: {
@@ -34,6 +34,7 @@ export default async function NewJournalEntryPage() {
   ]);
 
   const nameOrder = (user?.nameOrder ?? 'WESTERN') as 'WESTERN' | 'EASTERN';
+  const nameDisplayFormat = user?.nameDisplayFormat || 'FULL';
   const dateFormat = (user?.dateFormat ?? 'MDY') as 'MDY' | 'DMY' | 'YMD';
 
   return (
@@ -57,6 +58,7 @@ export default async function NewJournalEntryPage() {
               mode="create"
               availablePeople={availablePeople}
               nameOrder={nameOrder}
+              nameDisplayFormat={nameDisplayFormat}
               dateFormat={dateFormat}
             />
           </div>

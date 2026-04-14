@@ -34,9 +34,10 @@ export default async function EditGroupPage({
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { nameOrder: true },
+    select: { nameOrder: true, nameDisplayFormat: true },
   });
   const nameOrder = user?.nameOrder || 'WESTERN';
+  const nameDisplayFormat = user?.nameDisplayFormat || 'FULL';
 
   return (
     <div className="min-h-screen bg-background">
@@ -64,7 +65,7 @@ export default async function EditGroupPage({
           </h1>
 
           <div className="bg-surface shadow rounded-lg p-6">
-            <GroupForm group={group} mode="edit" nameOrder={nameOrder} />
+            <GroupForm group={group} mode="edit" nameOrder={nameOrder} nameDisplayFormat={nameDisplayFormat} />
           </div>
         </div>
       </main>

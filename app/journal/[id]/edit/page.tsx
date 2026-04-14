@@ -35,7 +35,7 @@ export default async function EditJournalEntryPage({
     }),
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { nameOrder: true, dateFormat: true },
+      select: { nameOrder: true, nameDisplayFormat: true, dateFormat: true },
     }),
     prisma.person.findMany({
       where: {
@@ -57,6 +57,7 @@ export default async function EditJournalEntryPage({
   }
 
   const nameOrder = (user?.nameOrder ?? 'WESTERN') as 'WESTERN' | 'EASTERN';
+  const nameDisplayFormat = user?.nameDisplayFormat || 'FULL';
   const dateFormat = (user?.dateFormat ?? 'MDY') as 'MDY' | 'DMY' | 'YMD';
 
   // Serialize date to YYYY-MM-DD string for the form
@@ -92,6 +93,7 @@ export default async function EditJournalEntryPage({
               initialData={initialData}
               availablePeople={availablePeople}
               nameOrder={nameOrder}
+              nameDisplayFormat={nameDisplayFormat}
               dateFormat={dateFormat}
             />
           </div>
