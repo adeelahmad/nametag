@@ -48,7 +48,7 @@ export function formatDateWithoutYear(date: Date | string, format: DateFormat): 
   }
 
   const day = d.getDate();
-  const monthName = d.toLocaleDateString(undefined, { month: 'long' });
+  const monthName = d.toLocaleDateString('en-US', { month: 'long' });
 
   // For DMY format, show "day Month" (e.g., "5 January")
   // For MDY and YMD formats, show "Month day" (e.g., "January 5")
