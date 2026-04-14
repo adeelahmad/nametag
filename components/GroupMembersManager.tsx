@@ -57,7 +57,7 @@ export default function GroupMembersManager({
   // Transform people to PillItem format
   const pillItems = availablePeople.map((person) => ({
     id: person.id,
-    label: formatFullName(person, nameOrder, nameDisplayFormat),
+    label: formatFullName(person, nameOrder),
   }));
 
   const selectedItems = currentMembers.map((member) => ({

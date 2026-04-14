@@ -31,11 +31,10 @@ export default async function PeoplePage({
   // Fetch user's date format preference
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { dateFormat: true, nameOrder: true, nameDisplayFormat: true },
+    select: { dateFormat: true, nameOrder: true },
   });
   const dateFormat = user?.dateFormat || 'MDY';
   const nameOrder = user?.nameOrder || 'WESTERN';
-  const nameDisplayFormat = user?.nameDisplayFormat || 'FULL';
 
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
@@ -237,7 +236,6 @@ export default async function PeoplePage({
                 availableGroups={allGroups}
                 relationshipTypes={relationshipTypes}
                 nameOrder={nameOrder}
-                nameDisplayFormat={nameDisplayFormat}
                 translations={{
                   surname: t('surname'),
                   nickname: t('nickname'),

@@ -370,7 +370,7 @@ export default async function PersonDetailsPage({
                     <p className="text-foreground">
                       {[
                         person.prefix,
-                        formatFullName(person, nameOrder, nameDisplayFormat),
+                        formatFullName(person, nameOrder),
                         person.suffix,
                       ]
                         .filter(Boolean)
