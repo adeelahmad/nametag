@@ -97,21 +97,17 @@ export const GET = withAuth(async (request, session) => {
     const groupOperator = searchParams.get('groupMatchOperator') === 'and' ? 'AND' : 'OR';
     const includeGroupClause =
       includePredicates.length > 0 ? { [groupOperator]: includePredicates } : null;
+    const filterPredicates: Array<Record<string, unknown>> = [];
+
+    if (includeGroupClause) {
+      filterPredicates.push(includeGroupClause);
+    }
+    filterPredicates.push(...excludePredicates);
+
     const whereClause = {
       userId: session.user.id,
       deletedAt: null,
-      ...(includeGroupClause && excludePredicates.length === 0
-        ? includeGroupClause
-        : {}),
-      ...(includeGroupClause && excludePredicates.length > 0
-        ? {
-            AND: [includeGroupClause, ...excludePredicates],
-          }
-        : excludePredicates.length > 0
-          ? {
-              AND: excludePredicates,
-            }
-          : {}),
+      ...(filterPredicates.length > 0 ? { AND: filterPredicates } : {}),
     };
 
     // Fetch people with optimized select to minimize payload
