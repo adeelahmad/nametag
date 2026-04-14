@@ -444,4 +444,40 @@ describe('Dashboard Graph API Route', () => {
       ],
     });
   });
+
+  it('should build include-only filter inside AND wrapper', async () => {
+    const request = new NextRequest(
+      'http://localhost:3000/api/dashboard/graph?groupMatchOperator=and&includeGroupIds=g1',
+    );
+
+    personFindMany.mockResolvedValue([]);
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(200);
+    expect(personFindMany).toHaveBeenCalledTimes(1);
+
+    const queryArg = personFindMany.mock.calls[0][0];
+    // Result should be: (g1)
+    expect(queryArg.where).toEqual({
+      userId: 'user123',
+      deletedAt: null,
+      AND: [
+        {
+          AND: [
+            {
+              groups: {
+                some: {
+                  groupId: 'g1',
+                  group: {
+                    deletedAt: null,
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
 });
