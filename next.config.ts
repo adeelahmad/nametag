@@ -6,8 +6,12 @@ const withNextIntl = createNextIntlPlugin('./i18n.ts');
 const nextConfig: NextConfig = {
   devIndicators: false,
 
-  // Externalize Pino from Next.js webpack bundle (uses Node.js native modules)
-  serverExternalPackages: ['pino', 'pino-pretty'],
+  // Externalize packages that use Node.js native modules from Next.js webpack bundle
+  serverExternalPackages: [
+    'pino', 'pino-pretty',
+    '@googleapis/gmail', '@googleapis/drive', '@googleapis/calendar',
+    'google-auth-library',
+  ],
 
   // Production optimization
   output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
