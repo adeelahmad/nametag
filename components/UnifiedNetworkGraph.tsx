@@ -13,6 +13,7 @@ import 'd3-transition';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import PillSelector from './PillSelector';
+import { GraphFilterGroupPill } from './GraphFilterPills';
 
 interface GraphNode extends SimulationNodeDatum {
   id: string;
@@ -638,61 +639,22 @@ export default function UnifiedNetworkGraph({
                 emptyMessage={t('noGroupsFound')}
                 showAllOnFocus={true}
                 renderPill={(item, onRemove) => (
-                  <div
+                  <GraphFilterGroupPill
                     key={item.id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => toggleFilterSign(item.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        toggleFilterSign(item.id);
-                      }
-                    }}
+                    id={item.id}
+                    label={item.label}
+                    color={item.color}
+                    isNegative={item.isNegative}
+                    onToggle={() => toggleFilterSign(item.id)}
+                    onRemove={onRemove}
                     title={
                       item.isNegative
                         ? t('filterState.excluded')
                         : t('filterState.included')
                     }
-                    aria-label={`${item.label}: ${item.isNegative ? t('filterAction.exclude') : t('filterAction.include')}`}
-                    className={`inline-flex h-8 items-center gap-1.5 px-3 border rounded-full text-sm font-medium shadow-sm cursor-pointer select-none transition-colors ${
-                      item.isNegative
-                        ? 'bg-red-100 border-red-300 hover:bg-red-200 dark:bg-red-900/30 dark:border-red-700/50 dark:hover:bg-red-900/45'
-                        : 'bg-green-100 border-green-300 hover:bg-green-200 dark:bg-green-900/30 dark:border-green-700/50 dark:hover:bg-green-900/45'
-                    }`}
-                  >
-                    <div
-                      className="w-3 h-3 rounded-full shrink-0 ring-1 ring-white/50"
-                      style={{ backgroundColor: item.color || '#7bf080' }}
-                    />
-                    <span className="text-foreground">{item.label}</span>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemove();
-                      }}
-                      onKeyDown={(e) => e.stopPropagation()}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      className="hover:bg-foreground/10 rounded-full p-0.5 transition-colors"
-                      aria-label={`${t('filterAction.remove')} ${item.label}`}
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+                    ariaLabel={`${item.label}: ${item.isNegative ? t('filterAction.exclude') : t('filterAction.include')}`}
+                    removeAriaLabel={`${t('filterAction.remove')} ${item.label}`}
+                  />
                 )}
               />
             </div>

@@ -639,8 +639,19 @@
       },
       "filterHelp": {
         "ariaLabel": "Hilfe zum Graph-Filter",
-        "pillTip": "Klicke auf einen Gruppennamen um ihn ein- oder auszuschließen.",
-        "modeTip": "Modus: eine oder alle eingeschlossenen Gruppen abgleichen."
+        "title": "Funktionsweise Gruppenfilter",
+        "groupsSection": "Gruppen ein-/ausschließen",
+        "groupsDescription": "Standardmäßig sind ausgewählte Gruppen eingeschlossen (grün). Mit einem Klick auf die Gruppe kann der Status zu ausschließen (rot) geändert werden und umgekehrt.",
+        "includingSection": "Gruppe eingeschlossen:",
+        "includingDescription": "Personen aus eingeschlossenen Gruppen werden im Graphen angezeigt.",
+        "excludingSection": "Gruppe ausgeschlossen:",
+        "excludingDescription": "Personen aus ausgeschlossenen Gruppen werden nicht im Graphen angezeigt.",
+        "matchModeSection": "Filtermodus",
+        "anyMode": "Beliebig (ODER):",
+        "anyModeDescription": "Es werden Personen angezeigt, die mindestens einer der ausgewählten Bedingungen entsprechen, also mindestens einer inkludierten Gruppe und keiner exkludierten Gruppe angehören.",
+        "allMode": "Alle (UND):",
+        "allModeDescription": "Es werden nur Personen angezeigt, die alle ausgewählten Bedingungen erfüllen, also allen inkludierten Gruppen und keiner exkludierten Gruppen angehören.",
+        "example": "Freunde"
       }
     }
   },

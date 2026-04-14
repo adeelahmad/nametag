@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import { prisma } from '@/lib/prisma';
 import UnifiedNetworkGraph from '@/components/UnifiedNetworkGraph';
+import GraphFilterHelpModal from '@/components/GraphFilterHelpModal';
 import { formatDate, formatDateWithoutYear } from '@/lib/date-format';
 import { getUpcomingEvents } from '@/lib/upcoming-events';
 import { getTranslations } from 'next-intl/server';
@@ -121,23 +122,7 @@ export default async function DashboardPage() {
                 <h2 className="text-xl font-bold text-foreground">
                   {t('yourNetwork')}
                 </h2>
-                <div className="group/help relative inline-flex items-center">
-                  <button
-                    type="button"
-                    className="inline-flex w-4 h-4 items-center justify-center rounded-full border border-border text-xs font-bold text-muted hover:text-foreground hover:bg-surface-elevated transition-colors shrink-0"
-                    aria-label={t('graph.filterHelp.ariaLabel')}
-                  >
-                    ?
-                  </button>
-                  <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-max max-w-[90vw] -translate-x-1/2 rounded-md border border-border bg-surface px-2.5 py-2 text-xs text-foreground shadow-lg opacity-0 translate-y-1 transition-all group-hover/help:opacity-100 group-hover/help:translate-y-0">
-                    <p className="whitespace-nowrap">
-                      {t('graph.filterHelp.modeTip')}
-                    </p>
-                    <p className="mt-1 text-muted-foreground">
-                      {t('graph.filterHelp.pillTip')}
-                    </p>
-                  </div>
-                </div>
+                <GraphFilterHelpModal />
               </div>
               <UnifiedNetworkGraph
                 apiEndpoint="/api/dashboard/graph"
