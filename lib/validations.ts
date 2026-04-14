@@ -369,6 +369,10 @@ export const updateNameOrderSchema = z.object({
   nameOrder: z.enum(['WESTERN', 'EASTERN']),
 });
 
+export const updateNameDisplayFormatSchema = z.object({
+  nameDisplayFormat: z.enum(['FULL', 'NICKNAME_PREFERRED', 'SHORT']),
+});
+
 // ============================================
 // Import schema
 // ============================================
