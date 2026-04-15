@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { getTranslations } from 'next-intl/server';
 import Navigation from '@/components/Navigation';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
-import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
+import { formatGraphName, type NameDisplayFormat } from '@/lib/nameUtils';
 import { Button } from '@/components/ui/Button';
 import DeleteJournalEntryButton from '@/components/DeleteJournalEntryButton';
 
@@ -115,7 +115,7 @@ export default async function JournalEntryDetailPage({
                       href={`/people/${person.id}`}
                       className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors"
                     >
-                      {formatFullName(person, nameOrder, nameDisplayFormat)}
+                      {formatGraphName(person, nameOrder, nameDisplayFormat)}
                     </Link>
                   ))}
                 </div>

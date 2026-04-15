@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import PillSelector from '@/components/PillSelector';
-import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
+import { formatFullName, formatGraphName, type NameDisplayFormat } from '@/lib/nameUtils';
 
 interface PersonOption {
   id: string;
@@ -31,7 +31,7 @@ export default function JournalFilters({ people, currentPersonIds, currentSearch
   const router = useRouter();
 
   const pillPeople: PillPerson[] = useMemo(
-    () => people.map((p) => ({ id: p.id, label: formatFullName(p, nameOrder, nameDisplayFormat) })),
+    () => people.map((p) => ({ id: p.id, label: formatGraphName(p, nameOrder, nameDisplayFormat) })),
     [people, nameOrder, nameDisplayFormat],
   );
 

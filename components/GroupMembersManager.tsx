@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import PillSelector from './PillSelector';
 import PersonAvatar from './PersonPhoto';
-import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
+import { formatFullName, formatGraphName, type NameDisplayFormat } from '@/lib/nameUtils';
 
 interface Person {
   id: string;
@@ -62,7 +62,7 @@ export default function GroupMembersManager({
 
   const selectedItems = currentMembers.map((member) => ({
     id: member.id,
-    label: formatFullName(member, nameOrder, nameDisplayFormat),
+    label: formatGraphName(member, nameOrder, nameDisplayFormat),
   }));
 
   const handleAdd = async (item: { id: string; label: string }) => {
@@ -105,7 +105,7 @@ export default function GroupMembersManager({
         return;
       }
 
-      toast.success(t('removedSuccess', { name: formatFullName(member, nameOrder, nameDisplayFormat), group: groupName }));
+      toast.success(t('removedSuccess', { name: formatGraphName(member, nameOrder, nameDisplayFormat), group: groupName }));
       router.refresh();
     } catch {
       toast.error(t('errorConnection'));
