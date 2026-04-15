@@ -292,14 +292,14 @@ export default async function PersonDetailsPage({
               <div className="flex items-start gap-5 flex-1 min-w-0">
                 <PersonAvatar
                   personId={person.id}
-                  name={formatFullName(person, nameOrder, nameDisplayFormat)}
+                  name={formatGraphName(person, nameOrder, nameDisplayFormat)}
                   photo={person.photo}
                   size={72}
                   loading="eager"
                 />
                 <div className="flex-1 min-w-0">
                   <h1 className="text-2xl sm:text-3xl font-bold text-foreground break-words">
-                    {formatFullName(person, nameOrder, nameDisplayFormat)}
+                    {formatGraphName(person, nameOrder, nameDisplayFormat)}
                   </h1>
                 {person.groups.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -346,7 +346,7 @@ export default async function PersonDetailsPage({
                 </Link>
                 <PersonActionsMenu
                   personId={person.id}
-                  personName={formatFullName(person, nameOrder, nameDisplayFormat)}
+                  personName={formatGraphName(person, nameOrder, nameDisplayFormat)}
                   person={serializedPerson}
                   hasCardDavSync={!!cardDavConnection && !!person.cardDavMapping}
                   allPeople={allPeople}

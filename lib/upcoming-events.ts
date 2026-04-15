@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
+import { formatGraphName, type NameDisplayFormat } from '@/lib/nameUtils';
 import { parseAsLocalDate } from '@/lib/date-format';
 import { getTranslationsForLocale } from '@/lib/i18n-utils';
 import { getDateDisplayTitle } from '@/lib/important-date-types';
@@ -178,7 +178,7 @@ export async function getUpcomingEvents(userId: string): Promise<UpcomingEvent[]
       upcomingEvents.push({
         id: `important-${importantDate.id}`,
         personId: importantDate.person.id,
-        personName: formatFullName(importantDate.person, nameOrder, nameDisplayFormat),
+        personName: formatGraphName(importantDate.person, nameOrder, nameDisplayFormat),
         type: 'important_date',
         title: getDateDisplayTitle(importantDate, tDates),
         titleKey: null,
@@ -208,7 +208,7 @@ export async function getUpcomingEvents(userId: string): Promise<UpcomingEvent[]
         upcomingEvents.push({
           id: `contact-${person.id}`,
           personId: person.id,
-          personName: formatFullName(person, nameOrder, nameDisplayFormat),
+          personName: formatGraphName(person, nameOrder, nameDisplayFormat),
           type: 'contact_reminder',
           title: null,
           titleKey: 'timeToCatchUp',

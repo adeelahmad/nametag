@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import PersonForm from '@/components/PersonForm';
 import Navigation from '@/components/Navigation';
-import { formatFullName, type NameDisplayFormat } from '@/lib/nameUtils';
+import { formatGraphName, type NameDisplayFormat } from '@/lib/nameUtils';
 import { canEnableReminder } from '@/lib/billing/subscription';
 import { getTranslations } from 'next-intl/server';
 
@@ -101,12 +101,12 @@ export default async function EditPersonPage({
               href={`/people/${person.id}`}
               className="text-primary hover:underline text-sm"
             >
-              {t('backToPerson', { name: formatFullName(person, nameOrder, nameDisplayFormat) })}
+              {t('backToPerson', { name: formatGraphName(person, nameOrder, nameDisplayFormat) })}
             </Link>
           </div>
 
           <h1 className="text-3xl font-bold text-foreground mb-6">
-            {t('editPerson', { name: formatFullName(person, nameOrder, nameDisplayFormat) })}
+            {t('editPerson', { name: formatGraphName(person, nameOrder, nameDisplayFormat) })}
           </h1>
 
           <div className="bg-surface shadow rounded-lg p-6">
