@@ -99,10 +99,9 @@ export default function GraphFilterHelpModal() {
   return (
     <>
       <button
-        ref={triggerButtonRef}
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex w-6 h-6 items-center justify-center rounded-full border border-border text-sm font-bold text-muted hover:text-foreground hover:bg-surface-elevated transition-colors shrink-0"
+        className="inline-flex w-6 h-6 items-center justify-center rounded-full border border-foreground/40 bg-surface-elevated text-base font-bold text-muted hover:text-foreground hover:border-foreground transition-colors shrink-0"
         aria-label={t('graph.filterHelp.ariaLabel')}
         title={t('graph.filterHelp.ariaLabel')}
       >
