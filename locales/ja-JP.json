@@ -630,7 +630,44 @@
       "filterPlaceholder": "グループでフィルタリングするには入力してください...",
       "noGroupsFound": "一致するグループは見つかりませんでした",
       "clusterByGroup": "グループごとにクラスタリング",
-      "recenterGraph": "グラフを再中心に配置"
+      "recenterGraph": "グラフを再中心に配置",
+      "matchMode": {
+        "any": "いずれか",
+        "all": "すべて",
+        "anyTitle": "いずれかのグループに一致",
+        "allTitle": "すべてのグループに一致",
+        "ariaLabel": "{title}。クリックして切り替え。"
+      },
+      "filterState": {
+        "included": "含める。クリックして除外。",
+        "excluded": "除外中。クリックして含める。",
+        "includedWithLabel": "{label}: 含める。クリックして除外。",
+        "excludedWithLabel": "{label}: 除外中。クリックして含める。"
+      },
+      "filterAction": {
+        "include": "含める",
+        "exclude": "除外する",
+        "remove": "削除",
+        "removeWithLabel": "{label}を削除"
+      },
+      "filterHelp": {
+        "ariaLabel": "グラフフィルターのヘルプ",
+        "title": "グループフィルターの仕組み",
+        "groupsSection": "グループの含める/除外",
+        "groupsDescription": "デフォルトでは、選択したグループは含める（緑）になります。グループをクリックすると除外（赤）に切り替わり、もう一度クリックで戻せます。",
+        "includingSection": "グループを含める:",
+        "includingDescription": "含めたグループの人物はグラフに表示されます。",
+        "excludingSection": "グループを除外:",
+        "excludingDescription": "除外したグループの人物はグラフに表示されません。",
+        "matchModeSection": "フィルターモード",
+        "anyMode": "いずれか（OR）:",
+        "anyModeDescription": "選択した条件のうち少なくとも1つに一致する人物を表示します。つまり、少なくとも1つの含めたグループに属し、除外したグループには属していない人物です。",
+        "allMode": "すべて（AND）:",
+        "allModeDescription": "選択した条件をすべて満たす人物のみを表示します。つまり、含めたすべてのグループに属し、除外したグループには属していない人物です。",
+        "example": "友だち",
+        "pillTip": "グループ名をクリックして、含める/除外を切り替えます。",
+        "modeTip": "モード: 含めたグループの1つまたはすべてに一致。"
+      }
     }
   },
   "people": {

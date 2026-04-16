@@ -630,7 +630,42 @@
       "filterPlaceholder": "Tippen, um nach Gruppen zu filtern...",
       "noGroupsFound": "Keine Gruppen gefunden passend zu",
       "clusterByGroup": "Nach Gruppe clustern",
-      "recenterGraph": "Graph neu zentrieren"
+      "recenterGraph": "Graph neu zentrieren",
+      "matchMode": {
+        "any": "Beliebig",
+        "all": "Alle",
+        "anyTitle": "Übereinstimmung mit beliebiger Gruppe",
+        "allTitle": "Übereinstimmung mit allen Gruppen",
+        "ariaLabel": "{title}. Klicken zum Wechseln."
+      },
+      "filterState": {
+        "included": "Eingeschlossen. Klicken zum Ausschließen.",
+        "excluded": "Ausgeschlossen. Klicken zum Einschließen.",
+        "includedWithLabel": "{label}: Eingeschlossen. Klicken zum Ausschließen.",
+        "excludedWithLabel": "{label}: Ausgeschlossen. Klicken zum Einschließen."
+      },
+      "filterAction": {
+        "include": "einschließen",
+        "exclude": "ausschließen",
+        "remove": "entfernen",
+        "removeWithLabel": "{label} entfernen"
+      },
+      "filterHelp": {
+        "ariaLabel": "Hilfe zum Graph-Filter",
+        "title": "Funktionsweise Gruppenfilter",
+        "groupsSection": "Gruppen ein-/ausschließen",
+        "groupsDescription": "Standardmäßig sind ausgewählte Gruppen eingeschlossen (grün). Mit einem Klick auf die Gruppe kann der Status zu ausschließen (rot) geändert werden und umgekehrt.",
+        "includingSection": "Gruppe eingeschlossen:",
+        "includingDescription": "Personen aus eingeschlossenen Gruppen werden im Graphen angezeigt.",
+        "excludingSection": "Gruppe ausgeschlossen:",
+        "excludingDescription": "Personen aus ausgeschlossenen Gruppen werden nicht im Graphen angezeigt.",
+        "matchModeSection": "Filtermodus",
+        "anyMode": "Beliebig (ODER):",
+        "anyModeDescription": "Es werden Personen angezeigt, die mindestens einer der ausgewählten Bedingungen entsprechen, also mindestens einer inkludierten Gruppe und keiner exkludierten Gruppe angehören.",
+        "allMode": "Alle (UND):",
+        "allModeDescription": "Es werden nur Personen angezeigt, die alle ausgewählten Bedingungen erfüllen, also allen inkludierten Gruppen und keiner exkludierten Gruppen angehören.",
+        "example": "Freunde"
+      }
     }
   },
   "people": {
