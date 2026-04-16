@@ -114,6 +114,7 @@ describe('Locale Utilities', () => {
         theme: 'LIGHT',
         dateFormat: 'MDY',
         nameOrder: 'WESTERN',
+        nameDisplayFormat: 'FULL',
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -152,6 +153,7 @@ describe('Locale Utilities', () => {
         theme: 'LIGHT',
         dateFormat: 'MDY',
         nameOrder: 'WESTERN',
+        nameDisplayFormat: 'FULL',
         createdAt: new Date(),
         updatedAt: new Date(),
       });

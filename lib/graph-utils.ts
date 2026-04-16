@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { formatGraphName } from './nameUtils';
+import { formatGraphName, type NameDisplayFormat } from './nameUtils';
 
 export interface GraphNode {
   id: string;
@@ -137,10 +137,15 @@ interface Person
   groups: { group: Group }[];
 }
 
-export function personToGraphNode(person: Person, isCenter = false, nameOrder?: 'WESTERN' | 'EASTERN'): GraphNode {
+export function personToGraphNode(
+  person: Person,
+  isCenter = false,
+  nameOrder?: 'WESTERN' | 'EASTERN',
+  nameDisplayFormat?: NameDisplayFormat
+): GraphNode {
   return {
     id: person.id,
-    label: formatGraphName(person, nameOrder),
+    label: formatGraphName(person, nameOrder, nameDisplayFormat),
     groups: person.groups.map((pg) => pg.group.name),
     colors: person.groups.map((pg) => pg.group.color || '#3B82F6'),
     isCenter,

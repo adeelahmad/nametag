@@ -109,6 +109,16 @@
       "nameOrderExample": "Eksempel",
       "nameOrderSuccess": "Navnerekkefølge oppdatert",
       "nameOrderError": "Kunne ikke oppdatere navnerekkefølge",
+      "nameDisplayFormatTitle": "Navnevisningsformat",
+      "nameDisplayFormatDescription": "Velg hvilke deler av navnet som vises",
+      "nameDisplayFormatFull": "Fullt navn",
+      "nameDisplayFormatFullDescription": "Vis alle navnedeler inkludert kallenavn",
+      "nameDisplayFormatNicknamePreferred": "Kallenavn foretrukket",
+      "nameDisplayFormatNicknamePreferredDescription": "Bruk kallenavn i stedet for fornavn",
+      "nameDisplayFormatShort": "Kort",
+      "nameDisplayFormatShortDescription": "Vis kun kallenavn eller fornavn",
+      "nameDisplayFormatSuccess": "Navnevisningsformat oppdatert",
+      "nameDisplayFormatError": "Kunne ikke oppdatere navnevisningsformat",
       "language": {
         "title": "Språk",
         "description": "Velg språket ditt",
@@ -620,7 +630,44 @@
       "filterPlaceholder": "Skriv for å filtrere etter grupper...",
       "noGroupsFound": "Fant ingen grupper som samsvarer",
       "clusterByGroup": "Klynge etter gruppe",
-      "recenterGraph": "Sentrer grafen på nytt"
+      "recenterGraph": "Sentrer grafen på nytt",
+      "matchMode": {
+        "any": "Noen",
+        "all": "Alle",
+        "anyTitle": "Treff på noen gruppe",
+        "allTitle": "Treff på alle grupper",
+        "ariaLabel": "{title}. Klikk for å bytte."
+      },
+      "filterState": {
+        "included": "Inkludert. Klikk for å ekskludere.",
+        "excluded": "Ekskludert. Klikk for å inkludere.",
+        "includedWithLabel": "{label}: Inkludert. Klikk for å ekskludere.",
+        "excludedWithLabel": "{label}: Ekskludert. Klikk for å inkludere."
+      },
+      "filterAction": {
+        "include": "inkluder",
+        "exclude": "ekskluder",
+        "remove": "fjern",
+        "removeWithLabel": "Fjern {label}"
+      },
+      "filterHelp": {
+        "ariaLabel": "Hjelp for graffilter",
+        "title": "Slik fungerer gruppefiltre",
+        "groupsSection": "Inkluder eller ekskluder grupper",
+        "groupsDescription": "Som standard er valgte grupper inkludert (grønn). Klikk på en gruppe for å bytte den til ekskludert (rød), og omvendt.",
+        "includingSection": "Gruppe inkludert:",
+        "includingDescription": "Personer fra inkluderte grupper vises i grafen.",
+        "excludingSection": "Gruppe ekskludert:",
+        "excludingDescription": "Personer fra ekskluderte grupper vises ikke i grafen.",
+        "matchModeSection": "Filtermodus",
+        "anyMode": "Hvilken som helst (ELLER):",
+        "anyModeDescription": "Viser personer som matcher minst én valgt betingelse, altså tilhører minst én inkludert gruppe og ingen ekskluderte grupper.",
+        "allMode": "Alle (OG):",
+        "allModeDescription": "Viser bare personer som oppfyller alle valgte betingelser, altså tilhører alle inkluderte grupper og ingen ekskluderte grupper.",
+        "example": "Venner",
+        "pillTip": "Klikk på et gruppenavn for å inkludere eller ekskludere det.",
+        "modeTip": "Modus: match én eller alle inkluderte grupper."
+      }
     }
   },
   "people": {
