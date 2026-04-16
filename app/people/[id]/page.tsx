@@ -11,7 +11,7 @@ import PersonVCardRawView from '@/components/PersonVCardRawView';
 import PersonActionsMenu from '@/components/PersonActionsMenu';
 import LastContactQuickUpdate from '@/components/LastContactQuickUpdate';
 import { formatDate, formatDateWithoutYear, parseAsLocalDate, type DateFormat } from '@/lib/date-format';
-import { formatFullName, formatGraphName } from '@/lib/nameUtils';
+import { formatFullName, formatGraphName, type NameDisplayFormat } from '@/lib/nameUtils';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import PersonAvatar from '@/components/PersonPhoto';
 import { getTranslations } from 'next-intl/server';
@@ -105,6 +105,7 @@ export default async function PersonDetailsPage({
     select: {
       dateFormat: true,
       nameOrder: true,
+      nameDisplayFormat: true,
       language: true,
       name: true,
       surname: true,
@@ -114,6 +115,7 @@ export default async function PersonDetailsPage({
   });
   const dateFormat = user?.dateFormat || 'MDY';
   const nameOrder = user?.nameOrder;
+  const nameDisplayFormat: NameDisplayFormat = user?.nameDisplayFormat || 'FULL';
 
   const [person, allPeople, relationshipTypes, cardDavConnection, latestJournalEntry, latestEmails, personDocuments, googleIntegration] = await Promise.all([
     prisma.person.findUnique({
@@ -339,14 +341,14 @@ export default async function PersonDetailsPage({
               <div className="flex items-start gap-5 flex-1 min-w-0">
                 <PersonAvatar
                   personId={person.id}
-                  name={formatFullName(person, nameOrder)}
+                  name={formatGraphName(person, nameOrder, nameDisplayFormat)}
                   photo={person.photo}
                   size={72}
                   loading="eager"
                 />
                 <div className="flex-1 min-w-0">
                   <h1 className="text-2xl sm:text-3xl font-bold text-foreground break-words">
-                    {formatFullName(person, nameOrder)}
+                    {formatGraphName(person, nameOrder, nameDisplayFormat)}
                   </h1>
                 {person.groups.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -393,11 +395,12 @@ export default async function PersonDetailsPage({
                 </Link>
                 <PersonActionsMenu
                   personId={person.id}
-                  personName={formatFullName(person, nameOrder)}
+                  personName={formatGraphName(person, nameOrder, nameDisplayFormat)}
                   person={serializedPerson}
                   hasCardDavSync={!!cardDavConnection && !!person.cardDavMapping}
                   allPeople={allPeople}
                   nameOrder={nameOrder}
+                  nameDisplayFormat={nameDisplayFormat}
                 />
               </div>
             </div>
@@ -741,6 +744,7 @@ export default async function PersonDetailsPage({
                   date: latestJournalEntry.date.toISOString(),
                 } : null}
                 nameOrder={nameOrder}
+                nameDisplayFormat={nameDisplayFormat}
                 locale={user?.language || 'en'}
               />
 
@@ -811,7 +815,7 @@ export default async function PersonDetailsPage({
                 {relationshipToUser && (
                   <UserRelationshipCard
                     personId={person.id}
-                    personName={formatGraphName(person, nameOrder)}
+                    personName={formatGraphName(person, nameOrder, nameDisplayFormat)}
                     relationshipToUser={relationshipToUser}
                     relationshipTypes={relationshipTypes}
                     userName={user?.name || ''}
@@ -822,7 +826,7 @@ export default async function PersonDetailsPage({
                 {/* Relationships to other people */}
                 <RelationshipManager
                   personId={person.id}
-                  personName={formatGraphName(person, nameOrder)}
+                  personName={formatGraphName(person, nameOrder, nameDisplayFormat)}
                   relationships={person.relationshipsTo}
                   availablePeople={availablePeople}
                   relationshipTypes={relationshipTypes}
@@ -835,6 +839,7 @@ export default async function PersonDetailsPage({
                   }}
                   hasUserRelationship={!!person.relationshipToUserId}
                   nameOrder={nameOrder}
+                  nameDisplayFormat={nameDisplayFormat}
                 />
               </div>
 

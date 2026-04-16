@@ -47,26 +47,67 @@ export const GET = withAuth(async (request, session) => {
   try {
     // Parse query parameters for filtering
     const { searchParams } = new URL(request.url);
-    const groupIds = searchParams.getAll('groupIds'); // Get all groupIds parameters
-    const limit = searchParams.get('limit');
 
-    // Build where clause
-    const whereClause = {
-      userId: session.user.id,
-      deletedAt: null,
-      // Filter by groups if specified (show people who belong to ANY of the selected groups)
-      ...(groupIds.length > 0 && {
+    const parseGroupIds = (value: string | null) =>
+      Array.from(
+        new Set(
+          (value ?? '')
+            .split(',')
+            .map((groupId) => groupId.trim())
+            .filter(Boolean),
+        ),
+      );
+
+    const includeGroupIds = parseGroupIds(searchParams.get('includeGroupIds'));
+    const excludeGroupIds = parseGroupIds(searchParams.get('excludeGroupIds'));
+    const limit = searchParams.get('limit');
+    const includePredicates: Array<Record<string, unknown>> = [];
+    const excludePredicates: Array<Record<string, unknown>> = [];
+
+    // Build atomic predicates for included and excluded groups
+    includeGroupIds.forEach((groupId) => {
+      includePredicates.push({
         groups: {
           some: {
-            groupId: {
-              in: groupIds,
-            },
+            groupId,
             group: {
               deletedAt: null,
             },
           },
         },
-      }),
+      });
+    });
+
+    excludeGroupIds.forEach((groupId) => {
+      excludePredicates.push({
+        NOT: {
+          groups: {
+            some: {
+              groupId,
+              group: {
+                deletedAt: null,
+              },
+            },
+          },
+        },
+      });
+    });
+
+    // Build where clause
+    const groupOperator = searchParams.get('groupMatchOperator') === 'and' ? 'AND' : 'OR';
+    const includeGroupClause =
+      includePredicates.length > 0 ? { [groupOperator]: includePredicates } : null;
+    const filterPredicates: Array<Record<string, unknown>> = [];
+
+    if (includeGroupClause) {
+      filterPredicates.push(includeGroupClause);
+    }
+    filterPredicates.push(...excludePredicates);
+
+    const whereClause = {
+      userId: session.user.id,
+      deletedAt: null,
+      ...(filterPredicates.length > 0 ? { AND: filterPredicates } : {}),
     };
 
     // Fetch people with optimized select to minimize payload
@@ -156,9 +197,10 @@ export const GET = withAuth(async (request, session) => {
     // Fetch user photo and name order preference for the center node
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { photo: true, nameOrder: true },
+      select: { photo: true, nameOrder: true, nameDisplayFormat: true },
     });
     const nameOrder = user?.nameOrder;
+    const nameDisplayFormat = user?.nameDisplayFormat;
 
     // Add user as the center node
     const userId = `user-${session.user.id}`;
@@ -167,7 +209,7 @@ export const GET = withAuth(async (request, session) => {
 
     // Add all people as nodes
     people.forEach((person) => {
-      nodes.push(personToGraphNode(person, false, nameOrder));
+      nodes.push(personToGraphNode(person, false, nameOrder, nameDisplayFormat));
       nodeIds.add(person.id);
 
       // Connect each person to the user with their specific relationship (if they have a direct one)
