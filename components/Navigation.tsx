@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import NavigationSearch from './NavigationSearch';
+import NotificationBell from './NotificationBell';
 import UserMenu from './UserMenu';
 
 interface NavigationProps {
@@ -12,6 +13,7 @@ interface NavigationProps {
   userName?: string | null;
   userNickname?: string | null;
   userPhoto?: string | null;
+  userLocale?: string;
   currentPath?: string;
 }
 
@@ -57,7 +59,7 @@ const navItems = [
   { href: '/relationship-types', labelKey: 'relationshipTypes', createHref: '/relationship-types/new', createLabelKey: 'relationshipTypes' },
 ];
 
-export default function Navigation({ userEmail, userName, userNickname, userPhoto, currentPath }: NavigationProps) {
+export default function Navigation({ userEmail, userName, userNickname, userPhoto, userLocale, currentPath }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
@@ -103,6 +105,7 @@ export default function Navigation({ userEmail, userName, userNickname, userPhot
 
           {/* Right section: User menu (all screens), Hamburger (mobile) */}
           <div className="flex items-center space-x-2 z-10">
+            {userEmail && <NotificationBell locale={userLocale} />}
             {userEmail && (
               <UserMenu userEmail={userEmail} userName={userName} userNickname={userNickname} userPhoto={userPhoto} />
             )}

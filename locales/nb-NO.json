@@ -58,6 +58,14 @@
       "settings": "Innstillinger",
       "signOut": "Logg ut"
     },
+    "notifications": {
+      "title": "Varsler",
+      "ariaLabel": "{count, plural, =0 {Ingen uleste varsler} one {# ulest varsel} other {# uleste varsler}}",
+      "markAllRead": "Merk alle som lest",
+      "empty": "Ingen nye varsler.",
+      "loading": "Laster varsler...",
+      "dismiss": "Lukk"
+    },
     "journal": "Journal",
     "createJournal": "Ny oppføring"
   },
