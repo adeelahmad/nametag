@@ -398,12 +398,19 @@ server {
 
 If you run Proxmox VE, this fork ships helpers under `scripts/proxmox/`:
 
-- `create-lxc.sh` — run on the Proxmox host to provision a Debian LXC and install Nametag inside it
-- `install.sh` — run inside an existing Debian 12+/Ubuntu 22.04+ LXC to install Nametag, PostgreSQL, and systemd service
-- `update.sh` — in-place update of an existing install
-- `nametag.sh` — [community-scripts / ProxmoxVED](https://github.com/community-scripts/ProxmoxVED) style one-liner for create + update
+- `nametag.sh` — [community-scripts / ProxmoxVED](https://github.com/community-scripts/ProxmoxVED) style helper. Run on the Proxmox host to create a new LXC, or re-run against an existing one to update in place.
+- `create-lxc.sh` — standalone host-side provisioner (Debian LXC + Nametag)
+- `install.sh` — standalone in-container installer (Debian 12+/Ubuntu 22.04+)
+- `update.sh` — standalone in-place updater
+- `install/nametag-install.sh` — in-container installer in community-scripts format (invoked by `nametag.sh`)
 
-Quick install inside an LXC:
+Recommended (install or update, run on the Proxmox VE host):
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/adeelahmad/nametag/master/scripts/proxmox/nametag.sh)"
+```
+
+Or do a minimal install inside an existing LXC:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/adeelahmad/nametag/master/scripts/proxmox/install.sh | bash

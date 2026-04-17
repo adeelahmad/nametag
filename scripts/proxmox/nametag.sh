@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVED/main/misc/build.func)
 # Copyright (c) 2021-2026 community-scripts ORG
-# Author: MickLesk
+# Author: Adeel Ahmad
 # License: MIT | https://github.com/community-scripts/ProxmoxVED/raw/main/LICENSE
 # Source: https://github.com/adeelahmad/nametag
 
@@ -13,6 +13,21 @@ var_disk="${var_disk:-8}"
 var_os="${var_os:-debian}"
 var_version="${var_version:-13}"
 var_unprivileged="${var_unprivileged:-1}"
+
+# Where to fetch the in-container install script from (this repo)
+NAMETAG_INSTALL_URL="${NAMETAG_INSTALL_URL:-https://raw.githubusercontent.com/adeelahmad/nametag/master/install/nametag-install.sh}"
+
+# Shim curl so build.func pulls install/nametag-install.sh from this repo
+# instead of community-scripts/ProxmoxVED (where it does not exist).
+curl() {
+  for arg in "$@"; do
+    if [[ "$arg" == *"/install/nametag-install.sh" ]]; then
+      command curl -fsSL "$NAMETAG_INSTALL_URL"
+      return $?
+    fi
+  done
+  command curl "$@"
+}
 
 header_info "$APP"
 variables
