@@ -1,4 +1,5 @@
 import { cookies, headers } from 'next/headers';
+import { unstable_rethrow } from 'next/navigation';
 import { prisma } from './prisma';
 import { createModuleLogger } from './logger';
 
@@ -80,6 +81,7 @@ export async function getLocaleFromCookie(): Promise<SupportedLocale | null> {
 
     return null;
   } catch (error) {
+    unstable_rethrow(error);
     log.error({ err: error instanceof Error ? error : new Error(String(error)) }, 'Error reading locale cookie');
     return null;
   }
@@ -117,6 +119,7 @@ export async function setLocaleCookie(locale: SupportedLocale): Promise<void> {
 
     cookieStore.set(LOCALE_COOKIE_NAME, locale, cookieOptions);
   } catch (error) {
+    unstable_rethrow(error);
     log.error({ err: error instanceof Error ? error : new Error(String(error)) }, 'Error setting locale cookie');
   }
 }
@@ -172,6 +175,7 @@ export async function detectBrowserLocale(): Promise<SupportedLocale> {
 
     return DEFAULT_LOCALE;
   } catch (error) {
+    unstable_rethrow(error);
     log.error({ err: error instanceof Error ? error : new Error(String(error)) }, 'Error detecting browser locale');
     return DEFAULT_LOCALE;
   }
