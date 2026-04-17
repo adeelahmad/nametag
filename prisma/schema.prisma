@@ -52,6 +52,7 @@ model User {
   cardDavPendingImports  CardDavPendingImport[]
   duplicateDismissals    DuplicateDismissal[]
   googleIntegration      GoogleIntegration?
+  googleTasks            GoogleTask[]
 
   journalEntries    JournalEntry[]
 
@@ -118,6 +119,7 @@ model Person {
   dismissalsAsB      DuplicateDismissal[]   @relation("DismissalPersonB")
   journalEntries     JournalEntryPerson[]
   emailLogs          EmailLogPerson[]
+  googleTasks        GoogleTaskPerson[]
   documents          Document[]
 
   @@index([userId])
@@ -184,6 +186,7 @@ model JournalEntry {
   // Relations
   user   User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   people JournalEntryPerson[]
+  googleTasks GoogleTask[]
 
   @@index([userId, date])
   @@index([userId, deletedAt])
@@ -846,6 +849,10 @@ model GoogleIntegration {
   birthdayCalendarId  String?  // Google Calendar ID for birthday events
   lastCalendarSyncAt  DateTime?
 
+  // Tasks config
+  tasksEnabled        Boolean   @default(false) // User-level Google Tasks toggle
+  defaultTaskListId   String?   // Default Google Tasks list ID for new tasks
+
   // OCR config
   ocrEnabled          Boolean  @default(true) // User-level OCR toggle
 
@@ -865,8 +872,58 @@ model GoogleIntegration {
   emailLogs         EmailLog[]
   documents         Document[]
   syncLogs          SyncLog[]
+  googleTasks       GoogleTask[]
 
   @@map("google_integrations")
+}
+
+// Locally-tracked reference to a Google Tasks API task - keeps mapping to
+// Nametag entities (people, journal entries) so the task can be shown in the
+// UI and deep-linked back into Google Tasks.
+model GoogleTask {
+  id              String   @id @default(cuid())
+  integrationId   String
+  userId          String
+  journalEntryId  String?
+
+  // Google Tasks API identifiers
+  googleTaskId    String   // Task resource ID in Google
+  googleListId    String   // Task list ID in Google
+
+  // Cached task fields (kept in sync on write)
+  title           String
+  notes           String?  @db.Text
+  due             DateTime?
+  status          String   @default("needsAction") // "needsAction" or "completed"
+  taskWebUrl      String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  integration     GoogleIntegration    @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  journalEntry    JournalEntry?        @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
+  people          GoogleTaskPerson[]
+
+  @@unique([integrationId, googleTaskId])
+  @@index([userId])
+  @@index([journalEntryId])
+  @@map("google_tasks")
+}
+
+// Many-to-many: GoogleTask <-> Person (tracks which contacts a task references)
+model GoogleTaskPerson {
+  id           String      @id @default(cuid())
+  googleTaskId String
+  personId     String
+
+  googleTask   GoogleTask  @relation(fields: [googleTaskId], references: [id], onDelete: Cascade)
+  person       Person      @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([googleTaskId, personId])
+  @@index([personId])
+  @@map("google_task_people")
 }
 
 // Per-user sync log entry - tracks each sync run with details

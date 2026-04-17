@@ -19,6 +19,7 @@ import { getDateDisplayTitle } from '@/lib/important-date-types';
 import JournalSection from '@/components/JournalSection';
 import EmailsSection from '@/components/EmailsSection';
 import DocumentsSection from '@/components/DocumentsSection';
+import PersonTasksSection from '@/components/google/PersonTasksSection';
 
 function isSafeUrl(url: string): boolean {
   try {
@@ -287,7 +288,7 @@ export default async function PersonDetailsPage({
     // Check if user has Google integration
     prisma.googleIntegration.findUnique({
       where: { userId: session.user.id },
-      select: { id: true, driveSyncEnabled: true },
+      select: { id: true, driveSyncEnabled: true, tasksEnabled: true },
     }),
   ]);
 
@@ -781,6 +782,21 @@ export default async function PersonDetailsPage({
                     createdAt: doc.createdAt.toISOString(),
                   }))}
                   showUpload={!!googleIntegration?.driveSyncEnabled}
+                />
+              )}
+
+              {/* Google Tasks Section */}
+              {googleIntegration?.tasksEnabled && (
+                <PersonTasksSection
+                  person={{
+                    id: person.id,
+                    name: person.name,
+                    surname: person.surname,
+                    nickname: person.nickname,
+                  }}
+                  availablePeople={allPeople}
+                  nameOrder={nameOrder}
+                  locale={user?.language || 'en'}
                 />
               )}
 

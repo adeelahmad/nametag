@@ -11,6 +11,8 @@ type GoogleIntegrationStatus = {
   driveFolderName: string;
   calendarSyncEnabled: boolean;
   birthdayCalendarId: string | null;
+  tasksEnabled: boolean;
+  defaultTaskListId: string | null;
   ocrEnabled: boolean;
   autoSyncInterval: number;
   lastGmailSyncAt: string | null;
@@ -29,6 +31,9 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
   const [gmailEnabled, setGmailEnabled] = useState(integration?.gmailSyncEnabled ?? false);
   const [driveEnabled, setDriveEnabled] = useState(integration?.driveSyncEnabled ?? false);
   const [calendarEnabled, setCalendarEnabled] = useState(integration?.calendarSyncEnabled ?? false);
+  const [tasksEnabled, setTasksEnabled] = useState(integration?.tasksEnabled ?? false);
+  const [taskLists, setTaskLists] = useState<Array<{ id: string; title: string }>>([]);
+  const [loadingTaskLists, setLoadingTaskLists] = useState(false);
   const [ocrEnabled, setOcrEnabled] = useState(integration?.ocrEnabled ?? true);
   const [syncInterval, setSyncInterval] = useState(integration?.autoSyncInterval ?? 3600);
   const [folderName, setFolderName] = useState(integration?.driveFolderName ?? 'Nametag');
@@ -79,7 +84,7 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
     }
   }
 
-  async function handleToggle(field: 'gmailSyncEnabled' | 'driveSyncEnabled' | 'calendarSyncEnabled' | 'ocrEnabled', value: boolean) {
+  async function handleToggle(field: 'gmailSyncEnabled' | 'driveSyncEnabled' | 'calendarSyncEnabled' | 'tasksEnabled' | 'ocrEnabled', value: boolean) {
     try {
       const res = await fetch('/api/google/connect', {
         method: 'POST',
@@ -96,11 +101,37 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       if (field === 'gmailSyncEnabled') setGmailEnabled(value);
       if (field === 'driveSyncEnabled') setDriveEnabled(value);
       if (field === 'calendarSyncEnabled') setCalendarEnabled(value);
+      if (field === 'tasksEnabled') setTasksEnabled(value);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to update setting');
       if (field === 'gmailSyncEnabled') setGmailEnabled(!value);
       if (field === 'driveSyncEnabled') setDriveEnabled(!value);
       if (field === 'calendarSyncEnabled') setCalendarEnabled(!value);
+      if (field === 'tasksEnabled') setTasksEnabled(!value);
+    }
+  }
+
+  async function loadTaskLists() {
+    setLoadingTaskLists(true);
+    try {
+      const res = await fetch('/api/google/tasks/lists');
+      const data = await res.json();
+      if (data.success) setTaskLists(data.data);
+    } catch { /* silent */ }
+    setLoadingTaskLists(false);
+  }
+
+  async function handleTaskListSelect(listId: string) {
+    try {
+      const res = await fetch('/api/google/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authMode: currentIntegration.authMode, defaultTaskListId: listId }),
+      });
+      if (!res.ok) throw new Error('Save failed');
+      toast.success(t('tasksListSelected'));
+    } catch {
+      toast.error(t('tasksListSelectError'));
     }
   }
 
@@ -260,7 +291,48 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
             />
           </button>
         </div>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-sm text-foreground">{t('tasksToggle')}</span>
+            <p className="text-xs text-muted">{t('tasksToggleHelp')}</p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={tasksEnabled}
+            onClick={() => handleToggle('tasksEnabled', !tasksEnabled)}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+              tasksEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                tasksEnabled ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
       </div>
+
+      {/* Tasks default list picker */}
+      {tasksEnabled && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-foreground mb-1">{t('tasksListLabel')}</label>
+          <select
+            defaultValue={integration.defaultTaskListId || ''}
+            onChange={(e) => handleTaskListSelect(e.target.value)}
+            onFocus={() => { if (taskLists.length === 0) loadTaskLists(); }}
+            className="w-full rounded-md border border-border bg-background text-foreground text-sm p-2"
+          >
+            <option value="">{loadingTaskLists ? t('loading') : 'Default list'}</option>
+            {taskLists.map((list) => (
+              <option key={list.id} value={list.id}>{list.title}</option>
+            ))}
+          </select>
+          <p className="text-xs text-muted mt-1">{t('tasksListHelp')}</p>
+        </div>
+      )}
 
       {/* Drive folder name */}
       {driveEnabled && (
