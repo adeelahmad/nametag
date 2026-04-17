@@ -2,9 +2,13 @@
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 
+> **🍴 Fork Notice**
+>
+> This is a fork of [mattogodoy/nametag](https://github.com/mattogodoy/nametag) maintained at [adeelahmad/nametag](https://github.com/adeelahmad/nametag). It has diverged from upstream with additional features (Gmail/Drive/Calendar integration, Email Center, Proxmox helpers, and more — see [Fork Additions](#fork-additions)). Credit for the original project goes to [@mattogodoy](https://github.com/mattogodoy).
+
 > **⚠️ Active Development Notice**
 >
-> Nametag is under active development and may introduce breaking changes between releases. Please read the [release notes](https://github.com/mattogodoy/nametag/releases) carefully before updating to ensure a smooth upgrade process.
+> Nametag is under active development and may introduce breaking changes between releases. Please read the [release notes](https://github.com/adeelahmad/nametag/releases) carefully before updating to ensure a smooth upgrade process.
 
 Nametag is a personal relationships manager that helps you remember the people in your life and how they're connected. Track birthdays, contact information, how people are connected, and visualize your network as an interactive graph.
 
@@ -58,13 +62,28 @@ _Relationships page_
 
 - Track people with flexible attributes (name, birthday, important dates, and notes for everything else)
 - Map relationships between people (family, friends, colleagues)
-- Visualize your network with interactive graphs
+- Visualize your network with interactive graphs (with group include/exclude filtering)
 - Organize contacts into custom groups
 - Set reminders for important dates and staying in touch
+- Journaling with warm empty states, timeline, and inline editing
+- Configurable name display format and name order (including CJK-aware ordering)
+- CardDAV import/export and two-way sync
 - Full dark mode support
-- Multiple languages (English, Spanish, Japanese, Norwegian, German)
+- Multiple languages (English, Spanish, Japanese, Norwegian, German, Simplified Chinese)
 - Mobile-responsive design
 - Multi-platform Docker support (AMD64 and ARM64)
+
+### Fork Additions
+
+Features added in this fork on top of upstream:
+
+- **Gmail integration** — sync conversations per person, with a Gmail-like Email Center and per-person email keyword matching
+- **Google Drive integration** — attach documents to people, with OCR for scanned documents and a configurable Drive folder name
+- **Google Calendar integration** — sync birthdays and important dates to a Google Calendar
+- **Per-user Google OAuth** — users connect their own Google accounts from Settings → Integrations (service account mode still supported)
+- **Sync history logs** — view Gmail/Drive/Calendar/CardDAV sync runs and their details in settings
+- **Proxmox LXC deployment** — turnkey install/create/update scripts under `scripts/proxmox/`, plus a [community-scripts](https://github.com/community-scripts/ProxmoxVED) style helper at `scripts/proxmox/nametag.sh`
+- Slimmer dependencies — replaced the monolithic `googleapis` (~196 MB) with the lightweight `@googleapis/{gmail,drive,calendar}` packages
 
 ## Hosted vs Self-Hosted
 
@@ -106,7 +125,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   app:
-    image: ghcr.io/mattogodoy/nametag:latest
+    image: ghcr.io/adeelahmad/nametag:latest
     restart: unless-stopped
     ports:
       - '3000:3000'
@@ -373,6 +392,21 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
+```
+
+## Self-Hosting on Proxmox (LXC)
+
+If you run Proxmox VE, this fork ships helpers under `scripts/proxmox/`:
+
+- `create-lxc.sh` — run on the Proxmox host to provision a Debian LXC and install Nametag inside it
+- `install.sh` — run inside an existing Debian 12+/Ubuntu 22.04+ LXC to install Nametag, PostgreSQL, and systemd service
+- `update.sh` — in-place update of an existing install
+- `nametag.sh` — [community-scripts / ProxmoxVED](https://github.com/community-scripts/ProxmoxVED) style one-liner for create + update
+
+Quick install inside an LXC:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/adeelahmad/nametag/master/scripts/proxmox/install.sh | bash
 ```
 
 ## Tech Stack
