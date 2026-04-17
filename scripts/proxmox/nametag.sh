@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVED/main/misc/build.func)
+source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
 # Copyright (c) 2021-2026 community-scripts ORG
-# Author: Adeel Ahmad
-# License: MIT | https://github.com/community-scripts/ProxmoxVED/raw/main/LICENSE
+# Author: Adeel Ahmad (adeelahmad)
+# License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/adeelahmad/nametag
 
 APP="Nametag"
@@ -14,15 +14,12 @@ var_os="${var_os:-debian}"
 var_version="${var_version:-13}"
 var_unprivileged="${var_unprivileged:-1}"
 
-# Where to fetch the in-container install script from (this repo)
-NAMETAG_INSTALL_URL="${NAMETAG_INSTALL_URL:-https://raw.githubusercontent.com/adeelahmad/nametag/master/install/nametag-install.sh}"
-
-# Shim curl so build.func pulls install/nametag-install.sh from this repo
-# instead of community-scripts/ProxmoxVED (where it does not exist).
+# Shim curl so build.func pulls install/nametag-install.sh from this fork
+# (community-scripts/ProxmoxVE does not host it).
 curl() {
   for arg in "$@"; do
     if [[ "$arg" == *"/install/nametag-install.sh" ]]; then
-      command curl -fsSL "$NAMETAG_INSTALL_URL"
+      command curl -fsSL "https://raw.githubusercontent.com/adeelahmad/nametag/master/install/nametag-install.sh"
       return $?
     fi
   done
@@ -51,35 +48,29 @@ function update_script() {
 
     msg_info "Backing up Data"
     cp /opt/nametag/.env /opt/nametag.env.bak
-    cp -r /opt/nametag/data /opt/nametag_data_bak
+    cp -r /opt/nametag/data /opt/nametag_data_backup
     msg_ok "Backed up Data"
 
     CLEAN_INSTALL=1 fetch_and_deploy_gh_release "nametag" "adeelahmad/nametag" "tarball" "latest" "/opt/nametag"
 
-    msg_info "Rebuilding Application"
     cd /opt/nametag
-    $STD npm ci
+    cp /opt/nametag.env.bak /opt/nametag/.env
     set -a
     source /opt/nametag/.env
     set +a
+    $STD npm ci
     $STD npx prisma generate
+    $STD npx prisma migrate deploy
     $STD npm run build
     cp -r /opt/nametag/.next/static /opt/nametag/.next/standalone/.next/static
     cp -r /opt/nametag/public /opt/nametag/.next/standalone/public
-    msg_ok "Rebuilt Application"
 
     msg_info "Restoring Data"
-    cp /opt/nametag.env.bak /opt/nametag/.env
     mkdir -p /opt/nametag/data
-    cp -r /opt/nametag_data_bak/. /opt/nametag/data/
+    cp -r /opt/nametag_data_backup/. /opt/nametag/data/
     rm -f /opt/nametag.env.bak
-    rm -rf /opt/nametag_data_bak
+    rm -rf /opt/nametag_data_backup
     msg_ok "Restored Data"
-
-    msg_info "Running Migrations"
-    cd /opt/nametag
-    $STD npx prisma migrate deploy
-    msg_ok "Ran Migrations"
 
     msg_info "Starting Service"
     systemctl start nametag
