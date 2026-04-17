@@ -58,7 +58,7 @@ function update_script() {
     set -a
     source /opt/nametag/.env
     set +a
-    $STD npm ci
+    $STD npm ci --include=dev
     $STD npx prisma generate
     $STD npx prisma migrate deploy
     $STD npm run build
