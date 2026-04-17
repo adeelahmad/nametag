@@ -25,10 +25,14 @@ export const POST = withAuth(async (request, session) => {
     const body = await parseRequestBody<{
       conversationId?: string;
       message: string;
+      attachmentIds?: string[];
     }>(request);
 
-    const message = body.message?.trim();
-    if (!message) return apiResponse.error('Empty message');
+    const message = body.message?.trim() ?? '';
+    const attachmentIds = Array.isArray(body.attachmentIds)
+      ? body.attachmentIds.filter((id): id is string => typeof id === 'string')
+      : [];
+    if (!message && attachmentIds.length === 0) return apiResponse.error('Empty message');
 
     const settings = await getOrCreateSettings(session.user.id);
     if (!settings.apiKeyEncrypted) {
@@ -41,12 +45,14 @@ export const POST = withAuth(async (request, session) => {
     // Resolve or create the conversation.
     let conversationId = body.conversationId;
     let isNew = false;
+    let modelOverride: string | null = null;
     if (conversationId) {
       const existing = await prisma.assistantConversation.findFirst({
         where: { id: conversationId, userId: session.user.id },
-        select: { id: true, messageCount: true, title: true },
+        select: { id: true, messageCount: true, title: true, model: true },
       });
       if (!existing) return apiResponse.notFound('Conversation not found');
+      modelOverride = existing.model;
     } else {
       const conv = await createConversation(session.user.id, {
         title: deriveTitle(message),
@@ -55,9 +61,55 @@ export const POST = withAuth(async (request, session) => {
       isNew = true;
     }
 
+    // Resolve attachments: load extracted text and attach metadata. Only the
+    // user's own attachments are honored.
+    let finalContent = message;
+    const attachmentMeta: Array<{
+      id: string;
+      kind: string;
+      filename: string;
+      mimeType: string;
+    }> = [];
+    if (attachmentIds.length > 0) {
+      const found = await prisma.assistantAttachment.findMany({
+        where: {
+          id: { in: attachmentIds },
+          userId: session.user.id,
+          deletedAt: null,
+        },
+      });
+      for (const att of found) {
+        attachmentMeta.push({
+          id: att.id,
+          kind: att.kind,
+          filename: att.filename,
+          mimeType: att.mimeType,
+        });
+        if (att.extractedText) {
+          const snippet = att.extractedText.slice(0, 20_000);
+          finalContent += `\n\n--- attachment: ${att.filename} (${att.kind}) ---\n${snippet}`;
+        } else if (att.kind === 'IMAGE') {
+          finalContent += `\n\n[Attached image: ${att.filename}]`;
+        }
+      }
+      // Rebind attachments that were uploaded before the conversation existed.
+      await prisma.assistantAttachment.updateMany({
+        where: {
+          id: { in: found.map((a) => a.id) },
+          userId: session.user.id,
+          conversationId: null,
+        },
+        data: { conversationId },
+      });
+    }
+
     // Store the user's message before starting generation so it appears in
     // history even if the stream is interrupted.
-    await appendMessage(conversationId, { role: 'USER', content: message });
+    await appendMessage(conversationId, {
+      role: 'USER',
+      content: finalContent,
+      metadata: attachmentMeta.length > 0 ? { attachments: attachmentMeta } : undefined,
+    });
 
     if (!isNew) {
       // Opportunistically upgrade the title on first real user turn.
@@ -89,6 +141,7 @@ export const POST = withAuth(async (request, session) => {
             userId: session.user.id,
             conversationId: conversationId!,
             settings,
+            modelOverride,
             signal: request.signal,
             onEvent: send,
           });

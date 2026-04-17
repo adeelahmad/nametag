@@ -32,6 +32,9 @@ export interface RunAssistantOptions {
   onEvent: (ev: StreamEvent) => void;
   // Abort signal to propagate client disconnect.
   signal?: AbortSignal;
+  // Per-conversation override for the model identifier. Falls back to
+  // settings.model when null/undefined.
+  modelOverride?: string | null;
 }
 
 function buildToolList(settings: AssistantSettings): ToolDefinition[] {
@@ -51,6 +54,7 @@ export async function runAssistantTurn(opts: RunAssistantOptions): Promise<void>
 
   const system = resolveSystemPrompt(settings);
   const toolCtx: ToolContext = { userId };
+  const activeModel = opts.modelOverride?.trim() || settings.model;
 
   for (let step = 0; step < MAX_STEPS; step++) {
     if (signal?.aborted) {
@@ -65,7 +69,7 @@ export async function runAssistantTurn(opts: RunAssistantOptions): Promise<void>
     );
 
     const request = {
-      model: settings.model,
+      model: activeModel,
       messages: normalized,
       system: summarySystem ? `${system}\n\n${summarySystem}` : system,
       tools: buildToolList(settings),
@@ -93,7 +97,7 @@ export async function runAssistantTurn(opts: RunAssistantOptions): Promise<void>
       promptTokens: completion.usage?.promptTokens,
       completionTokens: completion.usage?.completionTokens,
       totalTokens: completion.usage?.totalTokens,
-      model: completion.model ?? settings.model,
+      model: completion.model ?? activeModel,
       metadata: { stopReason: completion.stopReason },
     });
 

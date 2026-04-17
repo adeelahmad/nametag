@@ -9,16 +9,24 @@ import {
 } from '@/lib/api-utils';
 import { createConversation, deriveTitle } from '@/lib/assistant/conversation';
 
-export const GET = withAuth(async (_request, session) => {
+export const GET = withAuth(async (request, session) => {
   try {
+    const url = new URL(request.url);
+    const includeArchived = url.searchParams.get('includeArchived') === '1';
     const conversations = await prisma.assistantConversation.findMany({
-      where: { userId: session.user.id, archivedAt: null },
+      where: {
+        userId: session.user.id,
+        ...(includeArchived ? {} : { archivedAt: null }),
+      },
       orderBy: [{ pinned: 'desc' }, { updatedAt: 'desc' }],
       select: {
         id: true,
         title: true,
         preview: true,
         pinned: true,
+        archivedAt: true,
+        model: true,
+        forkedFromId: true,
         messageCount: true,
         tokenCount: true,
         updatedAt: true,

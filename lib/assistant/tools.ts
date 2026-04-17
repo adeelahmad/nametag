@@ -12,6 +12,11 @@ import { prisma } from '@/lib/prisma';
 import { filterPeople, normalizeForSearch } from '@/lib/search';
 import type { ToolDefinition, JSONSchema } from './types';
 import { getUpcomingEvents } from '@/lib/upcoming-events';
+import { runWebSearch } from './web-search';
+import { safeFetch, extractText } from './fetch-url';
+import { extractPdfText } from './pdf';
+import { runDeepResearch } from './deep-research';
+import { getOrCreateSettings, getDecryptedSearchKey } from './settings';
 
 export interface ToolContext {
   userId: string;
@@ -468,6 +473,122 @@ const currentTimeTool: RegisteredTool = {
 };
 
 // ---------------------------------------------------------------------------
+// Tool: web_search
+// ---------------------------------------------------------------------------
+const webSearchTool: RegisteredTool = {
+  definition: {
+    name: 'web_search',
+    description:
+      'Search the public web for up-to-date information. Returns a list of titles, URLs, and snippets. Provider is configured per-user (Brave, Tavily, or DuckDuckGo fallback).',
+    parameters: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'Natural-language search query.' },
+        maxResults: {
+          type: 'integer',
+          description: 'Maximum results to return (default 6, max 20).',
+        },
+      },
+      required: ['query'],
+      additionalProperties: false,
+    },
+  },
+  argsSchema: z.object({
+    query: z.string().min(1),
+    maxResults: z.number().int().positive().max(20).optional(),
+  }),
+  async handler(args, ctx) {
+    const { query, maxResults } = args as { query: string; maxResults?: number };
+    const settings = await getOrCreateSettings(ctx.userId);
+    const apiKey = await getDecryptedSearchKey(ctx.userId);
+    const results = await runWebSearch(query, settings, {
+      maxResults,
+      apiKey,
+    });
+    return { provider: settings.searchProvider, results };
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Tool: fetch_url
+// ---------------------------------------------------------------------------
+const fetchUrlTool: RegisteredTool = {
+  definition: {
+    name: 'fetch_url',
+    description:
+      'Fetch a URL and return extracted plain text. Supports HTML, plain text, JSON, and PDFs. SSRF-protected and size-capped.',
+    parameters: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', description: 'Absolute http(s) URL.' },
+        maxChars: {
+          type: 'integer',
+          description: 'Maximum characters of extracted text to return (default 8000).',
+        },
+      },
+      required: ['url'],
+      additionalProperties: false,
+    },
+  },
+  argsSchema: z.object({
+    url: z.string().url(),
+    maxChars: z.number().int().positive().max(50_000).optional(),
+  }),
+  async handler(args) {
+    const { url, maxChars } = args as { url: string; maxChars?: number };
+    const res = await safeFetch(url);
+    const isPdf = res.contentType.toLowerCase().includes('pdf');
+    const text = isPdf
+      ? await extractPdfText(res.bytes).catch(() => '')
+      : extractText(res.bytes, res.contentType);
+    const cap = Math.min(maxChars ?? 8000, 50_000);
+    return {
+      finalUrl: res.url,
+      status: res.status,
+      contentType: res.contentType,
+      text: text.slice(0, cap),
+      truncated: text.length > cap,
+    };
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Tool: deep_research
+// ---------------------------------------------------------------------------
+const deepResearchTool: RegisteredTool = {
+  definition: {
+    name: 'deep_research',
+    description:
+      'Multi-step research: issue a web search, fetch the top pages, and return a structured brief with citations. Use for questions that need current facts the model may not know.',
+    parameters: {
+      type: 'object',
+      properties: {
+        question: { type: 'string', description: 'The research question.' },
+        maxSteps: {
+          type: 'integer',
+          description: 'Optional override for the per-user research step cap (max 12).',
+        },
+      },
+      required: ['question'],
+      additionalProperties: false,
+    },
+  },
+  argsSchema: z.object({
+    question: z.string().min(1),
+    maxSteps: z.number().int().positive().max(12).optional(),
+  }),
+  async handler(args, ctx) {
+    const { question, maxSteps } = args as {
+      question: string;
+      maxSteps?: number;
+    };
+    const settings = await getOrCreateSettings(ctx.userId);
+    const apiKey = await getDecryptedSearchKey(ctx.userId);
+    return runDeepResearch(question, settings, apiKey, { maxSteps });
+  },
+};
+
+// ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
 const REGISTRY: Record<string, RegisteredTool> = {
@@ -480,6 +601,9 @@ const REGISTRY: Record<string, RegisteredTool> = {
   list_groups: listGroupsTool,
   upcoming_events: upcomingEventsTool,
   current_time: currentTimeTool,
+  web_search: webSearchTool,
+  fetch_url: fetchUrlTool,
+  deep_research: deepResearchTool,
 };
 
 export function listTools(opts?: { disabled?: string[] }): RegisteredTool[] {

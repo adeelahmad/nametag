@@ -42,6 +42,10 @@ interface UpdateBody {
   toolsEnabled?: boolean;
   mcpEnabled?: boolean;
   disabledTools?: string[];
+  searchProvider?: 'BRAVE' | 'TAVILY' | 'DUCKDUCKGO';
+  searchApiKey?: string; // plaintext; empty keeps, "<CLEAR>" removes
+  maxResearchSteps?: number;
+  attachmentsMaxBytes?: number;
 }
 
 export const PATCH = withAuth(async (request, session) => {
@@ -77,6 +81,26 @@ export const PATCH = withAuth(async (request, session) => {
         data.apiKeyEncrypted = encryptApiKey(body.apiKey);
       }
       // empty string -> leave as-is
+    }
+
+    if (body.searchProvider === 'BRAVE' || body.searchProvider === 'TAVILY' || body.searchProvider === 'DUCKDUCKGO') {
+      data.searchProvider = body.searchProvider;
+    }
+    if (typeof body.searchApiKey === 'string') {
+      if (body.searchApiKey === '<CLEAR>') {
+        data.searchApiKeyEncrypted = null;
+      } else if (body.searchApiKey.length > 0) {
+        data.searchApiKeyEncrypted = encryptApiKey(body.searchApiKey);
+      }
+    }
+    if (typeof body.maxResearchSteps === 'number') {
+      data.maxResearchSteps = Math.min(12, Math.max(1, Math.floor(body.maxResearchSteps)));
+    }
+    if (typeof body.attachmentsMaxBytes === 'number') {
+      data.attachmentsMaxBytes = Math.min(
+        50 * 1024 * 1024,
+        Math.max(1024, Math.floor(body.attachmentsMaxBytes)),
+      );
     }
 
     const updated = await prisma.assistantSettings.update({

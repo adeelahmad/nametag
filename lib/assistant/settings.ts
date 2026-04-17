@@ -27,6 +27,10 @@ export interface AssistantSettingsView {
   toolsEnabled: boolean;
   mcpEnabled: boolean;
   disabledTools: string[];
+  searchProvider: DbSettings['searchProvider'];
+  hasSearchApiKey: boolean;
+  maxResearchSteps: number;
+  attachmentsMaxBytes: number;
 }
 
 export function toView(s: DbSettings): AssistantSettingsView {
@@ -44,6 +48,10 @@ export function toView(s: DbSettings): AssistantSettingsView {
     toolsEnabled: s.toolsEnabled,
     mcpEnabled: s.mcpEnabled,
     disabledTools: s.disabledTools,
+    searchProvider: s.searchProvider,
+    hasSearchApiKey: !!s.searchApiKeyEncrypted,
+    maxResearchSteps: s.maxResearchSteps,
+    attachmentsMaxBytes: s.attachmentsMaxBytes,
   };
 }
 
@@ -61,6 +69,19 @@ export async function getDecryptedApiKey(userId: string): Promise<string | undef
   if (!s?.apiKeyEncrypted) return undefined;
   try {
     return decryptApiKey(s.apiKeyEncrypted);
+  } catch {
+    return undefined;
+  }
+}
+
+export async function getDecryptedSearchKey(userId: string): Promise<string | undefined> {
+  const s = await prisma.assistantSettings.findUnique({
+    where: { userId },
+    select: { searchApiKeyEncrypted: true },
+  });
+  if (!s?.searchApiKeyEncrypted) return undefined;
+  try {
+    return decryptApiKey(s.searchApiKeyEncrypted);
   } catch {
     return undefined;
   }

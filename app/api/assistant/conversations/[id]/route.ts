@@ -39,6 +39,7 @@ export const PATCH = withAuth(async (request, session, context) => {
       title?: string;
       pinned?: boolean;
       archived?: boolean;
+      model?: string | null;
     }>(request);
 
     const existing = await prisma.assistantConversation.findFirst({
@@ -52,6 +53,12 @@ export const PATCH = withAuth(async (request, session, context) => {
     if (typeof body.pinned === 'boolean') data.pinned = body.pinned;
     if (typeof body.archived === 'boolean') {
       data.archivedAt = body.archived ? new Date() : null;
+    }
+    if (body.model === null) {
+      data.model = null;
+    } else if (typeof body.model === 'string') {
+      const trimmed = body.model.trim();
+      data.model = trimmed ? trimmed.slice(0, 120) : null;
     }
 
     const updated = await prisma.assistantConversation.update({

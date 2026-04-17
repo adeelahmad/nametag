@@ -52,9 +52,10 @@ const PROVIDER_PRESETS: Record<
 };
 
 export default function AssistantSettingsForm({ initial, availableTools }: Props) {
-  const [form, setForm] = useState<SettingsView & { apiKey: string }>({
+  const [form, setForm] = useState<SettingsView & { apiKey: string; searchApiKey: string }>({
     ...initial,
     apiKey: '',
+    searchApiKey: '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -88,8 +89,12 @@ export default function AssistantSettingsForm({ initial, availableTools }: Props
         toolsEnabled: form.toolsEnabled,
         mcpEnabled: form.mcpEnabled,
         disabledTools: form.disabledTools,
+        searchProvider: form.searchProvider,
+        maxResearchSteps: form.maxResearchSteps,
+        attachmentsMaxBytes: form.attachmentsMaxBytes,
       };
       if (form.apiKey) body.apiKey = form.apiKey;
+      if (form.searchApiKey) body.searchApiKey = form.searchApiKey;
 
       const res = await fetch('/api/assistant/settings', {
         method: 'PATCH',
@@ -101,7 +106,7 @@ export default function AssistantSettingsForm({ initial, availableTools }: Props
         throw new Error(err.error ?? `HTTP ${res.status}`);
       }
       toast.success('Settings saved');
-      setForm((f) => ({ ...f, apiKey: '' }));
+      setForm((f) => ({ ...f, apiKey: '', searchApiKey: '' }));
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
@@ -282,6 +287,86 @@ export default function AssistantSettingsForm({ initial, availableTools }: Props
             placeholder="Appended to the default persona."
             className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm font-mono"
           />
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border p-4 space-y-3">
+        <h3 className="text-sm font-semibold">Web search & research</h3>
+        <p className="text-xs text-muted">
+          Providers used by the <code>web_search</code>, <code>fetch_url</code>,
+          and <code>deep_research</code> tools. DuckDuckGo works without a key;
+          Brave and Tavily need their respective API keys.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Provider</label>
+            <select
+              value={form.searchProvider}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  searchProvider: e.target.value as SettingsView['searchProvider'],
+                })
+              }
+              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+            >
+              <option value="DUCKDUCKGO">DuckDuckGo (no key)</option>
+              <option value="BRAVE">Brave</option>
+              <option value="TAVILY">Tavily</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Search API key{' '}
+              {form.hasSearchApiKey ? (
+                <span className="text-xs text-muted">(saved)</span>
+              ) : null}
+            </label>
+            <input
+              type="password"
+              value={form.searchApiKey}
+              onChange={(e) => setForm({ ...form, searchApiKey: e.target.value })}
+              placeholder={form.hasSearchApiKey ? '•••••••• (leave blank)' : 'Optional'}
+              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Max research steps</label>
+            <input
+              type="number"
+              min={1}
+              max={20}
+              value={form.maxResearchSteps}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  maxResearchSteps: Math.max(1, Math.min(20, Number(e.target.value) || 6)),
+                })
+              }
+              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Max attachment size (bytes)
+            </label>
+            <input
+              type="number"
+              min={1024}
+              step={1024}
+              value={form.attachmentsMaxBytes}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  attachmentsMaxBytes: Math.max(
+                    1024,
+                    Number(e.target.value) || 10_485_760,
+                  ),
+                })
+              }
+              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+            />
+          </div>
         </div>
       </div>
 
