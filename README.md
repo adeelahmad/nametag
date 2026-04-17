@@ -82,8 +82,9 @@ Features added in this fork on top of upstream:
 - **Google Calendar integration** — sync birthdays and important dates to a Google Calendar
 - **Per-user Google OAuth** — users connect their own Google accounts from Settings → Integrations (service account mode still supported)
 - **Sync history logs** — view Gmail/Drive/Calendar/CardDAV sync runs and their details in settings
-- **Proxmox LXC deployment** — turnkey install/create/update scripts under `scripts/proxmox/`, plus a [community-scripts](https://github.com/community-scripts/ProxmoxVED) style helper at `scripts/proxmox/nametag.sh`
+- **Proxmox LXC deployment** — turnkey install/create/update scripts under `scripts/proxmox/`, plus a [community-scripts](https://github.com/community-scripts/ProxmoxVE) style helper at `scripts/proxmox/nametag.sh`
 - Slimmer dependencies — replaced the monolithic `googleapis` (~196 MB) with the lightweight `@googleapis/{gmail,drive,calendar}` packages
+
 
 ## Hosted vs Self-Hosted
 
@@ -398,7 +399,7 @@ server {
 
 If you run Proxmox VE, this fork ships helpers under `scripts/proxmox/`:
 
-- `nametag.sh` — [community-scripts / ProxmoxVED](https://github.com/community-scripts/ProxmoxVED) style helper. Run on the Proxmox host to create a new LXC, or re-run against an existing one to update in place.
+- `nametag.sh` — [community-scripts / ProxmoxVE](https://github.com/community-scripts/ProxmoxVE) style helper. Run on the Proxmox host to create a new LXC, or re-run against an existing one to update in place.
 - `create-lxc.sh` — standalone host-side provisioner (Debian LXC + Nametag)
 - `install.sh` — standalone in-container installer (Debian 12+/Ubuntu 22.04+)
 - `update.sh` — standalone in-place updater
@@ -415,6 +416,7 @@ Or do a minimal install inside an existing LXC:
 ```bash
 curl -sSL https://raw.githubusercontent.com/adeelahmad/nametag/master/scripts/proxmox/install.sh | bash
 ```
+
 
 ## Tech Stack
 
