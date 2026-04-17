@@ -29,7 +29,17 @@ PG_DB_NAME="nametag_db" \
   PG_DB_SKIP_ALTER_ROLE="true" \
   setup_postgresql_db
 
-fetch_and_deploy_gh_release "nametag" "adeelahmad/nametag" "tarball" "latest" "/opt/nametag"
+msg_info "Cloning ${APPLICATION:-Nametag}"
+RELEASE=$(curl -fsSL "https://api.github.com/repos/adeelahmad/nametag/releases/latest" 2>/dev/null | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/' || true)
+mkdir -p /opt/nametag
+if [ -n "${RELEASE}" ] && [ "${RELEASE}" != "null" ]; then
+  $STD curl -fsSL "https://github.com/adeelahmad/nametag/archive/refs/tags/${RELEASE}.tar.gz" | tar -xz --strip-components=1 -C /opt/nametag
+  echo "${RELEASE}" >/opt/nametag/.app_version
+else
+  $STD git clone --depth 1 https://github.com/adeelahmad/nametag.git /opt/nametag
+  cd /opt/nametag && echo "$(git rev-parse --short HEAD)" >/opt/nametag/.app_version
+fi
+msg_ok "Cloned ${APPLICATION:-Nametag}"
 
 msg_info "Configuring Environment"
 NEXTAUTH_SECRET="$(openssl rand -base64 32)"
@@ -61,10 +71,13 @@ set +a
 $STD npm ci
 $STD npx prisma generate
 $STD npx prisma migrate deploy
+$STD npx esbuild prisma/seed.production.ts --platform=node --format=cjs --outfile=prisma/seed.production.js --bundle --external:@prisma/client --external:pg
 $STD node prisma/seed.production.js || true
 $STD npm run build
+mkdir -p /opt/nametag/.next/standalone/.next
 cp -r /opt/nametag/.next/static /opt/nametag/.next/standalone/.next/static
 cp -r /opt/nametag/public /opt/nametag/.next/standalone/public
+cp -r /opt/nametag/locales /opt/nametag/.next/standalone/locales
 msg_ok "Built Application"
 
 msg_info "Creating Service"
