@@ -1,5 +1,6 @@
 import { getRequestConfig } from 'next-intl/server';
 import { cookies, headers } from 'next/headers';
+import { unstable_rethrow } from 'next/navigation';
 import { DEFAULT_LOCALE, type SupportedLocale, isSupportedLocale } from './lib/locale';
 
 /**
@@ -61,6 +62,7 @@ export default getRequestConfig(async () => {
       }
     }
   } catch (error) {
+    unstable_rethrow(error);
     console.error('Error detecting locale:', error);
   }
 

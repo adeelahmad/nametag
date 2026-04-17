@@ -13,6 +13,7 @@ vi.mock('next/navigation', () => ({
   }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
+  unstable_rethrow: vi.fn(),
 }));
 
 // Mock NextResponse for API tests
