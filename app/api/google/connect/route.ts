@@ -24,6 +24,8 @@ export const GET = withLogging(async function GET() {
         driveFolderName: true,
         calendarSyncEnabled: true,
         birthdayCalendarId: true,
+        tasksEnabled: true,
+        defaultTaskListId: true,
         ocrEnabled: true,
         autoSyncInterval: true,
         lastGmailSyncAt: true,
@@ -66,6 +68,8 @@ export const POST = withLogging(async function POST(request: Request) {
       driveFolderName,
       calendarSyncEnabled,
       birthdayCalendarId,
+      tasksEnabled,
+      defaultTaskListId,
       ocrEnabled,
     } = body;
 
@@ -143,6 +147,12 @@ export const POST = withLogging(async function POST(request: Request) {
     if (birthdayCalendarId !== undefined) {
       data.birthdayCalendarId = birthdayCalendarId;
     }
+    if (tasksEnabled !== undefined) {
+      data.tasksEnabled = tasksEnabled;
+    }
+    if (defaultTaskListId !== undefined) {
+      data.defaultTaskListId = defaultTaskListId || null;
+    }
     if (ocrEnabled !== undefined) {
       data.ocrEnabled = ocrEnabled;
     }
@@ -167,6 +177,8 @@ export const POST = withLogging(async function POST(request: Request) {
       driveFolderName: integration.driveFolderName,
       calendarSyncEnabled: integration.calendarSyncEnabled,
       birthdayCalendarId: integration.birthdayCalendarId,
+      tasksEnabled: integration.tasksEnabled,
+      defaultTaskListId: integration.defaultTaskListId,
       autoSyncInterval: integration.autoSyncInterval,
       lastGmailSyncAt: integration.lastGmailSyncAt,
       lastCalendarSyncAt: integration.lastCalendarSyncAt,

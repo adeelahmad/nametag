@@ -8,6 +8,7 @@ import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { formatGraphName, type NameDisplayFormat } from '@/lib/nameUtils';
 import { Button } from '@/components/ui/Button';
 import DeleteJournalEntryButton from '@/components/DeleteJournalEntryButton';
+import JournalTasksSection from '@/components/google/JournalTasksSection';
 
 export default async function JournalEntryDetailPage({
   params,
@@ -23,7 +24,7 @@ export default async function JournalEntryDetailPage({
 
   const { id } = await params;
 
-  const [entry, user] = await Promise.all([
+  const [entry, user, allPeople, googleIntegration] = await Promise.all([
     prisma.journalEntry.findUnique({
       where: {
         id,
@@ -49,6 +50,15 @@ export default async function JournalEntryDetailPage({
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { nameOrder: true, nameDisplayFormat: true, language: true, dateFormat: true },
+    }),
+    prisma.person.findMany({
+      where: { userId: session.user.id, deletedAt: null },
+      select: { id: true, name: true, surname: true, nickname: true },
+      orderBy: { name: 'asc' },
+    }),
+    prisma.googleIntegration.findUnique({
+      where: { userId: session.user.id },
+      select: { tasksEnabled: true },
     }),
   ]);
 
@@ -125,6 +135,22 @@ export default async function JournalEntryDetailPage({
             <article className="prose prose-sm dark:prose-invert max-w-none">
               <MarkdownRenderer content={entry.body} />
             </article>
+
+            {googleIntegration?.tasksEnabled && (
+              <JournalTasksSection
+                journalEntryId={entry.id}
+                journalTitle={entry.title}
+                taggedPeople={entry.people.map(({ person }) => ({
+                  id: person.id,
+                  name: person.name,
+                  surname: person.surname,
+                  nickname: person.nickname,
+                }))}
+                availablePeople={allPeople}
+                nameOrder={nameOrder}
+                locale={locale}
+              />
+            )}
           </div>
         </div>
       </main>

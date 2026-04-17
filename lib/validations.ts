@@ -304,6 +304,22 @@ export const updateJournalEntrySchema = z.object({
 });
 
 // ============================================
+// Google Tasks schemas
+// ============================================
+
+export const createGoogleTaskSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(1024),
+  notes: z.string().max(8192).optional().nullable(),
+  due: z.preprocess(
+    (val) => (val === '' ? null : val),
+    z.iso.date({ error: 'Invalid date' }).nullable().optional(),
+  ),
+  taskListId: z.string().max(200).nullable().optional(),
+  personIds: z.array(z.string()).optional().default([]),
+  journalEntryId: z.string().nullable().optional(),
+});
+
+// ============================================
 // Relationship schemas
 // ============================================
 
