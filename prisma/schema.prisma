@@ -57,6 +57,11 @@ model User {
   journalEntries    JournalEntry[]
   notifications     Notification[]
 
+  // Assistant module
+  assistantSettings       AssistantSettings?
+  assistantConversations  AssistantConversation[]
+  assistantBridgeTokens   AssistantBridgeToken[]
+
   @@unique([provider, providerAccountId])
   @@map("users")
 }
@@ -1067,4 +1072,167 @@ model Document {
   @@index([emailLogId])
   @@index([ocrStatus])
   @@map("documents")
+}
+
+// ============================================================================
+// Assistant module - chat-style AI interface connected to an LLM provider and
+// the app's own tool/MCP surface. Mirrors claude.ai UX: persistent history,
+// streaming, tool use, and auto-summarization when context grows large.
+// ============================================================================
+
+// Per-user configuration for the LLM provider powering the assistant.
+// Defaults to an OpenAI-compatible chat-completions endpoint so users can
+// point at OpenAI, Azure, OpenRouter, Groq, local llama.cpp/LM Studio/Ollama,
+// or any compatible gateway. Also supports the native Anthropic API.
+model AssistantSettings {
+  id                      String                    @id @default(cuid())
+  userId                  String                    @unique
+  provider                AssistantProvider         @default(OPENAI_COMPATIBLE)
+  baseUrl                 String                    @default("https://api.openai.com/v1")
+  model                   String                    @default("gpt-4o-mini")
+  summaryModel            String?
+  apiKeyEncrypted         String?                   @db.Text
+  maxTokens               Int                       @default(4096)
+  temperature             Float                     @default(0.7)
+  // Context window in tokens; used to decide when to compact.
+  contextWindow           Int                       @default(128000)
+  // When live-tokens exceed this fraction of contextWindow, auto-compact.
+  compactAtRatio          Float                     @default(0.8)
+  systemPrompt            String?                   @db.Text
+  toolsEnabled            Boolean                   @default(true)
+  mcpEnabled              Boolean                   @default(true)
+  // Optional: allow user to disable individual tools by name.
+  disabledTools           String[]                  @default([])
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+
+  user                    User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("assistant_settings")
+}
+
+enum AssistantProvider {
+  OPENAI_COMPATIBLE
+  ANTHROPIC
+}
+
+// A chat session, analogous to a claude.ai conversation.
+model AssistantConversation {
+  id                String                            @id @default(cuid())
+  userId            String
+  title             String                            @default("New conversation")
+  // Short natural-language summary used in sidebar previews.
+  preview           String?                           @db.Text
+  // Optional pinned flag for sidebar ordering.
+  pinned            Boolean                           @default(false)
+  archivedAt        DateTime?
+  // Running counters for cheap UI without aggregating messages.
+  messageCount      Int                               @default(0)
+  tokenCount        Int                               @default(0)
+  // When summarization is applied, this points at the latest summary covering
+  // messages up to (not including) summarizedUpToMessageId.
+  summarizedUpToMessageId String?
+  // Optional origin tag: "web", "matterbridge", "mcp".
+  origin            String                            @default("web")
+  // Matter-bridge/IM integration identifier (channel:userExternalId).
+  bridgeKey         String?
+  createdAt         DateTime                          @default(now())
+  updatedAt         DateTime                          @updatedAt
+
+  user              User                              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages          AssistantMessage[]
+  summaries         AssistantConversationSummary[]
+
+  @@index([userId, updatedAt])
+  @@index([userId, archivedAt])
+  @@index([bridgeKey])
+  @@map("assistant_conversations")
+}
+
+// A single message within a conversation. Tool calls and tool results are
+// stored as messages with role=TOOL so the agentic loop can be replayed.
+model AssistantMessage {
+  id                String                    @id @default(cuid())
+  conversationId    String
+  role              AssistantMessageRole
+  // Rendered text content. For assistant messages this is the model output.
+  // For tool_result messages this is a JSON-stringified tool response.
+  content           String                    @db.Text
+  // Optional tool invocation payload for role=ASSISTANT messages that include
+  // tool_use blocks. Shape: { id, name, arguments } or an array of such.
+  toolCalls         Json?
+  // When role=TOOL, the id of the tool_use block this result is for.
+  toolCallId        String?
+  // Provider-reported token usage for this message.
+  promptTokens      Int?
+  completionTokens  Int?
+  totalTokens       Int?
+  // Provider name and model at time of generation (for audit/debug).
+  model             String?
+  // Whether this message was filtered out of active context by compaction.
+  compacted         Boolean                   @default(false)
+  // Free-form metadata (attachments, citations, errors, stop reasons, etc.).
+  metadata          Json?
+  createdAt         DateTime                  @default(now())
+
+  conversation      AssistantConversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@map("assistant_messages")
+}
+
+enum AssistantMessageRole {
+  SYSTEM
+  USER
+  ASSISTANT
+  TOOL
+}
+
+// Rolling summaries produced when conversations grow past compactAtRatio of
+// the model's context window. A summary replaces the summarized prefix in
+// subsequent prompts, mirroring claude.ai's auto-compact behavior.
+model AssistantConversationSummary {
+  id                String                    @id @default(cuid())
+  conversationId    String
+  // All messages with createdAt <= coveredUntil are considered summarized.
+  coveredUntil      DateTime
+  // Number of messages the summary replaces.
+  messageCount      Int
+  // Short title-style description.
+  headline          String?
+  // The full summary text used as the compacted system context.
+  summary           String                    @db.Text
+  tokenCount        Int?
+  createdAt         DateTime                  @default(now())
+
+  conversation      AssistantConversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@map("assistant_conversation_summaries")
+}
+
+// Opaque bearer tokens for non-web clients (matter-bridge plugin, the MCP
+// server, or any script) to authenticate as a specific user. Stored hashed.
+model AssistantBridgeToken {
+  id          String    @id @default(cuid())
+  userId      String
+  // Human-readable label (e.g., "Matterbridge / Slack").
+  name        String
+  // SHA-256 hash of the token; the plaintext is shown once at creation time.
+  tokenHash   String    @unique
+  // Only the first/last chars are stored for UI display (e.g., "nmt_1a…cd9f").
+  tokenPreview String
+  // Optional scope restriction: "mcp", "chat", or "*".
+  scope       String    @default("*")
+  // Optional default conversation the bridge should post to.
+  defaultConversationId String?
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("assistant_bridge_tokens")
 }
