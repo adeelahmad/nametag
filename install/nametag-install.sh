@@ -68,7 +68,7 @@ cd /opt/nametag
 set -a
 source /opt/nametag/.env
 set +a
-$STD npm ci
+$STD npm ci --include=dev
 $STD npx prisma generate
 $STD npx prisma migrate deploy
 $STD npx esbuild prisma/seed.production.ts --platform=node --format=cjs --outfile=prisma/seed.production.js --bundle --external:@prisma/client --external:pg
