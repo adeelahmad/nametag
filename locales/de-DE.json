@@ -58,6 +58,14 @@
       "settings": "Einstellungen",
       "signOut": "Abmelden"
     },
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "ariaLabel": "{count, plural, =0 {Keine ungelesenen Benachrichtigungen} one {# ungelesene Benachrichtigung} other {# ungelesene Benachrichtigungen}}",
+      "markAllRead": "Alle als gelesen markieren",
+      "empty": "Keine neuen Benachrichtigungen.",
+      "loading": "Benachrichtigungen werden geladen...",
+      "dismiss": "Schließen"
+    },
     "journal": "Tagebuch",
     "createJournal": "Neuer Eintrag"
   },

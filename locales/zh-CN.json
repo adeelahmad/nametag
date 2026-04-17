@@ -58,6 +58,14 @@
       "settings": "设置",
       "signOut": "退出登录"
     },
+    "notifications": {
+      "title": "通知",
+      "ariaLabel": "{count, plural, =0 {没有未读通知} other {有#条未读通知}}",
+      "markAllRead": "全部标记为已读",
+      "empty": "没有新通知。",
+      "loading": "正在加载通知...",
+      "dismiss": "关闭"
+    },
     "journal": "日记",
     "createJournal": "新条目"
   },

@@ -54,6 +54,7 @@ model User {
   googleIntegration      GoogleIntegration?
 
   journalEntries    JournalEntry[]
+  notifications     Notification[]
 
   @@unique([provider, providerAccountId])
   @@map("users")
@@ -801,6 +802,46 @@ model DuplicateDismissal {
   @@unique([userId, personAId, personBId])
   @@index([userId])
   @@map("duplicate_dismissals")
+}
+
+// ============================================
+// IN-APP NOTIFICATIONS
+// ============================================
+
+enum NotificationType {
+  REMINDER        // Contact/important-date reminders
+  SYSTEM          // System-wide announcements
+  CARDDAV         // CardDAV sync events
+  IMPORT          // Contact import results
+  BILLING         // Subscription/payment updates
+  INFO            // Generic info
+}
+
+enum NotificationSeverity {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+// Notification – in-app notification displayed in the notification center
+model Notification {
+  id        String               @id @default(cuid())
+  userId    String
+  type      NotificationType     @default(INFO)
+  severity  NotificationSeverity @default(INFO)
+  title     String
+  body      String?              @db.Text
+  link      String?              // Optional deep link (e.g., "/people/abc")
+  metadata  Json?                // Arbitrary payload for UI rendering
+  readAt    DateTime?
+  createdAt DateTime             @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@map("notifications")
 }
 
 // Stripe webhook idempotency – prevents duplicate event processing

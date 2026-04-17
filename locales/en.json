@@ -59,6 +59,14 @@
       "settings": "Settings",
       "signOut": "Sign out"
     },
+    "notifications": {
+      "title": "Notifications",
+      "ariaLabel": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}",
+      "markAllRead": "Mark all as read",
+      "empty": "You're all caught up.",
+      "loading": "Loading notifications...",
+      "dismiss": "Dismiss"
+    },
     "journal": "Journal",
     "createJournal": "New entry"
   },
