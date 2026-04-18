@@ -60,18 +60,21 @@ fi
 # Restore .env
 cp "${APP_DIR}/.env.backup" "${APP_DIR}/.env"
 
+# Tarball extracts as root — restore ownership so the app user can write to node_modules, .next, etc.
+chown -R "${APP_USER}:${APP_USER}" "${APP_DIR}"
+
 # Rebuild
 log_info "Installing dependencies..."
-sudo -u "${APP_USER}" npm ci --production=false 2>&1 | tail -1
+sudo -u "${APP_USER}" npm ci --include=dev
 
 log_info "Generating Prisma client..."
-sudo -u "${APP_USER}" npx prisma generate 2>&1 | tail -1
+sudo -u "${APP_USER}" npx prisma generate
 
 log_info "Running migrations..."
-sudo -u "${APP_USER}" npx prisma migrate deploy 2>&1 | tail -1
+sudo -u "${APP_USER}" npx prisma migrate deploy
 
 log_info "Building application..."
-sudo -u "${APP_USER}" npm run build 2>&1 | tail -3
+sudo -u "${APP_USER}" npm run build
 
 # Restart
 log_info "Starting Nametag..."
