@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.43.1](https://github.com/adeelahmad/nametag/compare/v0.43.0...v0.43.1) (2026-04-19)
+
+
+### Bug Fixes
+
+* **assistant:** hide optional pdf-parse from bundler static analysis ([3557f50](https://github.com/adeelahmad/nametag/commit/3557f50))
+* **proxmox:** restore ownership after tarball extract; show full update output ([58d17d4](https://github.com/adeelahmad/nametag/commit/58d17d4))
+
+
 ## [0.43.0](https://github.com/adeelahmad/nametag/compare/v0.42.2...v0.43.0) (2026-04-19)
 
 > First release of the `adeelahmad/nametag` fork. Includes new modules (assistant, notifications, Google Tasks, Google Contacts), the Proxmox helper, and Google service-account support, on top of the latest upstream `mattogodoy/nametag` master.
