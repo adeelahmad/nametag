@@ -26,9 +26,12 @@ export async function extractPdfText(bytes: Buffer): Promise<string> {
   }
   let pdfParse: PdfParseFn | null = null;
   try {
-    // Dynamic import so the dep stays optional; `as unknown as ...` because
-    // `pdf-parse` has no bundled types.
-    const mod = (await import('pdf-parse' as string)) as unknown as {
+    // Indirect dynamic import so bundler tracers (Turbopack/Webpack) don't try
+    // to resolve `pdf-parse` at build time — the dep is intentionally optional.
+    const requireOptional = new Function('m', 'return import(m)') as (
+      m: string,
+    ) => Promise<unknown>;
+    const mod = (await requireOptional('pdf-parse')) as {
       default?: PdfParseFn;
     } & PdfParseFn;
     pdfParse = (mod.default ?? (mod as PdfParseFn)) as PdfParseFn;
