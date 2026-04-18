@@ -1,4 +1,4 @@
-import { OAuth2Client, GoogleAuth } from 'google-auth-library';
+import { OAuth2Client, JWT } from 'google-auth-library';
 import type { GoogleIntegration } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { env } from '@/lib/env';
@@ -13,6 +13,7 @@ const SCOPES = [
   'https://www.googleapis.com/auth/drive.file',
   'https://www.googleapis.com/auth/calendar',
   'https://www.googleapis.com/auth/tasks',
+  'https://www.googleapis.com/auth/contacts.readonly',
 ];
 
 /**
@@ -38,7 +39,9 @@ export type GoogleAuthResult = {
  * Fetches the GoogleIntegration record for a user.
  * Throws if no integration exists.
  */
-export async function getGoogleIntegration(userId: string): Promise<GoogleIntegration> {
+export async function getGoogleIntegration(
+  userId: string,
+): Promise<GoogleIntegration> {
   const integration = await prisma.googleIntegration.findUnique({
     where: { userId },
   });
@@ -59,7 +62,9 @@ export async function getGoogleIntegration(userId: string): Promise<GoogleIntegr
  * variables (either base64-encoded JSON or a file path).
  */
 export function isServiceAccountConfigured(): boolean {
-  return !!(env.GOOGLE_SERVICE_ACCOUNT_KEY || env.GOOGLE_SERVICE_ACCOUNT_KEY_PATH);
+  return !!(
+    env.GOOGLE_SERVICE_ACCOUNT_KEY || env.GOOGLE_SERVICE_ACCOUNT_KEY_PATH
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -104,16 +109,22 @@ export async function getGoogleAuth(userId: string): Promise<GoogleAuthResult> {
  *
  * Returns the updated integration record.
  */
-export async function refreshOAuthToken(integration: GoogleIntegration): Promise<GoogleIntegration> {
+export async function refreshOAuthToken(
+  integration: GoogleIntegration,
+): Promise<GoogleIntegration> {
   if (!integration.refreshToken) {
-    throw new Error(`No refresh token stored for integration ${integration.id}`);
+    throw new Error(
+      `No refresh token stored for integration ${integration.id}`,
+    );
   }
 
   const clientId = env.GOOGLE_CLIENT_ID;
   const clientSecret = env.GOOGLE_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    throw new Error('GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are required for OAuth token refresh');
+    throw new Error(
+      'GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are required for OAuth token refresh',
+    );
   }
 
   const oauth2Client = new OAuth2Client(clientId, clientSecret);
@@ -121,7 +132,10 @@ export async function refreshOAuthToken(integration: GoogleIntegration): Promise
 
   oauth2Client.setCredentials({ refresh_token: refreshToken });
 
-  log.info({ integrationId: integration.id, userId: integration.userId }, 'Refreshing OAuth access token');
+  log.info(
+    { integrationId: integration.id, userId: integration.userId },
+    'Refreshing OAuth access token',
+  );
 
   try {
     const { credentials } = await oauth2Client.refreshAccessToken();
@@ -151,25 +165,36 @@ export async function refreshOAuthToken(integration: GoogleIntegration): Promise
     });
 
     log.info(
-      { integrationId: integration.id, expiresAt: tokenExpiresAt?.toISOString() },
+      {
+        integrationId: integration.id,
+        expiresAt: tokenExpiresAt?.toISOString(),
+      },
       'OAuth access token refreshed successfully',
     );
 
     return updated;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    log.error({ integrationId: integration.id, error: message }, 'Failed to refresh OAuth token');
+    log.error(
+      { integrationId: integration.id, error: message },
+      'Failed to refresh OAuth token',
+    );
 
     // Persist the error for visibility in the UI
-    await prisma.googleIntegration.update({
-      where: { id: integration.id },
-      data: {
-        lastError: `Token refresh failed: ${message}`,
-        lastErrorAt: new Date(),
-      },
-    }).catch((dbErr) => {
-      log.error({ integrationId: integration.id, error: dbErr }, 'Failed to persist token refresh error');
-    });
+    await prisma.googleIntegration
+      .update({
+        where: { id: integration.id },
+        data: {
+          lastError: `Token refresh failed: ${message}`,
+          lastErrorAt: new Date(),
+        },
+      })
+      .catch((dbErr) => {
+        log.error(
+          { integrationId: integration.id, error: dbErr },
+          'Failed to persist token refresh error',
+        );
+      });
 
     throw new Error(`Failed to refresh Google OAuth token: ${message}`);
   }
@@ -187,12 +212,16 @@ export async function refreshOAuthToken(integration: GoogleIntegration): Promise
  * A `tokens` event listener is attached so that any token refresh triggered
  * by the Google client library itself is also persisted to the database.
  */
-async function buildOAuthClient(integration: GoogleIntegration): Promise<OAuth2Client> {
+async function buildOAuthClient(
+  integration: GoogleIntegration,
+): Promise<OAuth2Client> {
   const clientId = env.GOOGLE_CLIENT_ID;
   const clientSecret = env.GOOGLE_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    throw new Error('GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are required for OAuth mode');
+    throw new Error(
+      'GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are required for OAuth mode',
+    );
   }
 
   const oauth2Client = new OAuth2Client(clientId, clientSecret);
@@ -215,7 +244,10 @@ async function buildOAuthClient(integration: GoogleIntegration): Promise<OAuth2C
   // Listen for automatic token refreshes from the Google client library
   // so we always persist the latest tokens.
   oauth2Client.on('tokens', (tokens) => {
-    log.debug({ integrationId: integration.id }, 'Google client emitted new tokens');
+    log.debug(
+      { integrationId: integration.id },
+      'Google client emitted new tokens',
+    );
 
     const data: Record<string, unknown> = {};
 
@@ -236,17 +268,26 @@ async function buildOAuthClient(integration: GoogleIntegration): Promise<OAuth2C
       prisma.googleIntegration
         .update({ where: { id: integration.id }, data })
         .then(() => {
-          log.debug({ integrationId: integration.id }, 'Persisted refreshed tokens to DB');
+          log.debug(
+            { integrationId: integration.id },
+            'Persisted refreshed tokens to DB',
+          );
         })
         .catch((err) => {
-          log.error({ integrationId: integration.id, error: err }, 'Failed to persist refreshed tokens');
+          log.error(
+            { integrationId: integration.id, error: err },
+            'Failed to persist refreshed tokens',
+          );
         });
     }
   });
 
   // Proactively refresh if the token is expired or about to expire
   if (isTokenExpired(integration)) {
-    log.info({ integrationId: integration.id }, 'Access token expired or near expiry, refreshing');
+    log.info(
+      { integrationId: integration.id },
+      'Access token expired or near expiry, refreshing',
+    );
     const updated = await refreshOAuthToken(integration);
 
     // Re-seed the client with fresh credentials
@@ -274,42 +315,79 @@ async function buildOAuthClient(integration: GoogleIntegration): Promise<OAuth2C
  * 2. Global `GOOGLE_SERVICE_ACCOUNT_KEY` env var (base64-encoded JSON)
  * 3. Global `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` env var (file path)
  */
-async function buildServiceAccountClient(integration: GoogleIntegration): Promise<OAuth2Client> {
+async function buildServiceAccountClient(
+  integration: GoogleIntegration,
+): Promise<OAuth2Client> {
   const keyJson = resolveServiceAccountKey(integration);
-  const delegatedEmail = integration.delegatedEmail || env.GOOGLE_DELEGATED_USER_EMAIL;
+  const delegatedEmail =
+    integration.delegatedEmail || env.GOOGLE_DELEGATED_USER_EMAIL;
 
   if (!delegatedEmail) {
     throw new Error(
       `No delegated email configured for service-account integration ${integration.id}. ` +
-      'Set delegatedEmail on the integration or GOOGLE_DELEGATED_USER_EMAIL in the environment.',
+        'Set delegatedEmail on the integration or GOOGLE_DELEGATED_USER_EMAIL in the environment.',
     );
   }
 
-  const googleAuth = new GoogleAuth({
-    credentials: keyJson,
+  // Validate the JSON is actually a service-account key. OAuth client-secret
+  // JSONs ("type": "installed" / "web") will fail with unauthorized_client.
+  const keyType = typeof keyJson.type === 'string' ? keyJson.type : undefined;
+  const clientEmail =
+    typeof keyJson.client_email === 'string' ? keyJson.client_email : undefined;
+  const privateKey =
+    typeof keyJson.private_key === 'string' ? keyJson.private_key : undefined;
+  const clientId =
+    typeof keyJson.client_id === 'string' ? keyJson.client_id : undefined;
+
+  if (keyType !== 'service_account' || !clientEmail || !privateKey) {
+    throw new Error(
+      'Provided credentials JSON is not a service-account key. ' +
+        'It must have "type": "service_account" with "client_email" and "private_key" fields. ' +
+        'Download the correct key from Google Cloud Console → IAM & Admin → Service Accounts → Keys.',
+    );
+  }
+
+  // Construct a JWT client directly — the reliable path for domain-wide
+  // delegation. `GoogleAuth` + `clientOptions.subject` is known to drop the
+  // subject in some versions, producing unauthorized_client errors.
+  const jwtClient = new JWT({
+    email: clientEmail,
+    key: privateKey,
     scopes: SCOPES,
-    clientOptions: {
-      subject: delegatedEmail,
-    },
+    subject: delegatedEmail,
   });
 
-  // getClient() returns a JWT or Compute client; for domain-wide delegation
-  // it will be a JWT client which is compatible with OAuth2Client interface.
-  const client = await googleAuth.getClient();
+  try {
+    await jwtClient.authorize();
+  } catch (err) {
+    const raw = err instanceof Error ? err.message : String(err);
+    if (raw.includes('unauthorized_client')) {
+      throw new Error(
+        `Google rejected the service-account delegation (unauthorized_client). ` +
+          `Fix in Google Workspace Admin → Security → Access and data control → API controls → ` +
+          `Domain-wide Delegation: add Client ID "${clientId ?? '<unknown>'}" and authorize these exact scopes: ` +
+          `${SCOPES.join(', ')}. Also confirm "${delegatedEmail}" is a real user in the workspace and ` +
+          `the Admin SDK/Gmail/Drive/Calendar APIs are enabled in the service account's GCP project.`,
+      );
+    }
+    throw err;
+  }
 
   log.info(
-    { integrationId: integration.id, delegatedEmail },
+    { integrationId: integration.id, delegatedEmail, clientId },
     'Service account auth client created',
   );
 
-  return client as OAuth2Client;
+  return jwtClient;
 }
 
 /**
  * Resolves the service account key JSON from the integration record or
  * environment variables. Returns the parsed key object.
  */
-function resolveServiceAccountKey(integration: GoogleIntegration): Record<string, unknown> {
+function resolveServiceAccountKey(
+  integration: GoogleIntegration,
+): Record<string, unknown> {
   // 1. Per-integration key stored in DB (encrypted)
   if (integration.serviceAccountKey) {
     try {
@@ -320,18 +398,28 @@ function resolveServiceAccountKey(integration: GoogleIntegration): Record<string
         { integrationId: integration.id, error },
         'Failed to decrypt/parse per-integration service account key',
       );
-      throw new Error('Invalid service account key stored on integration record');
+      throw new Error(
+        'Invalid service account key stored on integration record',
+      );
     }
   }
 
   // 2. Global base64-encoded key from env
   if (env.GOOGLE_SERVICE_ACCOUNT_KEY) {
     try {
-      const decoded = Buffer.from(env.GOOGLE_SERVICE_ACCOUNT_KEY, 'base64').toString('utf-8');
+      const decoded = Buffer.from(
+        env.GOOGLE_SERVICE_ACCOUNT_KEY,
+        'base64',
+      ).toString('utf-8');
       return JSON.parse(decoded) as Record<string, unknown>;
     } catch (error) {
-      log.error({ error }, 'Failed to decode GOOGLE_SERVICE_ACCOUNT_KEY env var');
-      throw new Error('Invalid GOOGLE_SERVICE_ACCOUNT_KEY environment variable (expected base64-encoded JSON)');
+      log.error(
+        { error },
+        'Failed to decode GOOGLE_SERVICE_ACCOUNT_KEY env var',
+      );
+      throw new Error(
+        'Invalid GOOGLE_SERVICE_ACCOUNT_KEY environment variable (expected base64-encoded JSON)',
+      );
     }
   }
 
@@ -353,7 +441,7 @@ function resolveServiceAccountKey(integration: GoogleIntegration): Record<string
 
   throw new Error(
     'No service account key available. Provide one on the integration record, ' +
-    'or set GOOGLE_SERVICE_ACCOUNT_KEY or GOOGLE_SERVICE_ACCOUNT_KEY_PATH.',
+      'or set GOOGLE_SERVICE_ACCOUNT_KEY or GOOGLE_SERVICE_ACCOUNT_KEY_PATH.',
   );
 }
 
@@ -367,5 +455,7 @@ function isTokenExpired(integration: GoogleIntegration): boolean {
     return true;
   }
 
-  return integration.tokenExpiresAt.getTime() - Date.now() < TOKEN_EXPIRY_BUFFER_MS;
+  return (
+    integration.tokenExpiresAt.getTime() - Date.now() < TOKEN_EXPIRY_BUFFER_MS
+  );
 }

@@ -675,7 +675,10 @@
         "connectButton": "Connect",
         "connecting": "Connecting...",
         "connectSuccess": "Google integration connected successfully",
-        "connectError": "Failed to connect Google integration"
+        "connectError": "Failed to connect Google integration",
+        "switchTitle": "Switch auth method",
+        "switchDescription": "You're currently connected via {current}. Choose a different method below to re-authenticate.",
+        "cancel": "Cancel"
       }
     }
   },
@@ -1882,7 +1885,15 @@
     "tasksListLabel": "Default Task List",
     "tasksListHelp": "New tasks are added to this list by default",
     "tasksListSelected": "Default task list saved",
-    "tasksListSelectError": "Failed to save task list"
+    "tasksListSelectError": "Failed to save task list",
+    "contactsSync": "Google Contacts Sync",
+    "contactsSyncNow": "Sync Contacts Now",
+    "contactsSyncing": "Syncing...",
+    "contactsSyncSuccess": "Contacts sync completed",
+    "contactsSyncError": "Contacts sync failed",
+    "contactsSyncHelp": "Imports and updates your Google Contacts (People API) as people in Nametag",
+    "switchAuth": "Switch auth method",
+    "cancel": "Cancel"
   },
   "googleTasks": {
     "sectionTitle": "Tasks",

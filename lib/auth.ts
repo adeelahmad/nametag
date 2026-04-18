@@ -16,7 +16,14 @@ export const LOCKOUT_DURATION_MS = 30 * 60 * 1000; // 30 minutes
 export async function authorizeCredentials(credentials: {
   email?: string;
   password?: string;
-}): Promise<{ id: string; email: string; name: string; surname: string | null; nickname: string | null; photo: string | null } | null> {
+}): Promise<{
+  id: string;
+  email: string;
+  name: string;
+  surname: string | null;
+  nickname: string | null;
+  photo: string | null;
+} | null> {
   // Lazy load Prisma and bcrypt to avoid edge runtime issues
   const { prisma } = await import('@/lib/prisma');
   const bcrypt = await import('bcryptjs');
@@ -52,13 +59,16 @@ export async function authorizeCredentials(credentials: {
 
   const passwordMatch = await bcrypt.compare(
     credentials.password,
-    user.password
+    user.password,
   );
 
   if (!passwordMatch) {
     // Increment failed login attempts
     const newAttempts = user.failedLoginAttempts + 1;
-    const updateData: { failedLoginAttempts: { increment: number }; lockedUntil?: Date } = {
+    const updateData: {
+      failedLoginAttempts: { increment: number };
+      lockedUntil?: Date;
+    } = {
       failedLoginAttempts: { increment: 1 },
     };
 
@@ -67,17 +77,28 @@ export async function authorizeCredentials(credentials: {
 
       // Send lockout notification email (non-blocking)
       const locale = normalizeLocale(user.language || 'en');
-      import(`@/locales/${locale}.json`).then((messages) => {
-        const lockoutMessages = messages.emails?.accountLocked;
-        const subject = lockoutMessages?.subject || 'Account temporarily locked';
-        const text = lockoutMessages?.body || 'Your account has been temporarily locked due to too many failed login attempts. It will be automatically unlocked in 30 minutes. If you did not attempt to log in, please reset your password immediately.';
-        const html = `<p>${text.replace(/\n/g, '</p><p>')}</p>`;
-        return import('@/lib/email').then(({ sendEmail }) =>
-          sendEmail({ to: user.email, subject, html, text })
-        );
-      }).catch((err: unknown) => {
-        log.warn({ err: err instanceof Error ? err : new Error(String(err)), email: user.email }, 'Failed to send lockout notification email');
-      });
+      import(`@/locales/${locale}.json`)
+        .then((messages) => {
+          const lockoutMessages = messages.emails?.accountLocked;
+          const subject =
+            lockoutMessages?.subject || 'Account temporarily locked';
+          const text =
+            lockoutMessages?.body ||
+            'Your account has been temporarily locked due to too many failed login attempts. It will be automatically unlocked in 30 minutes. If you did not attempt to log in, please reset your password immediately.';
+          const html = `<p>${text.replace(/\n/g, '</p><p>')}</p>`;
+          return import('@/lib/email').then(({ sendEmail }) =>
+            sendEmail({ to: user.email, subject, html, text }),
+          );
+        })
+        .catch((err: unknown) => {
+          log.warn(
+            {
+              err: err instanceof Error ? err : new Error(String(err)),
+              email: user.email,
+            },
+            'Failed to send lockout notification email',
+          );
+        });
     }
 
     await prisma.user.update({
@@ -116,15 +137,17 @@ export async function authorizeCredentials(credentials: {
 // Build providers list based on mode
 const providers = [
   CredentialsProvider({
-      name: 'credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        return authorizeCredentials(credentials as { email?: string; password?: string });
-      },
-    }),
+    name: 'credentials',
+    credentials: {
+      email: { label: 'Email', type: 'email' },
+      password: { label: 'Password', type: 'password' },
+    },
+    async authorize(credentials) {
+      return authorizeCredentials(
+        credentials as { email?: string; password?: string },
+      );
+    },
+  }),
   // Add Google provider when credentials are configured (enables OAuth sign-in + Gmail/Drive integration)
   ...(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
     ? [
@@ -143,6 +166,7 @@ const providers = [
                 'https://www.googleapis.com/auth/drive.file',
                 'https://www.googleapis.com/auth/calendar',
                 'https://www.googleapis.com/auth/tasks',
+                'https://www.googleapis.com/auth/contacts.readonly',
               ].join(' '),
             },
           },
@@ -181,7 +205,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (account?.provider === 'google' && profile) {
         const { prisma } = await import('@/lib/prisma');
         const { createFreeSubscription } = await import('@/lib/billing');
-        const { createPreloadedRelationshipTypes } = await import('@/lib/relationship-types');
+        const { createPreloadedRelationshipTypes } =
+          await import('@/lib/relationship-types');
         const { normalizeEmail } = await import('@/lib/api-utils');
 
         // Normalize email to lowercase for case-insensitive lookup
@@ -209,20 +234,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           // Store/update Google OAuth tokens for Gmail/Drive integration
           if (account.access_token) {
-            const { encryptPassword } = await import('@/lib/carddav/encryption');
+            const { encryptPassword } =
+              await import('@/lib/carddav/encryption');
             await prisma.googleIntegration.upsert({
               where: { userId: existingUser.id },
               update: {
                 accessToken: encryptPassword(account.access_token),
-                ...(account.refresh_token ? { refreshToken: encryptPassword(account.refresh_token) } : {}),
-                tokenExpiresAt: account.expires_at ? new Date(account.expires_at * 1000) : null,
+                ...(account.refresh_token
+                  ? { refreshToken: encryptPassword(account.refresh_token) }
+                  : {}),
+                tokenExpiresAt: account.expires_at
+                  ? new Date(account.expires_at * 1000)
+                  : null,
               },
               create: {
                 userId: existingUser.id,
                 authMode: 'oauth',
                 accessToken: encryptPassword(account.access_token),
-                refreshToken: account.refresh_token ? encryptPassword(account.refresh_token) : null,
-                tokenExpiresAt: account.expires_at ? new Date(account.expires_at * 1000) : null,
+                refreshToken: account.refresh_token
+                  ? encryptPassword(account.refresh_token)
+                  : null,
+                tokenExpiresAt: account.expires_at
+                  ? new Date(account.expires_at * 1000)
+                  : null,
               },
             });
           }
@@ -247,14 +281,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           // Store Google OAuth tokens for Gmail/Drive integration
           if (account.access_token) {
-            const { encryptPassword } = await import('@/lib/carddav/encryption');
+            const { encryptPassword } =
+              await import('@/lib/carddav/encryption');
             await prisma.googleIntegration.create({
               data: {
                 userId: newUser.id,
                 authMode: 'oauth',
                 accessToken: encryptPassword(account.access_token),
-                refreshToken: account.refresh_token ? encryptPassword(account.refresh_token) : null,
-                tokenExpiresAt: account.expires_at ? new Date(account.expires_at * 1000) : null,
+                refreshToken: account.refresh_token
+                  ? encryptPassword(account.refresh_token)
+                  : null,
+                tokenExpiresAt: account.expires_at
+                  ? new Date(account.expires_at * 1000)
+                  : null,
               },
             });
           }

@@ -70,6 +70,7 @@ export const POST = withLogging(async function POST(request: Request) {
       birthdayCalendarId,
       tasksEnabled,
       defaultTaskListId,
+      contactsSyncEnabled,
       ocrEnabled,
     } = body;
 
@@ -122,7 +123,11 @@ export const POST = withLogging(async function POST(request: Request) {
       data.driveSyncEnabled = driveSyncEnabled;
     }
     if (autoSyncInterval !== undefined) {
-      if (typeof autoSyncInterval !== 'number' || autoSyncInterval < 60 || autoSyncInterval > 86400) {
+      if (
+        typeof autoSyncInterval !== 'number' ||
+        autoSyncInterval < 60 ||
+        autoSyncInterval > 86400
+      ) {
         return NextResponse.json(
           { error: 'autoSyncInterval must be between 60 and 86400 seconds' },
           { status: 400 },
@@ -131,7 +136,10 @@ export const POST = withLogging(async function POST(request: Request) {
       data.autoSyncInterval = autoSyncInterval;
     }
     if (driveFolderName !== undefined) {
-      if (typeof driveFolderName !== 'string' || driveFolderName.trim().length === 0) {
+      if (
+        typeof driveFolderName !== 'string' ||
+        driveFolderName.trim().length === 0
+      ) {
         return NextResponse.json(
           { error: 'driveFolderName must be a non-empty string' },
           { status: 400 },
@@ -152,6 +160,13 @@ export const POST = withLogging(async function POST(request: Request) {
     }
     if (defaultTaskListId !== undefined) {
       data.defaultTaskListId = defaultTaskListId || null;
+    }
+    if (contactsSyncEnabled !== undefined) {
+      data.contactsSyncEnabled = contactsSyncEnabled;
+      // Reset sync token when toggling so the next sync is a full sync.
+      if (contactsSyncEnabled === false) {
+        data.contactsSyncToken = null;
+      }
     }
     if (ocrEnabled !== undefined) {
       data.ocrEnabled = ocrEnabled;
@@ -188,7 +203,10 @@ export const POST = withLogging(async function POST(request: Request) {
       updatedAt: integration.updatedAt,
     };
 
-    return NextResponse.json({ success: true, data: safeIntegration }, { status: 201 });
+    return NextResponse.json(
+      { success: true, data: safeIntegration },
+      { status: 201 },
+    );
   } catch (error) {
     return handleApiError(error, 'google-connect-post');
   }

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
+import GoogleConnectForm from './GoogleConnectForm';
 
 type GoogleIntegrationStatus = {
   authMode: string;
@@ -13,6 +14,8 @@ type GoogleIntegrationStatus = {
   birthdayCalendarId: string | null;
   tasksEnabled: boolean;
   defaultTaskListId: string | null;
+  contactsSyncEnabled: boolean;
+  lastContactsSyncAt: string | null;
   ocrEnabled: boolean;
   autoSyncInterval: number;
   lastGmailSyncAt: string | null;
@@ -22,24 +25,51 @@ type GoogleIntegrationStatus = {
 
 interface GoogleIntegrationCardProps {
   integration: GoogleIntegrationStatus | null;
+  oauthConfigured: boolean;
+  serviceAccountAvailable: boolean;
 }
 
-export default function GoogleIntegrationCard({ integration }: GoogleIntegrationCardProps) {
+export default function GoogleIntegrationCard({
+  integration,
+  oauthConfigured,
+  serviceAccountAvailable,
+}: GoogleIntegrationCardProps) {
   const t = useTranslations('google');
   const [syncing, setSyncing] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
-  const [gmailEnabled, setGmailEnabled] = useState(integration?.gmailSyncEnabled ?? false);
-  const [driveEnabled, setDriveEnabled] = useState(integration?.driveSyncEnabled ?? false);
-  const [calendarEnabled, setCalendarEnabled] = useState(integration?.calendarSyncEnabled ?? false);
-  const [tasksEnabled, setTasksEnabled] = useState(integration?.tasksEnabled ?? false);
-  const [taskLists, setTaskLists] = useState<Array<{ id: string; title: string }>>([]);
+  const [switchingAuth, setSwitchingAuth] = useState(false);
+  const [contactsSyncing, setContactsSyncing] = useState(false);
+  const [gmailEnabled, setGmailEnabled] = useState(
+    integration?.gmailSyncEnabled ?? false,
+  );
+  const [driveEnabled, setDriveEnabled] = useState(
+    integration?.driveSyncEnabled ?? false,
+  );
+  const [calendarEnabled, setCalendarEnabled] = useState(
+    integration?.calendarSyncEnabled ?? false,
+  );
+  const [tasksEnabled, setTasksEnabled] = useState(
+    integration?.tasksEnabled ?? false,
+  );
+  const [taskLists, setTaskLists] = useState<
+    Array<{ id: string; title: string }>
+  >([]);
   const [loadingTaskLists, setLoadingTaskLists] = useState(false);
+  const [contactsEnabled, setContactsEnabled] = useState(
+    integration?.contactsSyncEnabled ?? false,
+  );
   const [ocrEnabled, setOcrEnabled] = useState(integration?.ocrEnabled ?? true);
-  const [syncInterval, setSyncInterval] = useState(integration?.autoSyncInterval ?? 3600);
-  const [folderName, setFolderName] = useState(integration?.driveFolderName ?? 'Nametag');
+  const [syncInterval, setSyncInterval] = useState(
+    integration?.autoSyncInterval ?? 3600,
+  );
+  const [folderName, setFolderName] = useState(
+    integration?.driveFolderName ?? 'Nametag',
+  );
   const [editingFolder, setEditingFolder] = useState(false);
   const [calendarSyncing, setCalendarSyncing] = useState(false);
-  const [calendars, setCalendars] = useState<Array<{ id: string; summary: string; primary: boolean }>>([]);
+  const [calendars, setCalendars] = useState<
+    Array<{ id: string; summary: string; primary: boolean }>
+  >([]);
   const [loadingCalendars, setLoadingCalendars] = useState(false);
 
   if (!integration) {
@@ -84,7 +114,32 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
     }
   }
 
-  async function handleToggle(field: 'gmailSyncEnabled' | 'driveSyncEnabled' | 'calendarSyncEnabled' | 'tasksEnabled' | 'ocrEnabled', value: boolean) {
+  async function handleContactsSyncNow() {
+    setContactsSyncing(true);
+    try {
+      const res = await fetch('/api/google/contacts/sync', { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Contacts sync failed');
+      }
+      toast.success(t('contactsSyncSuccess'));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('contactsSyncError'));
+    } finally {
+      setContactsSyncing(false);
+    }
+  }
+
+  async function handleToggle(
+    field:
+      | 'gmailSyncEnabled'
+      | 'driveSyncEnabled'
+      | 'calendarSyncEnabled'
+      | 'tasksEnabled'
+      | 'contactsSyncEnabled'
+      | 'ocrEnabled',
+    value: boolean,
+  ) {
     try {
       const res = await fetch('/api/google/connect', {
         method: 'POST',
@@ -102,12 +157,16 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       if (field === 'driveSyncEnabled') setDriveEnabled(value);
       if (field === 'calendarSyncEnabled') setCalendarEnabled(value);
       if (field === 'tasksEnabled') setTasksEnabled(value);
+      if (field === 'contactsSyncEnabled') setContactsEnabled(value);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to update setting');
+      toast.error(
+        err instanceof Error ? err.message : 'Failed to update setting',
+      );
       if (field === 'gmailSyncEnabled') setGmailEnabled(!value);
       if (field === 'driveSyncEnabled') setDriveEnabled(!value);
       if (field === 'calendarSyncEnabled') setCalendarEnabled(!value);
       if (field === 'tasksEnabled') setTasksEnabled(!value);
+      if (field === 'contactsSyncEnabled') setContactsEnabled(!value);
     }
   }
 
@@ -117,7 +176,9 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       const res = await fetch('/api/google/tasks/lists');
       const data = await res.json();
       if (data.success) setTaskLists(data.data);
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
     setLoadingTaskLists(false);
   }
 
@@ -126,7 +187,10 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       const res = await fetch('/api/google/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ authMode: currentIntegration.authMode, defaultTaskListId: listId }),
+        body: JSON.stringify({
+          authMode: currentIntegration.authMode,
+          defaultTaskListId: listId,
+        }),
       });
       if (!res.ok) throw new Error('Save failed');
       toast.success(t('tasksListSelected'));
@@ -141,9 +205,14 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       await fetch('/api/google/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ authMode: currentIntegration.authMode, autoSyncInterval: value }),
+        body: JSON.stringify({
+          authMode: currentIntegration.authMode,
+          autoSyncInterval: value,
+        }),
       });
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
   }
 
   async function loadCalendars() {
@@ -152,7 +221,9 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       const res = await fetch('/api/google/calendar');
       const data = await res.json();
       if (data.success) setCalendars(data.data);
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
     setLoadingCalendars(false);
   }
 
@@ -161,7 +232,10 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       await fetch('/api/google/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ authMode: currentIntegration.authMode, birthdayCalendarId: calendarId }),
+        body: JSON.stringify({
+          authMode: currentIntegration.authMode,
+          birthdayCalendarId: calendarId,
+        }),
       });
       toast.success(t('calendarSelected'));
     } catch {
@@ -174,7 +248,10 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       const res = await fetch('/api/google/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ authMode: currentIntegration.authMode, driveFolderName: folderName }),
+        body: JSON.stringify({
+          authMode: currentIntegration.authMode,
+          driveFolderName: folderName,
+        }),
       });
       if (!res.ok) throw new Error('Failed to save');
       toast.success(t('folderSaved'));
@@ -226,13 +303,32 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
         </span>
       </div>
 
-      {/* Auth mode badge */}
-      <div className="mb-4">
-        <span className="text-sm text-muted">{t('authMode')}: </span>
+      {/* Auth mode badge + switch */}
+      <div className="mb-4 flex items-center gap-3">
+        <span className="text-sm text-muted">{t('authMode')}:</span>
         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
           {integration.authMode === 'oauth' ? t('oauth') : t('serviceAccount')}
         </span>
+        <button
+          type="button"
+          onClick={() => setSwitchingAuth((s) => !s)}
+          className="text-xs font-medium text-primary hover:underline"
+        >
+          {switchingAuth ? t('cancel') : t('switchAuth')}
+        </button>
       </div>
+
+      {switchingAuth && (
+        <GoogleConnectForm
+          oauthConfigured={oauthConfigured}
+          serviceAccountAvailable={serviceAccountAvailable}
+          mode="switch"
+          currentAuthMode={
+            integration.authMode === 'oauth' ? 'oauth' : 'service_account'
+          }
+          onCancel={() => setSwitchingAuth(false)}
+        />
+      )}
 
       {/* Sync toggles */}
       <div className="space-y-3 mb-4">
@@ -279,7 +375,9 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
             type="button"
             role="switch"
             aria-checked={calendarEnabled}
-            onClick={() => handleToggle('calendarSyncEnabled', !calendarEnabled)}
+            onClick={() =>
+              handleToggle('calendarSyncEnabled', !calendarEnabled)
+            }
             className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
               calendarEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
             }`}
@@ -313,36 +411,83 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
             />
           </button>
         </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-foreground">{t('contactsSync')}</span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={contactsEnabled}
+            onClick={() =>
+              handleToggle('contactsSyncEnabled', !contactsEnabled)
+            }
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+              contactsEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                contactsEnabled ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
       {/* Tasks default list picker */}
       {tasksEnabled && (
         <div className="mb-4">
-          <label className="block text-sm font-medium text-foreground mb-1">{t('tasksListLabel')}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">
+            {t('tasksListLabel')}
+          </label>
           <select
             defaultValue={integration.defaultTaskListId || ''}
             onChange={(e) => handleTaskListSelect(e.target.value)}
-            onFocus={() => { if (taskLists.length === 0) loadTaskLists(); }}
+            onFocus={() => {
+              if (taskLists.length === 0) loadTaskLists();
+            }}
             className="w-full rounded-md border border-border bg-background text-foreground text-sm p-2"
           >
-            <option value="">{loadingTaskLists ? t('loading') : 'Default list'}</option>
+            <option value="">
+              {loadingTaskLists ? t('loading') : 'Default list'}
+            </option>
             {taskLists.map((list) => (
-              <option key={list.id} value={list.id}>{list.title}</option>
+              <option key={list.id} value={list.id}>
+                {list.title}
+              </option>
             ))}
           </select>
           <p className="text-xs text-muted mt-1">{t('tasksListHelp')}</p>
         </div>
       )}
 
+      {contactsEnabled && (
+        <div className="mb-4 flex items-center gap-3">
+          <button
+            onClick={handleContactsSyncNow}
+            disabled={contactsSyncing}
+            className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md border border-border text-foreground hover:bg-surface-elevated disabled:opacity-50 transition-colors"
+          >
+            {contactsSyncing ? t('contactsSyncing') : t('contactsSyncNow')}
+          </button>
+          <span className="text-xs text-muted">{t('contactsSyncHelp')}</span>
+        </div>
+      )}
+
       {/* Drive folder name */}
       {driveEnabled && (
         <div className="mb-4">
-          <label className="block text-sm font-medium text-foreground mb-1">{t('driveFolderLabel')}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">
+            {t('driveFolderLabel')}
+          </label>
           <div className="flex gap-2">
             <input
               type="text"
               value={folderName}
-              onChange={(e) => { setFolderName(e.target.value); setEditingFolder(true); }}
+              onChange={(e) => {
+                setFolderName(e.target.value);
+                setEditingFolder(true);
+              }}
               className="flex-1 rounded-md border border-border bg-background text-foreground text-sm p-2"
               placeholder="Nametag"
             />
@@ -364,19 +509,24 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
         <div className="mb-4 space-y-3">
           {/* Calendar picker */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">{t('calendarPicker')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              {t('calendarPicker')}
+            </label>
             <div className="flex gap-2">
               <select
                 value={integration.birthdayCalendarId || ''}
                 onChange={(e) => handleCalendarSelect(e.target.value)}
-                onFocus={() => { if (calendars.length === 0) loadCalendars(); }}
+                onFocus={() => {
+                  if (calendars.length === 0) loadCalendars();
+                }}
                 className="flex-1 rounded-md border border-border bg-background text-foreground text-sm p-2"
               >
                 <option value="">{t('calendarAutoCreate')}</option>
                 {loadingCalendars && <option disabled>{t('loading')}</option>}
                 {calendars.map((cal) => (
                   <option key={cal.id} value={cal.id}>
-                    {cal.summary}{cal.primary ? ' (primary)' : ''}
+                    {cal.summary}
+                    {cal.primary ? ' (primary)' : ''}
                   </option>
                 ))}
               </select>
@@ -417,13 +567,17 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
             ocrEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
           }`}
         >
-          <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${ocrEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+          <span
+            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${ocrEnabled ? 'translate-x-5' : 'translate-x-0'}`}
+          />
         </button>
       </div>
 
       {/* Auto sync interval */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-foreground mb-1">{t('syncIntervalLabel')}</label>
+        <label className="block text-sm font-medium text-foreground mb-1">
+          {t('syncIntervalLabel')}
+        </label>
         <select
           value={syncInterval}
           onChange={(e) => handleSyncInterval(Number(e.target.value))}
@@ -452,12 +606,26 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
       {integration.lastError && (
         <div className="mb-4 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3">
           <div className="flex items-start gap-2">
-            <svg className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            <svg
+              className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
             </svg>
             <div>
-              <p className="text-sm font-medium text-red-800 dark:text-red-300">{t('error')}</p>
-              <p className="text-sm text-red-700 dark:text-red-400 mt-1">{integration.lastError}</p>
+              <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                {t('error')}
+              </p>
+              <p className="text-sm text-red-700 dark:text-red-400 mt-1">
+                {integration.lastError}
+              </p>
             </div>
           </div>
         </div>
@@ -472,9 +640,24 @@ export default function GoogleIntegrationCard({ integration }: GoogleIntegration
         >
           {syncing || integration.syncInProgress ? (
             <>
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              <svg
+                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
               </svg>
               {t('syncing')}
             </>
