@@ -189,6 +189,16 @@ log_info "Building application (this may take a few minutes)..."
 sudo -u "${APP_USER}" npm run build 2>&1 | tail -3
 log_ok "Application built"
 
+# next.config uses output:'standalone'. The standalone server.js expects
+# .next/static and public next to it, but `next build` does not copy them.
+log_info "Copying static assets into standalone tree..."
+sudo -u "${APP_USER}" rm -rf "${APP_DIR}/.next/standalone/.next/static" "${APP_DIR}/.next/standalone/public"
+sudo -u "${APP_USER}" cp -r "${APP_DIR}/.next/static" "${APP_DIR}/.next/standalone/.next/static"
+if [ -d "${APP_DIR}/public" ]; then
+  sudo -u "${APP_USER}" cp -r "${APP_DIR}/public" "${APP_DIR}/.next/standalone/public"
+fi
+log_ok "Static assets staged"
+
 # ============================================
 # Systemd Service
 # ============================================

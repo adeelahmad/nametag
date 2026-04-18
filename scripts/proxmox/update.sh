@@ -76,6 +76,16 @@ sudo -u "${APP_USER}" npx prisma migrate deploy
 log_info "Building application..."
 sudo -u "${APP_USER}" npm run build
 
+# next.config sets `output: 'standalone'`. The standalone server expects
+# .next/static and public to live next to .next/standalone/server.js, but
+# `next build` does not copy them automatically.
+log_info "Copying static assets into standalone tree..."
+sudo -u "${APP_USER}" rm -rf "${APP_DIR}/.next/standalone/.next/static" "${APP_DIR}/.next/standalone/public"
+sudo -u "${APP_USER}" cp -r "${APP_DIR}/.next/static" "${APP_DIR}/.next/standalone/.next/static"
+if [ -d "${APP_DIR}/public" ]; then
+  sudo -u "${APP_USER}" cp -r "${APP_DIR}/public" "${APP_DIR}/.next/standalone/public"
+fi
+
 # Restart
 log_info "Starting Nametag..."
 systemctl start nametag
