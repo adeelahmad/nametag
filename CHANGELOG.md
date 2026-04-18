@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.43.0](https://github.com/adeelahmad/nametag/compare/v0.42.2...v0.43.0) (2026-04-19)
+
+> First release of the `adeelahmad/nametag` fork. Includes new modules (assistant, notifications, Google Tasks, Google Contacts), the Proxmox helper, and Google service-account support, on top of the latest upstream `mattogodoy/nametag` master.
+
+
+### Features
+
+* **assistant:** add AI chat module with MCP server and matterbridge support ([df0a612](https://github.com/adeelahmad/nametag/commit/df0a612a))
+* **assistant:** phase 2 — search, web + deep research, attachments, share, branch, regenerate ([9f45aab](https://github.com/adeelahmad/nametag/commit/9f45aab))
+* **google:** integrate Google Tasks with people & journal refs ([5dd97c7](https://github.com/adeelahmad/nametag/commit/5dd97c7))
+* add in-app notifications module ([d5a480d](https://github.com/adeelahmad/nametag/commit/d5a480d))
+* add Proxmox community-scripts helper for Nametag ([b48cf91](https://github.com/adeelahmad/nametag/commit/b48cf91))
+
+
+### Bug Fixes
+
+* **google:** service-account auth + unified Contacts via People API ([18844e7](https://github.com/adeelahmad/nametag/commit/18844e7))
+* **install:** install devDependencies during build ([990485f](https://github.com/adeelahmad/nametag/commit/990485f))
+* **proxmox:** install devDependencies during update build ([4b9a835](https://github.com/adeelahmad/nametag/commit/4b9a835))
+* **proxmox:** install script failing on missing GitHub release ([010b860](https://github.com/adeelahmad/nametag/commit/010b860))
+
+
 ## [0.42.2](https://github.com/mattogodoy/nametag/compare/v0.42.1...v0.42.2) (2026-04-09)
 
 
