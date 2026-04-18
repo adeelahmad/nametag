@@ -8,11 +8,18 @@ import { toast } from 'sonner';
 interface GoogleConnectFormProps {
   oauthConfigured: boolean;
   serviceAccountAvailable: boolean;
+  /** When set, renders as an inline "switch auth method" panel instead of the first-connect form. */
+  mode?: 'connect' | 'switch';
+  currentAuthMode?: 'oauth' | 'service_account' | null;
+  onCancel?: () => void;
 }
 
 export default function GoogleConnectForm({
   oauthConfigured,
   serviceAccountAvailable,
+  mode = 'connect',
+  currentAuthMode = null,
+  onCancel,
 }: GoogleConnectFormProps) {
   const t = useTranslations('settings.integrations.google');
   const [jsonKey, setJsonKey] = useState('');
@@ -35,7 +42,9 @@ export default function GoogleConnectForm({
         body: JSON.stringify({
           authMode: 'service_account',
           serviceAccountKey: jsonKey.trim(),
-          ...(delegatedEmail.trim() ? { delegatedEmail: delegatedEmail.trim() } : {}),
+          ...(delegatedEmail.trim()
+            ? { delegatedEmail: delegatedEmail.trim() }
+            : {}),
         }),
       });
 
@@ -53,28 +62,61 @@ export default function GoogleConnectForm({
     }
   };
 
-  const handleFileDrop = useCallback((e: React.DragEvent<HTMLTextAreaElement>) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type === 'application/json') {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const text = ev.target?.result;
-        if (typeof text === 'string') {
-          setJsonKey(text);
-        }
-      };
-      reader.readAsText(file);
-    }
-  }, []);
+  const handleFileDrop = useCallback(
+    (e: React.DragEvent<HTMLTextAreaElement>) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === 'application/json') {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const text = ev.target?.result;
+          if (typeof text === 'string') {
+            setJsonKey(text);
+          }
+        };
+        reader.readAsText(file);
+      }
+    },
+    [],
+  );
+
+  const isSwitch = mode === 'switch';
 
   return (
-    <div className="border border-border rounded-lg p-4">
-      <h3 className="text-lg font-semibold text-foreground mb-2">
-        {t('connectTitle')}
-      </h3>
+    <div
+      className={
+        isSwitch
+          ? 'mt-4 p-4 rounded-md border border-dashed border-border bg-surface-elevated/40'
+          : 'border border-border rounded-lg p-4'
+      }
+    >
+      <div className="flex items-start justify-between mb-2">
+        <h3
+          className={
+            isSwitch
+              ? 'text-base font-semibold text-foreground'
+              : 'text-lg font-semibold text-foreground'
+          }
+        >
+          {isSwitch ? t('switchTitle') : t('connectTitle')}
+        </h3>
+        {isSwitch && onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="text-sm text-muted hover:text-foreground"
+          >
+            {t('cancel')}
+          </button>
+        )}
+      </div>
       <p className="text-sm text-muted mb-6">
-        {t('connectDescription')}
+        {isSwitch
+          ? t('switchDescription', {
+              current:
+                currentAuthMode === 'oauth' ? t('oauth') : t('serviceAccount'),
+            })
+          : t('connectDescription')}
       </p>
 
       {/* OAuth sign-in */}
@@ -133,7 +175,10 @@ export default function GoogleConnectForm({
 
           <form onSubmit={handleServiceAccountConnect} className="space-y-4">
             <div>
-              <label htmlFor="json-key" className="block text-sm font-medium text-foreground mb-1">
+              <label
+                htmlFor="json-key"
+                className="block text-sm font-medium text-foreground mb-1"
+              >
                 {t('jsonKeyLabel')}
               </label>
               <textarea
@@ -150,8 +195,12 @@ export default function GoogleConnectForm({
             </div>
 
             <div>
-              <label htmlFor="delegated-email" className="block text-sm font-medium text-foreground mb-1">
-                {t('delegatedEmailLabel')} <span className="text-muted font-normal">(optional)</span>
+              <label
+                htmlFor="delegated-email"
+                className="block text-sm font-medium text-foreground mb-1"
+              >
+                {t('delegatedEmailLabel')}{' '}
+                <span className="text-muted font-normal">(optional)</span>
               </label>
               <input
                 id="delegated-email"
@@ -177,7 +226,8 @@ export default function GoogleConnectForm({
       {/* No mode available */}
       {!oauthConfigured && !serviceAccountAvailable && (
         <p className="text-sm text-muted">
-          No Google integration method is configured. Please set up Google OAuth credentials or a service account in your environment.
+          No Google integration method is configured. Please set up Google OAuth
+          credentials or a service account in your environment.
         </p>
       )}
     </div>

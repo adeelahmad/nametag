@@ -26,6 +26,8 @@ export default async function IntegrationsSettingsPage() {
       birthdayCalendarId: true,
       tasksEnabled: true,
       defaultTaskListId: true,
+      contactsSyncEnabled: true,
+      lastContactsSyncAt: true,
       ocrEnabled: true,
       autoSyncInterval: true,
       lastGmailSyncAt: true,
@@ -49,6 +51,9 @@ export default async function IntegrationsSettingsPage() {
         birthdayCalendarId: integration.birthdayCalendarId,
         tasksEnabled: integration.tasksEnabled,
         defaultTaskListId: integration.defaultTaskListId,
+        contactsSyncEnabled: integration.contactsSyncEnabled,
+        lastContactsSyncAt:
+          integration.lastContactsSyncAt?.toISOString() ?? null,
         ocrEnabled: integration.ocrEnabled,
         autoSyncInterval: integration.autoSyncInterval,
         lastGmailSyncAt: integration.lastGmailSyncAt?.toISOString() ?? null,
@@ -59,16 +64,16 @@ export default async function IntegrationsSettingsPage() {
 
   return (
     <div className="bg-surface shadow rounded-lg p-6">
-      <h2 className="text-xl font-bold text-foreground mb-4">
-        {t('title')}
-      </h2>
-      <p className="text-muted mb-6">
-        {t('description')}
-      </p>
+      <h2 className="text-xl font-bold text-foreground mb-4">{t('title')}</h2>
+      <p className="text-muted mb-6">{t('description')}</p>
 
       {integration ? (
         <>
-          <GoogleIntegrationCard integration={integrationStatus} />
+          <GoogleIntegrationCard
+            integration={integrationStatus}
+            oauthConfigured={oauthConfigured}
+            serviceAccountAvailable={serviceAccountAvailable}
+          />
           <div className="mt-6">
             <SyncHistory />
           </div>

@@ -901,6 +901,11 @@ model GoogleIntegration {
   tasksEnabled        Boolean   @default(false) // User-level Google Tasks toggle
   defaultTaskListId   String?   // Default Google Tasks list ID for new tasks
 
+  // Contacts (Google People API) config
+  contactsSyncEnabled Boolean  @default(false)
+  lastContactsSyncAt  DateTime?
+  contactsSyncToken   String?  @db.Text // People API syncToken for incremental sync
+
   // OCR config
   ocrEnabled          Boolean  @default(true) // User-level OCR toggle
 
