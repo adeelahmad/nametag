@@ -67,9 +67,10 @@
       "dismiss": "Descartar"
     },
     "journal": "Diario",
-    "createJournal": "Nueva entrada"
+    "createJournal": "Nueva entrada",
+    "assistant": "Asistente"
   },
-  "settings": {
+  "settings": { "assistant": { "title": "Asistente", "description": "Proveedor de IA, herramientas y tokens" },
     "title": "Configuración",
     "menu": "Menú de Configuración",
     "profile": {

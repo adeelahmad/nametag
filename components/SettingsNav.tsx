@@ -68,6 +68,16 @@ const allSettingsNavItems = [
     ),
   },
   {
+    href: '/settings/assistant',
+    labelKey: 'settings.assistant.title',
+    descriptionKey: 'settings.assistant.description',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0zM7 20l4-4h6a2 2 0 002-2V8a2 2 0 00-2-2H7a2 2 0 00-2 2v10z" />
+      </svg>
+    ),
+  },
+  {
     href: '/settings/account',
     labelKey: 'settings.account.title',
     descriptionKey: 'settings.account.description',

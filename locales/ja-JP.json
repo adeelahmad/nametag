@@ -67,9 +67,10 @@
       "dismiss": "閉じる"
     },
     "journal": "ジャーナル",
-    "createJournal": "新しいエントリー"
+    "createJournal": "新しいエントリー",
+    "assistant": "アシスタント"
   },
-  "settings": {
+  "settings": { "assistant": { "title": "アシスタント", "description": "AIプロバイダー、ツール、ブリッジトークン" },
     "title": "設定",
     "menu": "設定メニュー",
     "profile": {

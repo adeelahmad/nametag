@@ -48,6 +48,11 @@ const navIcons: Record<string, React.ReactNode> = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
     </svg>
   ),
+  assistant: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0zM7 20l4-4h6a2 2 0 002-2V8a2 2 0 00-2-2H7a2 2 0 00-2 2v10z" />
+    </svg>
+  ),
 };
 
 const navItems = [
@@ -57,6 +62,7 @@ const navItems = [
   { href: '/groups', labelKey: 'groups', createHref: '/groups/new', createLabelKey: 'groups' },
   { href: '/journal', labelKey: 'journal', createHref: '/journal/new', createLabelKey: 'journal' },
   { href: '/relationship-types', labelKey: 'relationshipTypes', createHref: '/relationship-types/new', createLabelKey: 'relationshipTypes' },
+  { href: '/assistant', labelKey: 'assistant' },
 ];
 
 export default function Navigation({ userEmail, userName, userNickname, userPhoto, userLocale, currentPath }: NavigationProps) {

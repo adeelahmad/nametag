@@ -68,11 +68,16 @@
       "dismiss": "Dismiss"
     },
     "journal": "Journal",
-    "createJournal": "New entry"
+    "createJournal": "New entry",
+    "assistant": "Assistant"
   },
   "settings": {
     "title": "Settings",
     "menu": "Settings Menu",
+    "assistant": {
+      "title": "Assistant",
+      "description": "LLM provider, tools, and bridge tokens"
+    },
     "profile": {
       "title": "Profile",
       "description": "Name, email, and personal info",

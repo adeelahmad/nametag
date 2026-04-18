@@ -67,9 +67,10 @@
       "dismiss": "关闭"
     },
     "journal": "日记",
-    "createJournal": "新条目"
+    "createJournal": "新条目",
+    "assistant": "助手"
   },
-  "settings": {
+  "settings": { "assistant": { "title": "助手", "description": "AI 提供者、工具和桥接令牌" },
     "title": "设置",
     "menu": "设置菜单",
     "profile": {

@@ -67,9 +67,10 @@
       "dismiss": "Lukk"
     },
     "journal": "Journal",
-    "createJournal": "Ny oppføring"
+    "createJournal": "Ny oppføring",
+    "assistant": "Assistent"
   },
-  "settings": {
+  "settings": { "assistant": { "title": "Assistent", "description": "AI-leverandør, verktøy og bro-tokener" },
     "title": "Innstillinger",
     "menu": "Innstillingsmeny",
     "profile": {

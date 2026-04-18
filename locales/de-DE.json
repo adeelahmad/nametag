@@ -67,9 +67,10 @@
       "dismiss": "Schließen"
     },
     "journal": "Tagebuch",
-    "createJournal": "Neuer Eintrag"
+    "createJournal": "Neuer Eintrag",
+    "assistant": "Assistent"
   },
-  "settings": {
+  "settings": { "assistant": { "title": "Assistent", "description": "KI-Anbieter, Tools und Bridge-Tokens" },
     "title": "Einstellungen",
     "menu": "Einstellungsmenü",
     "profile": {
